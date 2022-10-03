@@ -1,0 +1,4 @@
+nei.options.tools.dump.gtnhdumper=GTNH Dumper
+
+nei.options.tools.dump.gtnhdumper.advitempanel=Advanced Item Panel
+nei.options.tools.dump.gtnhdumper.advitempanel.dumped=Advanced Item Panel were dumped to %s
