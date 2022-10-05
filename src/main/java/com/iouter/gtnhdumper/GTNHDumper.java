@@ -6,11 +6,7 @@ import cpw.mods.fml.common.event.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(
-        modid = Tags.MODID,
-        version = Tags.VERSION,
-        name = Tags.MODNAME,
-        acceptedMinecraftVersions = "[1.7.10]")
+@Mod(modid = Tags.MODID, version = Tags.VERSION, name = Tags.MODNAME, acceptedMinecraftVersions = "[1.7.10]")
 public class GTNHDumper {
 
     private static Logger LOG = LogManager.getLogger(Tags.MODID);
@@ -18,9 +14,7 @@ public class GTNHDumper {
     public static final String MOD_ID = Tags.MODID;
     public static final String VERSION = Tags.VERSION;
 
-    @SidedProxy(
-            clientSide = Tags.GROUPNAME + ".ClientProxy",
-            serverSide = Tags.GROUPNAME + ".CommonProxy")
+    @SidedProxy(clientSide = Tags.GROUPNAME + ".ClientProxy", serverSide = Tags.GROUPNAME + ".CommonProxy")
     public static CommonProxy proxy;
 
     @Mod.EventHandler
