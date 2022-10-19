@@ -20,6 +20,7 @@ public class TICMaterialDumper extends DataDumper {
     @Override
     public String[] header() {
         return new String[] {
+            "ID",
             "Name",
             "Localized Name",
             "Base Durability",
@@ -28,7 +29,6 @@ public class TICMaterialDumper extends DataDumper {
             "Mining Speed",
             "Mining Level",
             "Attack Damage",
-            "Reinforced",
             "Ability",
             "Draw Speed",
             "Arrow Speed",
@@ -44,11 +44,7 @@ public class TICMaterialDumper extends DataDumper {
             ToolMaterial m = toolMaterials.get(index);
             ArrowMaterial arrowMaterial = TConstructRegistry.getArrowMaterial(index);
             BowMaterial bowMaterial = TConstructRegistry.getBowMaterial(index);
-            String mass = "", breakChance = "", drawspeed = "", flightSpeedMax = "", reinforced = "";
-            String ability = m.ability();
-            if (m.stonebound > 0) {
-                ability += " (" + Math.abs(m.stonebound) + ")";
-            }
+            String mass = "", breakChance = "", drawspeed = "", flightSpeedMax = "";
             if (arrowMaterial != null) {
                 mass = String.valueOf(arrowMaterial.mass);
                 breakChance = String.valueOf(arrowMaterial.breakChance);
@@ -57,10 +53,16 @@ public class TICMaterialDumper extends DataDumper {
                 drawspeed = String.valueOf(bowMaterial.drawspeed);
                 flightSpeedMax = String.valueOf(bowMaterial.flightSpeedMax);
             }
+            String ability = m.ability();
+            if (m.stonebound > 0 && ability != "") {
+                ability += " " + toRomaNumber((int) Math.abs(m.stonebound));
+            }
             if (m.reinforced() > 0) {
-                reinforced = getReinforcedString(m.reinforced());
+                if (ability != "") ability += " / ";
+                ability += getReinforcedString(m.reinforced());
             }
             list.add(new String[] {
+                String.valueOf(index),
                 m.name(),
                 m.prefixName(),
                 String.valueOf(m.durability()),
@@ -69,7 +71,6 @@ public class TICMaterialDumper extends DataDumper {
                 String.valueOf(m.toolSpeed() / 100F),
                 String.valueOf(m.harvestLevel()),
                 String.valueOf(m.attack()),
-                reinforced,
                 ability,
                 drawspeed,
                 flightSpeedMax,
@@ -94,38 +95,34 @@ public class TICMaterialDumper extends DataDumper {
     public static String getReinforcedString(int reinforced) {
         if (reinforced > 9) return StatCollector.translateToLocal("item.unbreakable");
         String ret = StatCollector.translateToLocal("tool.reinforced") + " ";
-        switch (reinforced) {
-            case 1:
-                ret += "I";
-                break;
-            case 2:
-                ret += "II";
-                break;
-            case 3:
-                ret += "III";
-                break;
-            case 4:
-                ret += "IV";
-                break;
-            case 5:
-                ret += "V";
-                break;
-            case 6:
-                ret += "VI";
-                break;
-            case 7:
-                ret += "VII";
-                break;
-            case 8:
-                ret += "VIII";
-                break;
-            case 9:
-                ret += "IX";
-                break;
-            default:
-                ret += reinforced;
-                break;
-        }
+        ret += toRomaNumber(reinforced);
         return ret;
+    }
+
+    public static String toRomaNumber(int num) {
+        switch (num) {
+            case 1:
+                return "I";
+            case 2:
+                return "II";
+            case 3:
+                return "III";
+            case 4:
+                return "IV";
+            case 5:
+                return "V";
+            case 6:
+                return "VI";
+            case 7:
+                return "VII";
+            case 8:
+                return "VIII";
+            case 9:
+                return "IX";
+            case 10:
+                return "X";
+            default:
+                return String.valueOf(num);
+        }
     }
 }
