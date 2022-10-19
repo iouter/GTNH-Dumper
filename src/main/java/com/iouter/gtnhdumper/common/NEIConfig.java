@@ -10,6 +10,7 @@ public class NEIConfig implements IConfigureNEI {
     public void loadConfig() {
         API.addOption(new AdvItemPanelDumper());
         if (Loader.isModLoaded("gregtech")) API.addOption(new GTMaterialDumper());
+        if (Loader.isModLoaded("TConstruct")) API.addOption(new TICMaterialDumper());
     }
 
     @Override

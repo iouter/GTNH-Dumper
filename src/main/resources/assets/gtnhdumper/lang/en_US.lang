@@ -4,3 +4,5 @@ nei.options.tools.dump.gtnhdumper.advitempanel=Advanced Item Panel
 nei.options.tools.dump.gtnhdumper.advitempanel.dumped=Advanced Item Panel were dumped to %s
 nei.options.tools.dump.gtnhdumper.gtmaterials=GT Material
 nei.options.tools.dump.gtnhdumper.gtmaterial.dumped=GT Material were dumped to %s
+nei.options.tools.dump.gtnhdumper.ticmaterials=TIC Material
+nei.options.tools.dump.gtnhdumper.ticmaterial.dumped=Tinkers' Construct Material were dumped to %s
