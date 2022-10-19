@@ -4,7 +4,7 @@
 		"modid": "gtnhdumper",
 		"name": "GTNH Dumper",
 		"description": "Dump data for GTNH wiki.",
-		"version": "1.0",
+		"version": "1.2.1",
 		"mcversion": "1.7.10",
 		"url": "https://github.com/iouter/GTNH Dumper",
 		"updateUrl": "",
