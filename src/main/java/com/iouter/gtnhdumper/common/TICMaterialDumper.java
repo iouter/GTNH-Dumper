@@ -93,7 +93,7 @@ public class TICMaterialDumper extends DataDumper {
     }
 
     public static String getReinforcedString(int reinforced) {
-        if (reinforced > 9) return StatCollector.translateToLocal("item.unbreakable");
+        if (reinforced > 9) return StatCollector.translateToLocal("tool.unbreakable");
         String ret = StatCollector.translateToLocal("tool.reinforced") + " ";
         ret += toRomaNumber(reinforced);
         return ret;

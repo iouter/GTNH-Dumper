@@ -11,6 +11,7 @@ public class NEIConfig implements IConfigureNEI {
         API.addOption(new AdvItemPanelDumper());
         if (Loader.isModLoaded("gregtech")) API.addOption(new GTMaterialDumper());
         if (Loader.isModLoaded("TConstruct")) API.addOption(new TICMaterialDumper());
+        if (Loader.isModLoaded("Thaumcraft")) API.addOption(new TC4ResearchDumper());
     }
 
     @Override
