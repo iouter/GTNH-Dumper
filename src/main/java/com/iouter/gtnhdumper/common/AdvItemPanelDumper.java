@@ -6,7 +6,6 @@ import codechicken.nei.config.ItemPanelDumper;
 import codechicken.nei.guihook.GuiContainerManager;
 import java.io.File;
 import java.util.LinkedList;
-import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -14,22 +13,10 @@ import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 
 public class AdvItemPanelDumper extends ItemPanelDumper {
+    public static final Minecraft minecraft = Minecraft.getMinecraft();
+
     public AdvItemPanelDumper() {
         super("tools.dump.gtnhdumper.advitempanel");
-    }
-
-    public static String ListToString(List list) {
-        String str = "";
-        if (list != null) {
-            str = str.concat(list.get(0) == null ? "" : list.get(0).toString());
-        }
-        if (list.size() > 1) {
-            for (int i = 1; i < list.size(); i++) {
-                str = str.concat("<br />");
-                str = str.concat(list.get(i) == null ? "" : list.get(i).toString());
-            }
-        }
-        return str;
     }
 
     @Override
@@ -39,27 +26,29 @@ public class AdvItemPanelDumper extends ItemPanelDumper {
 
     @Override
     public Iterable<String[]> dump(int mode) {
-        final Minecraft minecraft = Minecraft.getMinecraft();
         LinkedList<String[]> list = new LinkedList<>();
         for (ItemStack stack : ItemPanels.itemPanel.getItems()) {
-            String Tooltip;
-            try {
-                Tooltip = ListToString(stack.getTooltip(minecraft.thePlayer, false));
-            } catch (Exception e) {
-                Tooltip = "Has ERROR";
-            }
+            String Tooltip = getTooltip(stack);
             list.add(new String[] {
                 Item.itemRegistry.getNameForObject(stack.getItem()),
                 Integer.toString(Item.getIdFromItem(stack.getItem())),
                 Integer.toString(InventoryUtils.actualDamage(stack)),
-                stack.stackTagCompound == null
-                        ? ""
-                        : stack.stackTagCompound.toString().replace(",", "*comma*"),
+                stack.stackTagCompound == null ? "" : stack.stackTagCompound.toString(),
                 Tooltip,
                 EnumChatFormatting.getTextWithoutFormattingCodes(GuiContainerManager.itemDisplayNameShort(stack))
             });
         }
         return list;
+    }
+
+    public static String getTooltip(ItemStack itemStack) {
+        String tooltip;
+        try {
+            tooltip = itemStack.getTooltip(minecraft.thePlayer, false).toString();
+        } catch (Exception e) {
+            tooltip = "ERROR";
+        }
+        return tooltip;
     }
 
     @Override
