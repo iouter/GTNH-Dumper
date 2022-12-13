@@ -848,7 +848,7 @@ boolean isNewBuildScriptVersionAvailable(String projectDir) {
 //    String availableBuildScriptHash = getVersionHash(availableBuildScript)
 //
 //    boolean isUpToDate = currentBuildScriptHash.empty || availableBuildScriptHash.empty || currentBuildScriptHash == availableBuildScriptHash
-    return true
+    return false
 }
 
 static String getVersionHash(String buildScriptContent) {
