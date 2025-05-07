@@ -1,7 +1,7 @@
 package com.iouter.gtnhdumper.common;
 
 import codechicken.nei.config.DataDumper;
-import com.github.bartimaeusnek.bartworks.system.material.Werkstoff;
+import bartworks.system.material.Werkstoff;
 import cpw.mods.fml.common.Loader;
 import gregtech.api.enums.Materials;
 import java.io.File;
