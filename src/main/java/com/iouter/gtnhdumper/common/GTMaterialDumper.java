@@ -1,13 +1,13 @@
 package com.iouter.gtnhdumper.common;
 
-import codechicken.nei.config.DataDumper;
 import bartworks.system.material.Werkstoff;
-import cpw.mods.fml.common.Loader;
+import codechicken.nei.config.DataDumper;
 import gregtech.api.enums.Materials;
+import net.minecraft.util.ChatComponentTranslation;
+
 import java.io.File;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import net.minecraft.util.ChatComponentTranslation;
 
 public class GTMaterialDumper extends DataDumper {
 
@@ -17,7 +17,7 @@ public class GTMaterialDumper extends DataDumper {
 
     @Override
     public String[] header() {
-        return new String[] {
+        return new String[]{
             "Material ID",
             "Material Default Name",
             "Material Localized Name",
@@ -29,48 +29,43 @@ public class GTMaterialDumper extends DataDumper {
 
     @Override
     public Iterable<String[]> dump(int mode) {
+        //gt5
         Materials[] gtMaterials = Materials.values();
         LinkedList<String[]> list = new LinkedList<>();
         for (Materials m : gtMaterials) {
             if (m != null) {
-                list.add(new String[] {
-                    String.valueOf(m.mMetaItemSubID),
-                    m.mDefaultLocalName,
-                    m.mLocalizedName,
-                    String.valueOf(m.mDurability),
-                    String.valueOf(m.mToolSpeed),
-                    String.valueOf(m.mToolQuality)
-                });
+                dumpMaterialToList(m, list);
             }
         }
-
-        if (Loader.isModLoaded("bartworks")) {
-            LinkedHashSet<Werkstoff> bwMaterials = Werkstoff.werkstoffHashSet;
-            for (Werkstoff m : bwMaterials) {
-                if (m != null) {
-                    list.add(new String[] {
-                        String.valueOf(m.getmID()),
-                        m.getDefaultName(),
-                        m.getLocalizedName(),
-                        String.valueOf(m.getStats().getDurOverride()),
-                        String.valueOf(m.getStats().getSpeedOverride()),
-                        String.valueOf(m.getStats().getQualityOverride())
-                    });
-                }
+        //bartworks
+        LinkedHashSet<Werkstoff> bwMaterials = Werkstoff.werkstoffHashSet;
+        for (Werkstoff m : bwMaterials) {
+            if (m != null) {
+                dumpMaterialToList(m.getBridgeMaterial(), list);
             }
         }
-
         return list;
     }
 
     @Override
     public ChatComponentTranslation dumpMessage(File file) {
         return new ChatComponentTranslation(
-                "nei.options.tools.dump.gtnhdumper.gtmaterial.dumped", "dumps/" + file.getName());
+            "nei.options.tools.dump.gtnhdumper.gtmaterial.dumped", "dumps/" + file.getName());
     }
 
     @Override
     public int modeCount() {
         return 1;
+    }
+
+    private static void dumpMaterialToList(Materials materials, LinkedList<String[]> list) {
+        list.add(new String[]{
+            String.valueOf(materials.mMetaItemSubID),
+            materials.mDefaultLocalName,
+            materials.mLocalizedName,
+            String.valueOf(materials.mDurability),
+            String.valueOf(materials.mToolSpeed),
+            String.valueOf(materials.mToolQuality)
+        });
     }
 }
