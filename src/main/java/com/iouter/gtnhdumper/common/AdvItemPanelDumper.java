@@ -5,12 +5,18 @@ import codechicken.nei.ItemPanels;
 import codechicken.nei.config.ItemPanelDumper;
 import codechicken.nei.guihook.GuiContainerManager;
 import java.io.File;
+import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.StatCollector;
 
 public class AdvItemPanelDumper extends ItemPanelDumper {
     public static final Minecraft minecraft = Minecraft.getMinecraft();
@@ -21,34 +27,47 @@ public class AdvItemPanelDumper extends ItemPanelDumper {
 
     @Override
     public String[] header() {
-        return new String[] {"Item Name", "Item ID", "Item meta", "NBT", "Tooltip", "Display Name"};
+        return new String[] {"key",
+            "originalName",
+            "translatedName",
+            "tooltips"};
     }
 
     @Override
     public Iterable<String[]> dump(int mode) {
         LinkedList<String[]> list = new LinkedList<>();
         for (ItemStack stack : ItemPanels.itemPanel.getItems()) {
-            String Tooltip = getTooltip(stack);
             list.add(new String[] {
-                Item.itemRegistry.getNameForObject(stack.getItem()),
-                Integer.toString(Item.getIdFromItem(stack.getItem())),
-                Integer.toString(InventoryUtils.actualDamage(stack)),
-                stack.stackTagCompound == null ? "" : stack.stackTagCompound.toString(),
-                Tooltip,
-                EnumChatFormatting.getTextWithoutFormattingCodes(GuiContainerManager.itemDisplayNameShort(stack))
+                getItemKey(stack),
+                EnumChatFormatting.getTextWithoutFormattingCodes(StatCollector.translateToFallback(stack.getUnlocalizedName() + ".name")),
+                EnumChatFormatting.getTextWithoutFormattingCodes(GuiContainerManager.itemDisplayNameShort(stack)),
+                getTooltip(stack)
             });
         }
         return list;
     }
 
     public static String getTooltip(ItemStack itemStack) {
-        String tooltip;
         try {
-            tooltip = itemStack.getTooltip(minecraft.thePlayer, false).toString();
+            List<String> tooltips = itemStack.getTooltip(minecraft.thePlayer, false);
+            return String.join("<br>", tooltips);
         } catch (Exception e) {
-            tooltip = "ERROR";
+            return "ERROR";
         }
-        return tooltip;
+    }
+
+    public static String getItemKey(ItemStack stack) {
+        Item item = stack.getItem();
+        StringBuilder sb = new StringBuilder(Item.itemRegistry.getNameForObject(item));
+        int meta = InventoryUtils.actualDamage(stack);
+        if (meta != 0) {
+            sb.append(":").append(meta);
+        }
+        NBTTagCompound nbt = stack.stackTagCompound;
+        if (nbt != null) {
+            sb.append(nbt);
+        }
+        return sb.toString();
     }
 
     @Override
