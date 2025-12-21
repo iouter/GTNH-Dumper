@@ -9,7 +9,10 @@ import com.iouter.gtnhdumper.CommonProxy;
 import com.iouter.gtnhdumper.Utils;
 import com.iouter.gtnhdumper.common.recipe.GTDefaultHandlerRecipe;
 import com.iouter.gtnhdumper.common.recipe.GeneralHandlerRecipe;
+import com.iouter.gtnhdumper.common.recipe.TCHandlerRecipe;
 import com.iouter.gtnhdumper.common.recipe.base.RecipeItem;
+import com.iouter.gtnhdumper.common.recipe.serializer.AspectListSerializer;
+import com.iouter.gtnhdumper.common.recipe.serializer.AspectSerializer;
 import com.iouter.gtnhdumper.common.recipe.serializer.ElementSerializer;
 import com.iouter.gtnhdumper.common.recipe.serializer.FluidStackSerializer;
 import com.iouter.gtnhdumper.common.recipe.serializer.ItemStackSerializer;
@@ -22,6 +25,8 @@ import gregtech.nei.GTNEIDefaultHandler;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraftforge.fluids.FluidStack;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -41,6 +46,9 @@ public class RecipesDumper extends DataDumper {
                 GTNEIDefaultHandler gtDefaultHandler = (GTNEIDefaultHandler) recipeHandler;
                 return new GTDefaultHandlerRecipe(gtDefaultHandler);
             }
+        }
+        if (CommonProxy.isTCNEIAdditionsLoaded) {
+            return new TCHandlerRecipe(recipeHandler);
         }
         if (clazz.contains("Shaped")) {
             return new ShapedCraftingHandlerRecipe(recipeHandler);
@@ -72,6 +80,8 @@ public class RecipesDumper extends DataDumper {
                 .registerTypeAdapter(Materials.class, new MaterialsSerializer())
                 .registerTypeAdapter(ItemStack.class, new ItemStackSerializer())
                 .registerTypeAdapter(FluidStack.class, new FluidStackSerializer())
+                .registerTypeAdapter(Aspect.class, new AspectSerializer())
+                .registerTypeAdapter(AspectList.class, new AspectListSerializer())
                 .create();
             try (FileWriter writer = new FileWriter(file)) {
                 gson.toJson(dumpRecipes(handler), writer);
@@ -96,10 +106,4 @@ public class RecipesDumper extends DataDumper {
     public int modeCount() {
         return 1;
     }
-
-//    private static
-//
-//    private static Gson dumpGTDefaultRecipes(GTNEIDefaultHandler defaultHandler) {
-//        defaultHandler.getRecipeMap();
-//    }
 }

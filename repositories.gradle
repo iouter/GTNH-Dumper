@@ -17,4 +17,15 @@ repositories {
 		name "Jitpack"
 		url "https://jitpack.io"
 	}
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = 'glease'
+                url = 'https://maven.glease.net/repos/releases/'
+            }
+        }
+        filter {
+            includeGroup('net.glease')
+        }
+    }
 }
