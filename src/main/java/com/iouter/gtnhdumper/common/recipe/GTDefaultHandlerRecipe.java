@@ -8,6 +8,7 @@ import com.gtnewhorizons.modularui.api.drawable.FallbackableUITexture;
 import com.iouter.gtnhdumper.Utils;
 import com.iouter.gtnhdumper.common.recipe.base.RecipeFluid;
 import com.iouter.gtnhdumper.common.recipe.base.RecipeItem;
+import com.iouter.gtnhdumper.common.recipe.utils.GTShouldCheckNBT;
 import gregtech.api.objects.ItemData;
 import gregtech.api.recipe.BasicUIProperties;
 import gregtech.api.recipe.RecipeMap;
@@ -16,6 +17,7 @@ import gregtech.api.recipe.RecipeMetadataKey;
 import gregtech.api.recipe.metadata.IRecipeMetadataStorage;
 import gregtech.api.util.GTOreDictUnificator;
 import gregtech.api.util.GTRecipe;
+import gregtech.api.util.GTUtility;
 import gregtech.nei.GTNEIDefaultHandler;
 import net.minecraft.item.ItemStack;
 
@@ -73,10 +75,10 @@ public class GTDefaultHandlerRecipe{
                 if (stack == null)
                     continue;
                 ItemData data = GTOreDictUnificator.getAssociation(stack);
-                if (data == null)
-                    inputItems.add(new RecipeItem(stack).withNBT(stack));
-                else
+                if (data != null && GTShouldCheckNBT.shouldCheckNBT(data, stack, gtRecipe))
                     inputItems.add(new RecipeItem("#" + data, stack.stackSize).withNBT(stack));
+                else
+                    inputItems.add(new RecipeItem(stack).withNBT(stack));
             }
             if (inputItems.isEmpty())
                 inputItems = null;
@@ -94,7 +96,8 @@ public class GTDefaultHandlerRecipe{
                 outputFluids = null;
             ArrayList<RecipeItem> otherItems = new ArrayList<>();
             if (gtRecipe.mSpecialItems instanceof ItemStack) {
-                otherItems.add(new RecipeItem((ItemStack) gtRecipe.mSpecialItems));
+                ItemStack temp = (ItemStack) gtRecipe.mSpecialItems;
+                otherItems.add(new RecipeItem(temp).withNBT(temp));
             }
             if (otherItems.isEmpty())
                 otherItems = null;

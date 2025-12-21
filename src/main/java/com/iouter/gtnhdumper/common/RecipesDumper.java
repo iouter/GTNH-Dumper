@@ -31,21 +31,18 @@ import java.util.List;
 
 public class RecipesDumper extends DataDumper {
     public RecipesDumper() {
-        super("tools.dump.gtnhdumper.recipes");
+        super("tools.dump.gtnhdumper.recipe");
     }
 
     private static Object dumpRecipes(IRecipeHandler recipeHandler) {
-        String name = recipeHandler.getRecipeName();
+        final String clazz = Utils.getAfterLastDot(recipeHandler.getHandlerId()).replace(".", "_");
         if (CommonProxy.isGTLoaded) {
             if (recipeHandler instanceof GTNEIDefaultHandler) {
                 GTNEIDefaultHandler gtDefaultHandler = (GTNEIDefaultHandler) recipeHandler;
                 return new GTDefaultHandlerRecipe(gtDefaultHandler);
             }
-//            else if (recipeHandler instanceof GTNEIImprintHandler) {
-//
-//            }
         }
-        if (name.equals("有序合成")) {
+        if (clazz.contains("Shaped")) {
             return new ShapedCraftingHandlerRecipe(recipeHandler);
         }
         return new GeneralHandlerRecipe(recipeHandler);
@@ -80,6 +77,9 @@ public class RecipesDumper extends DataDumper {
                 gson.toJson(dumpRecipes(handler), writer);
                 System.out.println("已写入：" + file.getAbsolutePath());
             } catch (IOException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                System.out.println("导出" + name + "时发生错误：" + e.getLocalizedMessage());
                 e.printStackTrace();
             }
         }
