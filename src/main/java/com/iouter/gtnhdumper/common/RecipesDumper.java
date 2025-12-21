@@ -64,6 +64,10 @@ public class RecipesDumper extends DataDumper {
             recipesList.add(new String[]{handler.getRecipeName()});
             final String clazz = Utils.getAfterLastDot(handler.getHandlerId()).replace(".", "_");
             File file = new File( "dumps/recipes/" + clazz + "_" + name + ".json");
+            File parentDir = file.getParentFile();
+            if (parentDir != null && !parentDir.exists()) {
+                parentDir.mkdirs();
+            }
             Gson gson = new GsonBuilder()
                 .setPrettyPrinting()
                 .registerTypeAdapter(RecipeItem.class, new RecipeItemSerializer())

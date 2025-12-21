@@ -1,18 +1,13 @@
 package com.iouter.gtnhdumper.common.recipe;
 
-import appeng.integration.modules.GT;
 import codechicken.nei.recipe.GuiRecipeTab;
 import codechicken.nei.recipe.HandlerInfo;
 import codechicken.nei.recipe.RecipeCatalysts;
-import codechicken.nei.recipe.TemplateRecipeHandler;
 import com.google.common.base.Objects;
-import com.google.gson.JsonPrimitive;
 import com.gtnewhorizons.modularui.api.drawable.FallbackableUITexture;
 import com.iouter.gtnhdumper.Utils;
-import com.iouter.gtnhdumper.common.recipe.base.BaseRecipe;
 import com.iouter.gtnhdumper.common.recipe.base.RecipeFluid;
 import com.iouter.gtnhdumper.common.recipe.base.RecipeItem;
-import gregtech.api.enums.Element;
 import gregtech.api.objects.ItemData;
 import gregtech.api.recipe.BasicUIProperties;
 import gregtech.api.recipe.RecipeMap;
@@ -23,7 +18,6 @@ import gregtech.api.util.GTOreDictUnificator;
 import gregtech.api.util.GTRecipe;
 import gregtech.nei.GTNEIDefaultHandler;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

@@ -8,3 +8,7 @@ nei.options.tools.dump.gtnhdumper.ticmaterials=TIC Material
 nei.options.tools.dump.gtnhdumper.ticmaterial.dumped=Tinkers' Construct Material were dumped to %s
 nei.options.tools.dump.gtnhdumper.tc4researchs=TC4 Research
 nei.options.tools.dump.gtnhdumper.tc4research.dumped=TC4's Research were dumped to %s
+nei.options.tools.dump.gtnhdumper.recipes=Recipes
+nei.options.tools.dump.gtnhdumper.recipes.dumped=Recipes were dumped to %s and recipe/*.json
+nei.options.tools.dump.gtnhdumper.oreDictionary=Ore Dictionary
+nei.options.tools.dump.gtnhdumper.oreDictionary.dumped=Ore Dictionary were dumped to %s
