@@ -1,19 +1,15 @@
 package com.iouter.gtnhdumper.common;
 
-import codechicken.lib.inventory.InventoryUtils;
 import codechicken.nei.ItemPanels;
 import codechicken.nei.config.ItemPanelDumper;
 import codechicken.nei.guihook.GuiContainerManager;
 import java.io.File;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import com.iouter.gtnhdumper.Utils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
@@ -38,7 +34,7 @@ public class AdvItemPanelDumper extends ItemPanelDumper {
         LinkedList<String[]> list = new LinkedList<>();
         for (ItemStack stack : ItemPanels.itemPanel.getItems()) {
             list.add(new String[] {
-                getItemKey(stack),
+                Utils.getItemKeyWithNBT(stack),
                 EnumChatFormatting.getTextWithoutFormattingCodes(StatCollector.translateToFallback(stack.getUnlocalizedName() + ".name")),
                 EnumChatFormatting.getTextWithoutFormattingCodes(GuiContainerManager.itemDisplayNameShort(stack)),
                 getTooltip(stack)
@@ -54,20 +50,6 @@ public class AdvItemPanelDumper extends ItemPanelDumper {
         } catch (Exception e) {
             return "ERROR";
         }
-    }
-
-    public static String getItemKey(ItemStack stack) {
-        Item item = stack.getItem();
-        StringBuilder sb = new StringBuilder(Item.itemRegistry.getNameForObject(item));
-        int meta = InventoryUtils.actualDamage(stack);
-        if (meta != 0) {
-            sb.append(":").append(meta);
-        }
-        NBTTagCompound nbt = stack.stackTagCompound;
-        if (nbt != null) {
-            sb.append(nbt);
-        }
-        return sb.toString();
     }
 
     @Override

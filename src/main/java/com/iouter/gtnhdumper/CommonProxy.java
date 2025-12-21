@@ -1,8 +1,15 @@
 package com.iouter.gtnhdumper;
 
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.event.*;
 
 public class CommonProxy {
+
+    public static boolean isGTLoaded = Loader.isModLoaded("gregtech");
+    public static boolean isTiCLoaded = Loader.isModLoaded("TConstruct");
+    public static boolean isTCLoaded = Loader.isModLoaded("Thaumcraft");
+    public static boolean isAutomagyLoaded = Loader.isModLoaded("Automagy");
+
 
     // preInit "Run before anything else. Read your config, create blocks, items,
     // etc, and register them with the GameRegistry."

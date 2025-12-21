@@ -1,6 +1,7 @@
 package com.iouter.gtnhdumper.common;
 
 import codechicken.nei.config.DataDumper;
+import com.iouter.gtnhdumper.CommonProxy;
 import cpw.mods.fml.common.Loader;
 import java.io.File;
 import java.util.*;
@@ -93,6 +94,7 @@ public class TC4ResearchDumper extends DataDumper {
         if (aspects == null) return null;
         List<String> nameList = new ArrayList<>();
         for (Aspect a : aspects) {
+
             nameList.add(a.getName());
         }
         return nameList.toArray(new String[0]);
@@ -108,7 +110,7 @@ public class TC4ResearchDumper extends DataDumper {
     }
 
     public String getKillerTrigger(ResearchItem researchItem) {
-        if (Loader.isModLoaded("Automagy")) {
+        if (CommonProxy.isAutomagyLoaded) {
             if (researchItem.category.equals("AUTOMAGY")) {
                 Set<String> nameList = getKeysByValue(ModResearchItems.cluesOnKill, researchItem.key);
                 String[] list = nameList.toArray(new String[0]);

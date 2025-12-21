@@ -39,62 +39,62 @@ import static tconstruct.library.TConstructRegistry.toolMaterials;
 
 public class GTMaterialDumper extends DataDumper {
 
-    public static final String TRUE = "true";
-    public static final String FALSE = "false";
+    private static final String TRUE = "true";
+    private static final String FALSE = "false";
 
-    public static final String DEFAULT_NAME = "DefaultName";
-    public static final String LOCALIZED_NAME = "LocalizedName";
+    private static final String DEFAULT_NAME = "DefaultName";
+    private static final String LOCALIZED_NAME = "LocalizedName";
 
-    public static final String CHEMICAL_FORMULA = "ChemicalFormula";
-    public static final String FLAVOR_TEXT = "FlavorText";
+    private static final String CHEMICAL_FORMULA = "ChemicalFormula";
+    private static final String FLAVOR_TEXT = "FlavorText";
 
-    public static final String DURABILITY = "Durability";
-    public static final String TOOL_SPEED = "ToolSpeed";
-    public static final String TOOL_QUALITY = "ToolQuality";
+    private static final String DURABILITY = "Durability";
+    private static final String TOOL_SPEED = "ToolSpeed";
+    private static final String TOOL_QUALITY = "ToolQuality";
 
-    public static final String DUST_ITEMS = "DustItems";
-    public static final String METAL_ITEMS = "MetalItems";
-    public static final String GEM_ITEMS = "GemItems";
-    public static final String ORE_ITEMS = "OreItems";
-    public static final String CELL = "Cell";
-    public static final String PLASMA = "Plasma";
-    public static final String TOOL_HEAD_ITEMS = "ToolHeadItems";
-    public static final String GEAR_ITEMS = "GearItems";
-    public static final String EMPTY = "Empty";
-    public static final String GAS = "Gas";
-    public static final String FLUID = "Fluid";
+    private static final String DUST_ITEMS = "DustItems";
+    private static final String METAL_ITEMS = "MetalItems";
+    private static final String GEM_ITEMS = "GemItems";
+    private static final String ORE_ITEMS = "OreItems";
+    private static final String CELL = "Cell";
+    private static final String PLASMA = "Plasma";
+    private static final String TOOL_HEAD_ITEMS = "ToolHeadItems";
+    private static final String GEAR_ITEMS = "GearItems";
+    private static final String EMPTY = "Empty";
+    private static final String GAS = "Gas";
+    private static final String FLUID = "Fluid";
 
-    public static final String MOD = "Mod";
+    private static final String MOD = "Mod";
 
-    public static final String PIPE = "Pipe";
-    public static final String QUADRUPLE = "Quadruple";
-    public static final String NONUPLE = "Nonuple";
-    public static final String TINY = "Tiny";
-    public static final String SMALL = "Small";
-    public static final String LARGE = "Large";
-    public static final String HUGE = "Huge";
-    public static final String NORMAL = "Normal";
-    public static final String HEAT_RESISTANCE = "HeatResistance";
-    public static final String GAS_PROOF = "GasProof";
+    private static final String PIPE = "Pipe";
+    private static final String QUADRUPLE = "Quadruple";
+    private static final String NONUPLE = "Nonuple";
+    private static final String TINY = "Tiny";
+    private static final String SMALL = "Small";
+    private static final String LARGE = "Large";
+    private static final String HUGE = "Huge";
+    private static final String NORMAL = "Normal";
+    private static final String HEAT_RESISTANCE = "HeatResistance";
+    private static final String GAS_PROOF = "GasProof";
 
-    public static final String ITEM = "Item";
-    public static final String RESTRICTIVE = "Restrictive";
-    public static final String STEP_SIZE = "StepSize";
+    private static final String ITEM = "Item";
+    private static final String RESTRICTIVE = "Restrictive";
+    private static final String STEP_SIZE = "StepSize";
 
-    public static final String CABLE_VOLTAGE = "CableVoltage";
-    public static final String LOSS = "Loss";
+    private static final String CABLE_VOLTAGE = "CableVoltage";
+    private static final String LOSS = "Loss";
 
-    public static final String TINKER_BASE_DURABILITY = "TinkerBaseDurability";
-    public static final String TINKER_HANDLE_MODIFIER = "TinkerHandleModifier";
-    public static final String TINKER_FULL_DURABILITY = "TinkerFullDurability";
-    public static final String TINKER_MINING_SPEED = "TinkerMiningSpeed";
-    public static final String TINKER_MINING_LEVEL = "TinkerMiningLevel";
-    public static final String TINKER_ATTACK_DAMAGE = "TinkerAttackDamage";
-    public static final String TINKER_ABILITY = "TinkerAbility";
-    public static final String TINKER_DRAW_SPEED = "TinkerDrawSpeed";
-    public static final String TINKER_ARROW_SPEED = "TinkerArrowSpeed";
-    public static final String TINKER_WEIGHT = "TinkerWeight";
-    public static final String TINKER_BREAK_CHANCE = "TinkerBreakChance";
+    private static final String TINKER_BASE_DURABILITY = "TinkerBaseDurability";
+    private static final String TINKER_HANDLE_MODIFIER = "TinkerHandleModifier";
+    private static final String TINKER_FULL_DURABILITY = "TinkerFullDurability";
+    private static final String TINKER_MINING_SPEED = "TinkerMiningSpeed";
+    private static final String TINKER_MINING_LEVEL = "TinkerMiningLevel";
+    private static final String TINKER_ATTACK_DAMAGE = "TinkerAttackDamage";
+    private static final String TINKER_ABILITY = "TinkerAbility";
+    private static final String TINKER_DRAW_SPEED = "TinkerDrawSpeed";
+    private static final String TINKER_ARROW_SPEED = "TinkerArrowSpeed";
+    private static final String TINKER_WEIGHT = "TinkerWeight";
+    private static final String TINKER_BREAK_CHANCE = "TinkerBreakChance";
 
     private static final String[] HEADER = {
         DEFAULT_NAME,
