@@ -12,3 +12,5 @@ nei.options.tools.dump.gtnhdumper.recipes=Recipes
 nei.options.tools.dump.gtnhdumper.recipes.dumped=Recipes were dumped to %s and recipe/*.json
 nei.options.tools.dump.gtnhdumper.oreDictionarys=Ore Dictionary
 nei.options.tools.dump.gtnhdumper.oreDictionary.dumped=Ore Dictionary were dumped to %s
+nei.options.tools.dump.gtnhdumper.fluids=Fluids
+nei.options.tools.dump.gtnhdumper.fluid.dumped=Fluid were dumped to %s

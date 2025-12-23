@@ -1,8 +1,13 @@
 package com.iouter.gtnhdumper.common;
 
 import codechicken.nei.config.DataDumper;
+import codechicken.nei.config.HandlerDumper;
+import codechicken.nei.recipe.GuiRecipeTab;
 import codechicken.nei.recipe.GuiUsageRecipe;
+import codechicken.nei.recipe.HandlerInfo;
 import codechicken.nei.recipe.IRecipeHandler;
+import codechicken.nei.recipe.TemplateRecipeHandler;
+import com.google.common.base.Objects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.iouter.gtnhdumper.CommonProxy;
@@ -19,6 +24,8 @@ import com.iouter.gtnhdumper.common.recipe.serializer.ItemStackSerializer;
 import com.iouter.gtnhdumper.common.recipe.serializer.MaterialsSerializer;
 import com.iouter.gtnhdumper.common.recipe.serializer.RecipeItemSerializer;
 import com.iouter.gtnhdumper.common.recipe.ShapedCraftingHandlerRecipe;
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.ModContainer;
 import gregtech.api.enums.Element;
 import gregtech.api.enums.Materials;
 import gregtech.nei.GTNEIDefaultHandler;
@@ -31,6 +38,7 @@ import thaumcraft.api.aspects.AspectList;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +56,13 @@ public class RecipesDumper extends DataDumper {
             }
         }
         if (CommonProxy.isTCNEIAdditionsLoaded) {
-            return new TCHandlerRecipe(recipeHandler);
+            if (clazz.equals("AspectCombinationHandler") ||
+                clazz.equals("ArcaneCraftingShapedHandler") ||
+                clazz.equals("ArcaneCraftingShapelessHandler") ||
+                clazz.equals("TCNACrucibleRecipeHandler") ||
+                clazz.equals("TCNAInfusionRecipeHandler")) {
+                return new TCHandlerRecipe(recipeHandler);
+            }
         }
         if (clazz.contains("Shaped")) {
             return new ShapedCraftingHandlerRecipe(recipeHandler);
@@ -67,8 +81,16 @@ public class RecipesDumper extends DataDumper {
         for (IRecipeHandler handler : GuiUsageRecipe.usagehandlers) {
             final String name = handler.getRecipeName();
             recipesList.add(new String[]{handler.getRecipeName()});
-            final String clazz = Utils.getAfterLastDot(handler.getHandlerId()).replace(".", "_");
-            File file = new File( "dumps/recipes/" + clazz + "_" + name + ".json");
+            final String handlerName = handler.getHandlerId();
+            final String handlerId = Objects.firstNonNull(
+                handler instanceof TemplateRecipeHandler ? ((TemplateRecipeHandler) handler).getOverlayIdentifier()
+                    : null,
+                "null");
+            HandlerInfo info = GuiRecipeTab.getHandlerInfo(handlerName, handlerId);
+            String modID = info != null ? info.getModId() : "Unknown";
+            String id = Utils.getAfterLastDot(handlerId);
+            String clazz = Utils.getAfterLastDot(handlerName);
+            File file = new File( "dumps/recipes/" + modID + "/" + clazz + "_" + id + ".json");
             File parentDir = file.getParentFile();
             if (parentDir != null && !parentDir.exists()) {
                 parentDir.mkdirs();

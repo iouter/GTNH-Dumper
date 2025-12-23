@@ -27,6 +27,8 @@ import tconstruct.library.tools.BowMaterial;
 import tconstruct.library.tools.ToolMaterial;
 
 import java.io.File;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -161,17 +163,17 @@ public class GTMaterialDumper extends DataDumper {
         "Cable08",
         "Cable12",
         "Cable16",
-        TINKER_BASE_DURABILITY,
-        TINKER_HANDLE_MODIFIER,
-        TINKER_FULL_DURABILITY,
-        TINKER_MINING_SPEED,
-        TINKER_MINING_LEVEL,
-        TINKER_ATTACK_DAMAGE,
-        TINKER_ABILITY,
-        TINKER_DRAW_SPEED,
-        TINKER_ARROW_SPEED,
-        TINKER_WEIGHT,
-        TINKER_BREAK_CHANCE
+//        TINKER_BASE_DURABILITY,
+//        TINKER_HANDLE_MODIFIER,
+//        TINKER_FULL_DURABILITY,
+//        TINKER_MINING_SPEED,
+//        TINKER_MINING_LEVEL,
+//        TINKER_ATTACK_DAMAGE,
+//        TINKER_ABILITY,
+//        TINKER_DRAW_SPEED,
+//        TINKER_ARROW_SPEED,
+//        TINKER_WEIGHT,
+//        TINKER_BREAK_CHANCE
     };
 
     public GTMaterialDumper() {
@@ -339,13 +341,8 @@ public class GTMaterialDumper extends DataDumper {
                 itemPipeType = RESTRICTIVE + itemPipeType;
             itemPipeType = ITEM + PIPE + itemPipeType;
             int tickTime = itemPipe.mTickTime;
-            if (tickTime == 20) {
-                materialMap.put(itemPipeType, getMaxPipeCapacity(itemPipe.getPipeCapacity()) + "stacks/s");
-            } else if (tickTime % 20 == 0) {
-                materialMap.put(itemPipeType, getMaxPipeCapacity(itemPipe.getPipeCapacity()) + "stacks/" + tickTime / 20 + "s");
-            } else {
-                materialMap.put(itemPipeType, getMaxPipeCapacity(itemPipe.getPipeCapacity()) + "stacks/" + tickTime + "t");
-            }
+            BigDecimal capacity = new BigDecimal(20 * getMaxPipeCapacity(itemPipe.getPipeCapacity())).divide(new BigDecimal(tickTime), 2, RoundingMode.HALF_UP);
+            materialMap.put(itemPipeType, String.valueOf(capacity));
             materialMap.put(itemPipeType + STEP_SIZE, String.valueOf(itemPipe.mStepSize));
 
         } else if (pipeEntity instanceof MTECable) {
@@ -388,7 +385,7 @@ public class GTMaterialDumper extends DataDumper {
         Map<String, Map<String, String>> totalMap = new HashMap<>();
         //gt5
         Materials[] gtMaterials = Materials.values();
-        for (Materials m : Materials.values()) {
+        for (Materials m : gtMaterials) {
             if (m != null) {
                 dumpGTMaterial(m, totalMap);
             }

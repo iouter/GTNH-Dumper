@@ -1,21 +1,25 @@
 package com.iouter.gtnhdumper.common;
 
-import codechicken.nei.ItemPanels;
 import codechicken.nei.config.ItemPanelDumper;
 import codechicken.nei.guihook.GuiContainerManager;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import com.iouter.gtnhdumper.Utils;
-import net.minecraft.client.Minecraft;
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.ModContainer;
+import cpw.mods.fml.common.registry.GameData;
+import cpw.mods.fml.common.registry.GameRegistry;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 
 public class AdvItemPanelDumper extends ItemPanelDumper {
-    public static final Minecraft minecraft = Minecraft.getMinecraft();
 
     public AdvItemPanelDumper() {
         super("tools.dump.gtnhdumper.advitempanel");
@@ -24,32 +28,55 @@ public class AdvItemPanelDumper extends ItemPanelDumper {
     @Override
     public String[] header() {
         return new String[] {"key",
+            "nbt",
             "originalName",
             "translatedName",
-            "tooltips"};
+            "tooltips",
+            "mod"};
     }
 
     @Override
     public Iterable<String[]> dump(int mode) {
         LinkedList<String[]> list = new LinkedList<>();
-        for (ItemStack stack : ItemPanels.itemPanel.getItems()) {
+
+        List<ItemStack> itemStacks = new ArrayList<>();
+
+        for (Object temp : GameData.getItemRegistry()) {
+            if (!(temp instanceof Item)) continue;
+            Item item = (Item) temp;
+            List<ItemStack> sub = new ArrayList<>();
+            item.getSubItems(item, CreativeTabs.tabAllSearch, sub);
+            itemStacks.addAll(sub);
+        }
+
+        for (ItemStack stack : itemStacks) {
+            if (stack == null)
+                continue;
+            GameRegistry.UniqueIdentifier uid = null;
+            try {
+                uid = GameRegistry.findUniqueIdentifierFor(stack.getItem());
+            } catch (Exception e) {
+                continue;
+            }
+            if (uid == null)
+                continue;
+            String modid = uid.modId;
+            ModContainer mod = Loader.instance().getIndexedModList().get(modid);
+
+            String nbt = Utils.getItemNBT(stack);
+            String dumpNbt = nbt != null ? nbt : "";
+
+            String modName = mod != null ? mod.getName() : modid;
             list.add(new String[] {
-                Utils.getItemKeyWithNBT(stack),
+                Utils.getItemKey(stack),
+                dumpNbt,
                 EnumChatFormatting.getTextWithoutFormattingCodes(StatCollector.translateToFallback(stack.getUnlocalizedName() + ".name")),
                 EnumChatFormatting.getTextWithoutFormattingCodes(GuiContainerManager.itemDisplayNameShort(stack)),
-                getTooltip(stack)
+                Utils.getTooltip(stack),
+                modName
             });
         }
         return list;
-    }
-
-    public static String getTooltip(ItemStack itemStack) {
-        try {
-            List<String> tooltips = itemStack.getTooltip(minecraft.thePlayer, false);
-            return String.join("<br>", tooltips);
-        } catch (Exception e) {
-            return "ERROR";
-        }
     }
 
     @Override

@@ -12,6 +12,7 @@ public class NEIConfig implements IConfigureNEI {
         API.addOption(new AdvItemPanelDumper());
         API.addOption(new RecipesDumper());
         API.addOption(new OreDictionaryDumper());
+        API.addOption(new FluidsDumper());
         if (CommonProxy.isGTLoaded) API.addOption(new GTMaterialDumper());
         if (CommonProxy.isTiCLoaded) API.addOption(new TICMaterialDumper());
         if (CommonProxy.isTCLoaded) API.addOption(new TC4ResearchDumper());

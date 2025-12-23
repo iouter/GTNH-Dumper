@@ -31,6 +31,8 @@ import java.util.stream.Collectors;
 
 public class GTDefaultHandlerRecipe{
     private final String name;
+    private final String identifier;
+    private final String source;
     private final String markedItem;
     private final ArrayList<String> catalysts;
     private final String progressBar;
@@ -47,6 +49,10 @@ public class GTDefaultHandlerRecipe{
         final String handlerId = Objects.firstNonNull(
             handler.getOverlayIdentifier(),
             "null");
+
+        this.identifier = handlerId;
+        this.source = handlerName;
+
         HandlerInfo info = GuiRecipeTab.getHandlerInfo(handlerName, handlerId);
         final ItemStack markedItemStack = info != null ? info.getItemStack() : null;
         this.markedItem = markedItemStack != null ? Utils.getItemKeyWithNBT(markedItemStack) : "null";

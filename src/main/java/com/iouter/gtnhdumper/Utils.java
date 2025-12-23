@@ -3,6 +3,7 @@ package com.iouter.gtnhdumper;
 import codechicken.lib.inventory.InventoryUtils;
 import codechicken.nei.PositionedStack;
 import com.iouter.gtnhdumper.common.recipe.base.RecipeItem;
+import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -19,6 +20,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Utils {
+    public static final Minecraft minecraft = Minecraft.getMinecraft();
+
     public static String getItemKeyWithNBT(ItemStack stack) {
         final String nbt = getItemNBT(stack);
         final String key = getItemKey(stack);
@@ -200,5 +203,14 @@ public class Utils {
 
     public static String getAfterLastDot(String input) {
         return getAfterLastChar(input, '.');
+    }
+
+    public static String getTooltip(ItemStack itemStack) {
+        try {
+            List<String> tooltips = itemStack.getTooltip(minecraft.thePlayer, false);
+            return String.join("<br>", tooltips);
+        } catch (Exception e) {
+            return "ERROR";
+        }
     }
 }
