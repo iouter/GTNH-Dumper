@@ -90,7 +90,10 @@ public class GTDefaultHandlerRecipe{
                         ItemStack[] stacks = (ItemStack[]) stackObj;
                         String oD = Utils.getOreDictByItems(stacks, oreDictMap);
                         if (oD == null) {
-                            inputItems.add(Arrays.stream(stacks).map(RecipeItem::new).toArray(RecipeItem[]::new));
+                            if (stacks.length == 1)
+                                inputItems.add(new RecipeItem(stacks[0]));
+                            else
+                                inputItems.add(Arrays.stream(stacks).map(RecipeItem::new).toArray(RecipeItem[]::new));
                         } else {
                             inputItems.add(new RecipeItem("#" + oD, stacks[0].stackSize));
                         }

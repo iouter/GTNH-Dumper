@@ -109,9 +109,11 @@ public class RecipesDumper extends DataDumper {
                 gson.toJson(dumpRecipes(handler), writer);
                 System.out.println("已写入：" + file.getAbsolutePath());
             } catch (IOException e) {
+                file.deleteOnExit();
                 e.printStackTrace();
             } catch (Exception e) {
                 System.out.println("导出" + name + "时发生错误：" + e.getLocalizedMessage());
+                file.deleteOnExit();
                 e.printStackTrace();
             }
         }
