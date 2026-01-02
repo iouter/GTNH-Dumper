@@ -1,29 +1,21 @@
 package com.iouter.gtnhdumper.common;
 
 import bartworks.system.material.Werkstoff;
-import codechicken.nei.config.DataDumper;
-import com.iouter.gtnhdumper.common.json.WikiJsonInterface;
-import gregtech.GTMod;
+import com.iouter.gtnhdumper.common.base.WikiDumper;
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.OrePrefixes;
-import gregtech.api.interfaces.metatileentity.IFluidLockable;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.metatileentity.MetaPipeEntity;
 import gregtech.api.metatileentity.implementations.MTECable;
 import gregtech.api.metatileentity.implementations.MTEFluidPipe;
 import gregtech.api.metatileentity.implementations.MTEItemPipe;
-import gregtech.api.util.GTLog;
 import gregtech.api.util.GTOreDictUnificator;
-import gregtech.common.blocks.ItemMachines;
 import gtPlusPlus.core.material.Material;
-import gtPlusPlus.core.material.state.MaterialState;
-import gtPlusPlus.core.util.minecraft.ItemUtils;
 import gtPlusPlus.xmod.gregtech.api.metatileentity.implementations.GTPPMTECable;
 import gtPlusPlus.xmod.gregtech.api.metatileentity.implementations.GTPPMTEFluidPipe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentTranslation;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import tconstruct.library.TConstructRegistry;
 import tconstruct.library.tools.ArrowMaterial;
@@ -31,7 +23,6 @@ import tconstruct.library.tools.BowMaterial;
 import tconstruct.library.tools.ToolMaterial;
 
 import java.io.File;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Arrays;
@@ -40,13 +31,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.iouter.gtnhdumper.common.TICMaterialDumper.getReinforcedString;
 import static com.iouter.gtnhdumper.common.TICMaterialDumper.toRomaNumber;
 import static tconstruct.library.TConstructRegistry.toolMaterials;
 
-public class GTMaterialDumper extends DataDumper implements WikiJsonInterface {
+public class GTMaterialDumper extends WikiDumper {
 
     private static final String TRUE = "true";
     private static final String FALSE = "false";
@@ -280,7 +270,7 @@ public class GTMaterialDumper extends DataDumper implements WikiJsonInterface {
 
     private static void putModName(Map<String, String> materialMap, String modName) {
         if (modName == null) modName = "BartWorks";
-        materialMap.merge(MOD, modName, (a, b) -> a + ";;;" + b);
+        materialMap.merge(MOD, modName, (a, b) -> a + ARRAY_SEPARATOR + b);
     }
 
     private static void dumpPipeEntity(MetaPipeEntity pipeEntity, Map<String, Map<String, String>> totalMap) {
@@ -454,26 +444,6 @@ public class GTMaterialDumper extends DataDumper implements WikiJsonInterface {
     private static String getExistOreprefixes(List<OrePrefixes> orePrefixes) {
         if (orePrefixes == null)
             return null;
-        return orePrefixes.stream().map(OrePrefixes::toString).collect(Collectors.joining(";;;"));
-    }
-
-    @Override
-    public String getFileExtension() {
-        return getFileExtensionWiki();
-    }
-
-    @Override
-    public int modeCount() {
-        return modeCountWiki();
-    }
-
-    @Override
-    public String modeButtonText() {
-        return modeButtonTextWiki();
-    }
-
-    @Override
-    public void dumpTo(File file) throws IOException {
-        dumpToWiki(file);
+        return orePrefixes.stream().map(OrePrefixes::toString).collect(Collectors.joining(ARRAY_SEPARATOR));
     }
 }

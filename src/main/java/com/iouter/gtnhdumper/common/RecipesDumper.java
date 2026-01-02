@@ -1,7 +1,6 @@
 package com.iouter.gtnhdumper.common;
 
 import codechicken.nei.config.DataDumper;
-import codechicken.nei.config.HandlerDumper;
 import codechicken.nei.recipe.GuiRecipeTab;
 import codechicken.nei.recipe.GuiUsageRecipe;
 import codechicken.nei.recipe.HandlerInfo;
@@ -14,6 +13,7 @@ import com.iouter.gtnhdumper.CommonProxy;
 import com.iouter.gtnhdumper.Utils;
 import com.iouter.gtnhdumper.common.recipe.GTDefaultHandlerRecipe;
 import com.iouter.gtnhdumper.common.recipe.GeneralHandlerRecipe;
+import com.iouter.gtnhdumper.common.recipe.ShapedCraftingHandlerRecipe;
 import com.iouter.gtnhdumper.common.recipe.TCHandlerRecipe;
 import com.iouter.gtnhdumper.common.recipe.base.RecipeItem;
 import com.iouter.gtnhdumper.common.recipe.serializer.AspectListSerializer;
@@ -23,9 +23,6 @@ import com.iouter.gtnhdumper.common.recipe.serializer.FluidStackSerializer;
 import com.iouter.gtnhdumper.common.recipe.serializer.ItemStackSerializer;
 import com.iouter.gtnhdumper.common.recipe.serializer.MaterialsSerializer;
 import com.iouter.gtnhdumper.common.recipe.serializer.RecipeItemSerializer;
-import com.iouter.gtnhdumper.common.recipe.ShapedCraftingHandlerRecipe;
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.ModContainer;
 import gregtech.api.enums.Element;
 import gregtech.api.enums.Materials;
 import gregtech.nei.GTNEIDefaultHandler;
@@ -38,7 +35,6 @@ import thaumcraft.api.aspects.AspectList;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 

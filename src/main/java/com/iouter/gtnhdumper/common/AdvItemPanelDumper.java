@@ -1,19 +1,8 @@
 package com.iouter.gtnhdumper.common;
 
-import codechicken.nei.config.ItemPanelDumper;
 import codechicken.nei.guihook.GuiContainerManager;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.iouter.gtnhdumper.Utils;
-import com.iouter.gtnhdumper.common.json.WikiJsonInterface;
-import com.iouter.gtnhdumper.common.json.WikiJsonUtil;
+import com.iouter.gtnhdumper.common.base.WikiDumper;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.common.registry.GameData;
@@ -25,7 +14,12 @@ import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 
-public class AdvItemPanelDumper extends ItemPanelDumper implements WikiJsonInterface {
+import java.io.File;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
+public class AdvItemPanelDumper extends WikiDumper {
 
     public AdvItemPanelDumper() {
         super("tools.dump.gtnhdumper.advitempanel");
@@ -99,25 +93,5 @@ public class AdvItemPanelDumper extends ItemPanelDumper implements WikiJsonInter
     public ChatComponentTranslation dumpMessage(File file) {
         return new ChatComponentTranslation(
                 "nei.options.tools.dump.gtnhdumper.advitempanel.dumped", "dumps/" + file.getName());
-    }
-
-    @Override
-    public String getFileExtension() {
-        return getFileExtensionWiki();
-    }
-
-    @Override
-    public int modeCount() {
-        return modeCountWiki();
-    }
-
-    @Override
-    public String modeButtonText() {
-        return modeButtonTextWiki();
-    }
-
-    @Override
-    public void dumpTo(File file) throws IOException {
-        dumpToWiki(file);
     }
 }

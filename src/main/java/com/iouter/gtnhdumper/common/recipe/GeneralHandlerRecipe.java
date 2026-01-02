@@ -8,7 +8,6 @@ import codechicken.nei.recipe.TemplateRecipeHandler;
 import com.google.common.base.Objects;
 import com.iouter.gtnhdumper.Utils;
 import com.iouter.gtnhdumper.common.recipe.base.BaseRecipe;
-import com.iouter.gtnhdumper.common.recipe.base.RecipeItem;
 import net.minecraft.item.ItemStack;
 
 import java.util.ArrayList;

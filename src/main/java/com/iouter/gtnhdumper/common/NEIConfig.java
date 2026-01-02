@@ -4,7 +4,6 @@ import codechicken.nei.api.API;
 import codechicken.nei.api.IConfigureNEI;
 import com.iouter.gtnhdumper.CommonProxy;
 import com.iouter.gtnhdumper.GTNHDumper;
-import cpw.mods.fml.common.Loader;
 
 public class NEIConfig implements IConfigureNEI {
     @Override

@@ -1,6 +1,6 @@
 nei.options.tools.dump.gtnhdumper=GTNH Dumper
 
-nei.options.tools.dump.gtnhdumper.advitempanel=Advanced Item Panel
+nei.options.tools.dump.gtnhdumper.advitempanels=Advanced Item Panel
 nei.options.tools.dump.gtnhdumper.advitempanel.dumped=Advanced Item Panel were dumped to %s
 nei.options.tools.dump.gtnhdumper.gtmaterials=GT Material
 nei.options.tools.dump.gtnhdumper.gtmaterial.dumped=GT Material were dumped to %s

@@ -1,9 +1,8 @@
 package com.iouter.gtnhdumper.common;
 
-import codechicken.nei.config.DataDumper;
 import com.iouter.gtnhdumper.CommonProxy;
 import com.iouter.gtnhdumper.Utils;
-import com.iouter.gtnhdumper.common.json.WikiJsonInterface;
+import com.iouter.gtnhdumper.common.base.WikiDumper;
 import gregtech.api.enums.ItemList;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentTranslation;
@@ -13,7 +12,6 @@ import net.minecraftforge.fluids.FluidStack;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Map;
@@ -21,7 +19,7 @@ import java.util.stream.Stream;
 
 import static gregtech.api.enums.GTValues.E;
 
-public class FluidsDumper extends DataDumper implements WikiJsonInterface {
+public class FluidsDumper extends WikiDumper {
 
     private static final String KEY = "key";
     private static final String ORIGINAL_NAME = "originalName";
@@ -98,25 +96,5 @@ public class FluidsDumper extends DataDumper implements WikiJsonInterface {
     public ChatComponentTranslation dumpMessage(File file) {
         return new ChatComponentTranslation(
             "nei.options.tools.dump.gtnhdumper.gtmaterial.fluid", "dumps/" + file.getName());
-    }
-
-    @Override
-    public String getFileExtension() {
-        return getFileExtensionWiki();
-    }
-
-    @Override
-    public int modeCount() {
-        return modeCountWiki();
-    }
-
-    @Override
-    public String modeButtonText() {
-        return modeButtonTextWiki();
-    }
-
-    @Override
-    public void dumpTo(File file) throws IOException {
-        dumpToWiki(file);
     }
 }

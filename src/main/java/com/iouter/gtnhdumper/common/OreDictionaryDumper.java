@@ -1,16 +1,14 @@
 package com.iouter.gtnhdumper.common;
 
-import codechicken.nei.config.DataDumper;
 import com.iouter.gtnhdumper.Utils;
-import com.iouter.gtnhdumper.common.json.WikiJsonInterface;
+import com.iouter.gtnhdumper.common.base.WikiDumper;
 import net.minecraft.util.ChatComponentTranslation;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Map;
 
-public class OreDictionaryDumper extends DataDumper implements WikiJsonInterface {
+public class OreDictionaryDumper extends WikiDumper {
     public OreDictionaryDumper() {
         super("tools.dump.gtnhdumper.oreDictionary");
     }
@@ -47,25 +45,5 @@ public class OreDictionaryDumper extends DataDumper implements WikiJsonInterface
     public ChatComponentTranslation dumpMessage(File file) {
         return new ChatComponentTranslation(
             "nei.options.tools.dump.gtnhdumper.oreDictionary.dumped", "dumps/" + file.getName());
-    }
-
-    @Override
-    public String getFileExtension() {
-        return getFileExtensionWiki();
-    }
-
-    @Override
-    public int modeCount() {
-        return modeCountWiki();
-    }
-
-    @Override
-    public String modeButtonText() {
-        return modeButtonTextWiki();
-    }
-
-    @Override
-    public void dumpTo(File file) throws IOException {
-        dumpToWiki(file);
     }
 }

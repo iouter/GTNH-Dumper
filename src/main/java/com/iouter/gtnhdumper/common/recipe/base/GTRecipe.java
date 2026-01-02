@@ -1,7 +1,5 @@
 package com.iouter.gtnhdumper.common.recipe.base;
 
-import gregtech.api.recipe.metadata.IRecipeMetadataStorage;
-
 import java.util.ArrayList;
 import java.util.Map;
 

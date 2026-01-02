@@ -1,13 +1,10 @@
 package com.iouter.gtnhdumper.common;
 
 import codechicken.nei.config.DataDumper;
-import bartworks.system.material.Werkstoff;
-import cpw.mods.fml.common.Loader;
-import gregtech.api.enums.Materials;
-import java.io.File;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import net.minecraft.util.ChatComponentTranslation;
+
+import java.io.File;
+import java.util.LinkedList;
 
 public class GTOreVeinDumper extends DataDumper {
 

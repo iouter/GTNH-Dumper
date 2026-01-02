@@ -1,13 +1,7 @@
 package com.iouter.gtnhdumper.common;
 
-import codechicken.nei.config.DataDumper;
 import com.iouter.gtnhdumper.CommonProxy;
-import com.iouter.gtnhdumper.common.json.WikiJsonInterface;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
+import com.iouter.gtnhdumper.common.base.WikiDumper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.StatCollector;
@@ -18,7 +12,16 @@ import thaumcraft.api.research.ResearchCategoryList;
 import thaumcraft.api.research.ResearchItem;
 import tuhljin.automagy.config.ModResearchItems;
 
-public class TC4ResearchDumper extends DataDumper implements WikiJsonInterface {
+import java.io.File;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+public class TC4ResearchDumper extends WikiDumper {
     public TC4ResearchDumper() {
         super("tools.dump.gtnhdumper.tc4research");
     }
@@ -85,7 +88,7 @@ public class TC4ResearchDumper extends DataDumper implements WikiJsonInterface {
         for (String str : list) {
             nameList.add(ResearchCategories.getResearch(str).getName());
         }
-        return String.join(";;;", nameList);
+        return String.join(ARRAY_SEPARATOR, nameList);
     }
 
     public static String getItemStacksName(ItemStack[] itemStacks) {
@@ -94,7 +97,7 @@ public class TC4ResearchDumper extends DataDumper implements WikiJsonInterface {
         for (ItemStack i : itemStacks) {
             nameList.add(i.getDisplayName());
         }
-        return String.join(";;;", nameList);
+        return String.join(ARRAY_SEPARATOR, nameList);
     }
 
     public static String getAspectsName(Aspect[] aspects) {
@@ -104,7 +107,7 @@ public class TC4ResearchDumper extends DataDumper implements WikiJsonInterface {
 
             nameList.add(a.getName());
         }
-        return String.join(";;;", nameList);
+        return String.join(ARRAY_SEPARATOR, nameList);
     }
 
     public static String getEnTitiesName(String[] list) {
@@ -113,7 +116,7 @@ public class TC4ResearchDumper extends DataDumper implements WikiJsonInterface {
         for (String str : list) {
             nameList.add(StatCollector.translateToLocal("entity." + str + ".name"));
         }
-        return String.join(";;;", nameList);
+        return String.join(ARRAY_SEPARATOR, nameList);
     }
 
     public String getKillerTrigger(ResearchItem researchItem) {
@@ -121,7 +124,7 @@ public class TC4ResearchDumper extends DataDumper implements WikiJsonInterface {
             if (researchItem.category.equals("AUTOMAGY")) {
                 Set<String> nameList = getKeysByValue(ModResearchItems.cluesOnKill, researchItem.key);
                 String[] list = nameList.toArray(new String[0]);
-                return String.join(";;;", list);
+                return String.join(ARRAY_SEPARATOR, list);
             }
         }
         return null;
@@ -132,25 +135,5 @@ public class TC4ResearchDumper extends DataDumper implements WikiJsonInterface {
                 .filter(entry -> Objects.equals(entry.getValue(), value))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toSet());
-    }
-
-    @Override
-    public String getFileExtension() {
-        return getFileExtensionWiki();
-    }
-
-    @Override
-    public int modeCount() {
-        return modeCountWiki();
-    }
-
-    @Override
-    public String modeButtonText() {
-        return modeButtonTextWiki();
-    }
-
-    @Override
-    public void dumpTo(File file) throws IOException {
-        dumpToWiki(file);
     }
 }
