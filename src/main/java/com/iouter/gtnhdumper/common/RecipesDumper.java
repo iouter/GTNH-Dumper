@@ -95,16 +95,20 @@ public class RecipesDumper extends DataDumper {
             if (parentDir != null && !parentDir.exists()) {
                 parentDir.mkdirs();
             }
-            Gson gson = new GsonBuilder()
+            GsonBuilder gsonBuilder = new GsonBuilder()
                 .setPrettyPrinting()
                 .registerTypeAdapter(RecipeItem.class, new RecipeItemSerializer())
-                .registerTypeAdapter(Element.class, new ElementSerializer())
-                .registerTypeAdapter(Materials.class, new MaterialsSerializer())
                 .registerTypeAdapter(ItemStack.class, new ItemStackSerializer())
-                .registerTypeAdapter(FluidStack.class, new FluidStackSerializer())
-                .registerTypeAdapter(Aspect.class, new AspectSerializer())
-                .registerTypeAdapter(AspectList.class, new AspectListSerializer())
-                .create();
+                .registerTypeAdapter(FluidStack.class, new FluidStackSerializer());
+            if (CommonProxy.isGTLoaded) {
+                gsonBuilder.registerTypeAdapter(Element.class, new ElementSerializer())
+                    .registerTypeAdapter(Materials.class, new MaterialsSerializer());
+            }
+            if (CommonProxy.isTCLoaded) {
+                gsonBuilder.registerTypeAdapter(Aspect.class, new AspectSerializer())
+                    .registerTypeAdapter(AspectList.class, new AspectListSerializer());
+            }
+            Gson gson = gsonBuilder.create();
             try (FileWriter writer = new FileWriter(file)) {
                 gson.toJson(dumpRecipes(handler), writer);
                 System.out.println("已写入：" + file.getAbsolutePath());

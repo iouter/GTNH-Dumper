@@ -7,21 +7,21 @@ import java.util.Map;
 
 public class GTRecipe{
 
-    private final ArrayList<RecipeItem> inputItems;
+    private final ArrayList<Object> inputItems;
     private final ArrayList<RecipeFluid> inputFluids;
-    private final ArrayList<RecipeItem> outputItems;
+    private final ArrayList<Object> outputItems;
     private final ArrayList<RecipeFluid> outputFluids;
-    private final ArrayList<RecipeItem> otherItems;
+    private final ArrayList<Object> otherItems;
     private final Integer eut;
     private final Integer duration;
     private Integer specialValue;
     private final Map<String, Object> metadata;
 
-    public GTRecipe(ArrayList<RecipeItem> inputItems,
+    public GTRecipe(ArrayList<Object> inputItems,
                     ArrayList<RecipeFluid> inputFluids,
-                    ArrayList<RecipeItem> outputItems,
+                    ArrayList<Object> outputItems,
                     ArrayList<RecipeFluid> outputFluids,
-                    ArrayList<RecipeItem> otherItems, int eut, int duration, Integer specialValue, Map<String, Object> metadata) {
+                    ArrayList<Object> otherItems, int eut, int duration, Integer specialValue, Map<String, Object> metadata) {
         this.inputItems = inputItems;
         this.inputFluids = inputFluids;
         this.outputItems = outputItems;

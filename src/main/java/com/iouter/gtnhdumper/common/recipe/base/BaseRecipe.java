@@ -3,13 +3,17 @@ package com.iouter.gtnhdumper.common.recipe.base;
 import java.util.ArrayList;
 
 public class BaseRecipe {
-    private final ArrayList<RecipeItem> inputItems;
+    private final ArrayList<Object> inputItems;
     private final ArrayList<RecipeFluid> inputFluids;
-    private final ArrayList<RecipeItem> outputItems;
+    private final ArrayList<Object> outputItems;
     private final ArrayList<RecipeFluid> outputFluids;
-    private final ArrayList<RecipeItem> otherItems;
+    private final ArrayList<Object> otherItems;
 
-    public BaseRecipe(ArrayList<RecipeItem> inputItems, ArrayList<RecipeFluid> inputFluids, ArrayList<RecipeItem> outputItems, ArrayList<RecipeFluid> outputFluids, ArrayList<RecipeItem> otherItems) {
+    public BaseRecipe(ArrayList<Object> inputItems,
+                      ArrayList<RecipeFluid> inputFluids,
+                      ArrayList<Object> outputItems,
+                      ArrayList<RecipeFluid> outputFluids,
+                      ArrayList<Object> otherItems) {
         this.inputItems = inputItems;
         this.inputFluids = inputFluids;
         this.outputItems = outputItems;

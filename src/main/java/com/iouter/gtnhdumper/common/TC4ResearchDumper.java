@@ -2,8 +2,10 @@ package com.iouter.gtnhdumper.common;
 
 import codechicken.nei.config.DataDumper;
 import com.iouter.gtnhdumper.CommonProxy;
-import cpw.mods.fml.common.Loader;
+import com.iouter.gtnhdumper.common.json.WikiJsonInterface;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import net.minecraft.item.ItemStack;
@@ -16,9 +18,19 @@ import thaumcraft.api.research.ResearchCategoryList;
 import thaumcraft.api.research.ResearchItem;
 import tuhljin.automagy.config.ModResearchItems;
 
-public class TC4ResearchDumper extends DataDumper {
+public class TC4ResearchDumper extends DataDumper implements WikiJsonInterface {
     public TC4ResearchDumper() {
         super("tools.dump.gtnhdumper.tc4research");
+    }
+
+    @Override
+    public int getKeyIndex() {
+        return 1;
+    }
+
+    @Override
+    public String getKeyStr() {
+        return "tc4Researches";
     }
 
     @Override
@@ -49,11 +61,11 @@ public class TC4ResearchDumper extends DataDumper {
                     ResearchCategories.getCategoryName(m.category),
                     String.valueOf(m.getComplexity()),
                     String.valueOf(ThaumcraftApi.getWarp(m.key)),
-                    Arrays.toString(TC4RKeytoRName(m.parents)),
-                    Arrays.toString(TC4RKeytoRName(m.parentsHidden)),
-                    Arrays.toString(ItemStackstoName(m.getItemTriggers())),
-                    Arrays.toString(EnTityToName(m.getEntityTriggers())),
-                    Arrays.toString(AspectsToName(m.getAspectTriggers())),
+                    getResearchsName(m.parents),
+                    getResearchsName(m.parentsHidden),
+                    getItemStacksName(m.getItemTriggers()),
+                    getEnTitiesName(m.getEntityTriggers()),
+                    getAspectsName(m.getAspectTriggers()),
                     getKillerTrigger(m)
                 });
             }
@@ -67,46 +79,41 @@ public class TC4ResearchDumper extends DataDumper {
                 "nei.options.tools.dump.gtnhdumper.tc4research.dumped", "dumps/" + file.getName());
     }
 
-    @Override
-    public int modeCount() {
-        return 1;
-    }
-
-    public static String[] TC4RKeytoRName(String[] list) {
+    public static String getResearchsName(String[] list) {
         if (list == null) return null;
         List<String> nameList = new ArrayList<>();
         for (String str : list) {
             nameList.add(ResearchCategories.getResearch(str).getName());
         }
-        return nameList.toArray(new String[0]);
+        return String.join(";;;", nameList);
     }
 
-    public static String[] ItemStackstoName(ItemStack[] itemStacks) {
+    public static String getItemStacksName(ItemStack[] itemStacks) {
         if (itemStacks == null) return null;
         List<String> nameList = new ArrayList<>();
         for (ItemStack i : itemStacks) {
             nameList.add(i.getDisplayName());
         }
-        return nameList.toArray(new String[0]);
+        return String.join(";;;", nameList);
     }
 
-    public static String[] AspectsToName(Aspect[] aspects) {
+    public static String getAspectsName(Aspect[] aspects) {
         if (aspects == null) return null;
         List<String> nameList = new ArrayList<>();
         for (Aspect a : aspects) {
 
             nameList.add(a.getName());
         }
-        return nameList.toArray(new String[0]);
+        return String.join(";;;", nameList);
     }
 
-    public static String[] EnTityToName(String[] list) {
+    public static String getEnTitiesName(String[] list) {
         if (list == null) return null;
         List<String> nameList = new ArrayList<>();
         for (String str : list) {
             nameList.add(StatCollector.translateToLocal("entity." + str + ".name"));
         }
-        return nameList.toArray(new String[0]);
+        return String.join(";;;", nameList);
     }
 
     public String getKillerTrigger(ResearchItem researchItem) {
@@ -114,10 +121,10 @@ public class TC4ResearchDumper extends DataDumper {
             if (researchItem.category.equals("AUTOMAGY")) {
                 Set<String> nameList = getKeysByValue(ModResearchItems.cluesOnKill, researchItem.key);
                 String[] list = nameList.toArray(new String[0]);
-                return Arrays.toString(EnTityToName(list));
+                return String.join(";;;", list);
             }
         }
-        return "null";
+        return null;
     }
 
     public static <T, E> Set<T> getKeysByValue(Map<T, E> map, E value) {
@@ -125,5 +132,25 @@ public class TC4ResearchDumper extends DataDumper {
                 .filter(entry -> Objects.equals(entry.getValue(), value))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toSet());
+    }
+
+    @Override
+    public String getFileExtension() {
+        return getFileExtensionWiki();
+    }
+
+    @Override
+    public int modeCount() {
+        return modeCountWiki();
+    }
+
+    @Override
+    public String modeButtonText() {
+        return modeButtonTextWiki();
+    }
+
+    @Override
+    public void dumpTo(File file) throws IOException {
+        dumpToWiki(file);
     }
 }

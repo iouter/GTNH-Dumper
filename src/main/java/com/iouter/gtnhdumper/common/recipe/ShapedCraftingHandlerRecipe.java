@@ -61,7 +61,7 @@ public class ShapedCraftingHandlerRecipe{
                         continue;
                     inputItems[serial] = new RecipeItem(p.items);
                 }
-                ArrayList<RecipeItem> otherItems = Utils.getRecipeItems(recipe.getOtherStacks());
+                ArrayList<Object> otherItems = Utils.getRecipeItems(recipe.getOtherStacks());
                 if (otherItems.isEmpty())
                     otherItems = null;
                 BaseRecipe baseRecipe = new BaseRecipe(new ArrayList<>(Arrays.asList(inputItems)),

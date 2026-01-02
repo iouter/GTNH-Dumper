@@ -3,6 +3,7 @@ package com.iouter.gtnhdumper.common;
 import codechicken.nei.config.DataDumper;
 import com.iouter.gtnhdumper.CommonProxy;
 import com.iouter.gtnhdumper.Utils;
+import com.iouter.gtnhdumper.common.json.WikiJsonInterface;
 import gregtech.api.enums.ItemList;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentTranslation;
@@ -12,6 +13,7 @@ import net.minecraftforge.fluids.FluidStack;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Map;
@@ -19,7 +21,7 @@ import java.util.stream.Stream;
 
 import static gregtech.api.enums.GTValues.E;
 
-public class FluidsDumper extends DataDumper {
+public class FluidsDumper extends DataDumper implements WikiJsonInterface {
 
     private static final String KEY = "key";
     private static final String ORIGINAL_NAME = "originalName";
@@ -49,6 +51,16 @@ public class FluidsDumper extends DataDumper {
     }
 
     @Override
+    public int getKeyIndex() {
+        return 0;
+    }
+
+    @Override
+    public String getKeyStr() {
+        return "fluids";
+    }
+
+    @Override
     public String[] header() {
         if (!CommonProxy.isGTLoaded) return HEADER;
         return Stream.concat(Arrays.stream(HEADER), Arrays.stream(new String[]{GT_DISPLAY_KEY, TOOLTIPS})).toArray(String[]::new);
@@ -70,14 +82,14 @@ public class FluidsDumper extends DataDumper {
             boolean isGaseous = fluid.isGaseous();
             boolean canBePlaced = fluid.canBePlacedInWorld();
             if (!CommonProxy.isGTLoaded) {
-                list.add(new String[]{fluidKey, originalName, translatedName, String.valueOf(luminosity), String.valueOf(density), String.valueOf(temperature), String.valueOf(viscosity), String.valueOf(isGaseous), String.valueOf(canBePlaced)});
+                list.add(new String[]{"fluid." + fluidKey, originalName, translatedName, String.valueOf(luminosity), String.valueOf(density), String.valueOf(temperature), String.valueOf(viscosity), String.valueOf(isGaseous), String.valueOf(canBePlaced)});
                 continue;
             }
             int id = fluid.getID();
             ItemStack gtDisplay = new ItemStack(ItemList.Display_Fluid.getItem(), 1, id);
             String gtDisplayKey = Utils.getItemKey(gtDisplay);
             String tooltips = Utils.getTooltip(gtDisplay);
-            list.add(new String[]{fluidKey, originalName, translatedName, String.valueOf(luminosity), String.valueOf(density), String.valueOf(temperature), String.valueOf(viscosity), String.valueOf(isGaseous), String.valueOf(canBePlaced), gtDisplayKey, tooltips});
+            list.add(new String[]{"fluid." + fluidKey, originalName, translatedName, String.valueOf(luminosity), String.valueOf(density), String.valueOf(temperature), String.valueOf(viscosity), String.valueOf(isGaseous), String.valueOf(canBePlaced), gtDisplayKey, tooltips});
         }
         return list;
     }
@@ -89,7 +101,22 @@ public class FluidsDumper extends DataDumper {
     }
 
     @Override
+    public String getFileExtension() {
+        return getFileExtensionWiki();
+    }
+
+    @Override
     public int modeCount() {
-        return 1;
+        return modeCountWiki();
+    }
+
+    @Override
+    public String modeButtonText() {
+        return modeButtonTextWiki();
+    }
+
+    @Override
+    public void dumpTo(File file) throws IOException {
+        dumpToWiki(file);
     }
 }

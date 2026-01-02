@@ -17,7 +17,7 @@ public class RecipeFluid {
     }
 
     public RecipeFluid(FluidStack stack) {
-        this(stack.getUnlocalizedName(), stack.amount);
+        this("fluid." + stack.getFluid().getName(), stack.amount);
     }
 
     public RecipeFluid withChance(int chance) {

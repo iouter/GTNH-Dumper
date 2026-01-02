@@ -88,7 +88,7 @@ public class TCHandlerRecipe {
                     recipes.add(new TCRecipe()
                         .withInputItems(inputItems)
                         .withInputAspects(tcRecipe.aspects)
-                        .withOutputItems(new RecipeItem(tcRecipe.getRecipeOutput()).withNBT(tcRecipe.getRecipeOutput()))
+                        .withOutputItems(new RecipeItem(tcRecipe.getRecipeOutput()))
                         .withResearch(tcRecipe.getResearch())
                     );
                 }
@@ -103,7 +103,7 @@ public class TCHandlerRecipe {
                             .map(TCHandlerRecipe::getItemFromObject)
                             .toArray(RecipeItem[]::new))
                         .withInputAspects(tcRecipe.getAspects())
-                        .withOutputItems(new RecipeItem(tcRecipe.getRecipeOutput()).withNBT(tcRecipe.getRecipeOutput()))
+                        .withOutputItems(new RecipeItem(tcRecipe.getRecipeOutput()))
                         .withResearch(tcRecipe.getResearch()));
                 }
             }
@@ -114,7 +114,7 @@ public class TCHandlerRecipe {
                     recipes.add(new TCRecipe()
                         .withInputItems(getItemFromObject(tcRecipe.catalyst))
                         .withInputAspects(tcRecipe.aspects)
-                        .withOutputItems(new RecipeItem(tcRecipe.getRecipeOutput()).withNBT(tcRecipe.getRecipeOutput()))
+                        .withOutputItems(new RecipeItem(tcRecipe.getRecipeOutput()))
                         .withResearch(tcRecipe.key)
                     );
                 }
@@ -172,7 +172,7 @@ public class TCHandlerRecipe {
         stacks = Arrays.stream(stacks).filter(java.util.Objects::nonNull).toArray(ItemStack[]::new);
         if (stacks.length == 0)
             return null;
-        return new RecipeItem(stacks).withNBT(stacks[0]);
+        return new RecipeItem(stacks);
     }
 
 }

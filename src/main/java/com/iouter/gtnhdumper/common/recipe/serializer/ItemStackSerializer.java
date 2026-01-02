@@ -15,7 +15,7 @@ public class ItemStackSerializer implements JsonSerializer<ItemStack> {
         if (src == null) {
             return null;
         }
-        RecipeItem recipeItem = new RecipeItem(src).withNBT(src);
+        RecipeItem recipeItem = new RecipeItem(src);
         return context.serialize(recipeItem, RecipeItem.class);
     }
 }

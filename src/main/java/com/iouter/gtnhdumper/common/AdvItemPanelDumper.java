@@ -3,11 +3,17 @@ package com.iouter.gtnhdumper.common;
 import codechicken.nei.config.ItemPanelDumper;
 import codechicken.nei.guihook.GuiContainerManager;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.iouter.gtnhdumper.Utils;
+import com.iouter.gtnhdumper.common.json.WikiJsonInterface;
+import com.iouter.gtnhdumper.common.json.WikiJsonUtil;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.common.registry.GameData;
@@ -19,10 +25,20 @@ import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 
-public class AdvItemPanelDumper extends ItemPanelDumper {
+public class AdvItemPanelDumper extends ItemPanelDumper implements WikiJsonInterface {
 
     public AdvItemPanelDumper() {
         super("tools.dump.gtnhdumper.advitempanel");
+    }
+
+    @Override
+    public int getKeyIndex() {
+        return 0;
+    }
+
+    @Override
+    public String getKeyStr() {
+        return "items";
     }
 
     @Override
@@ -86,7 +102,22 @@ public class AdvItemPanelDumper extends ItemPanelDumper {
     }
 
     @Override
+    public String getFileExtension() {
+        return getFileExtensionWiki();
+    }
+
+    @Override
     public int modeCount() {
-        return 1;
+        return modeCountWiki();
+    }
+
+    @Override
+    public String modeButtonText() {
+        return modeButtonTextWiki();
+    }
+
+    @Override
+    public void dumpTo(File file) throws IOException {
+        dumpToWiki(file);
     }
 }

@@ -2,9 +2,11 @@ package com.iouter.gtnhdumper.common;
 
 import bartworks.system.material.Werkstoff;
 import codechicken.nei.config.DataDumper;
+import com.iouter.gtnhdumper.common.json.WikiJsonInterface;
 import gregtech.GTMod;
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.Materials;
+import gregtech.api.enums.OrePrefixes;
 import gregtech.api.interfaces.metatileentity.IFluidLockable;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.metatileentity.MetaPipeEntity;
@@ -12,6 +14,7 @@ import gregtech.api.metatileentity.implementations.MTECable;
 import gregtech.api.metatileentity.implementations.MTEFluidPipe;
 import gregtech.api.metatileentity.implementations.MTEItemPipe;
 import gregtech.api.util.GTLog;
+import gregtech.api.util.GTOreDictUnificator;
 import gregtech.common.blocks.ItemMachines;
 import gtPlusPlus.core.material.Material;
 import gtPlusPlus.core.material.state.MaterialState;
@@ -20,6 +23,7 @@ import gtPlusPlus.xmod.gregtech.api.metatileentity.implementations.GTPPMTECable;
 import gtPlusPlus.xmod.gregtech.api.metatileentity.implementations.GTPPMTEFluidPipe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentTranslation;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import tconstruct.library.TConstructRegistry;
 import tconstruct.library.tools.ArrowMaterial;
@@ -27,19 +31,22 @@ import tconstruct.library.tools.BowMaterial;
 import tconstruct.library.tools.ToolMaterial;
 
 import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.iouter.gtnhdumper.common.TICMaterialDumper.getReinforcedString;
 import static com.iouter.gtnhdumper.common.TICMaterialDumper.toRomaNumber;
 import static tconstruct.library.TConstructRegistry.toolMaterials;
 
-public class GTMaterialDumper extends DataDumper {
+public class GTMaterialDumper extends DataDumper implements WikiJsonInterface {
 
     private static final String TRUE = "true";
     private static final String FALSE = "false";
@@ -98,6 +105,8 @@ public class GTMaterialDumper extends DataDumper {
     private static final String TINKER_WEIGHT = "TinkerWeight";
     private static final String TINKER_BREAK_CHANCE = "TinkerBreakChance";
 
+    private static final String ORE_PREFIXES = "OrePrefixes";
+
     private static final String[] HEADER = {
         DEFAULT_NAME,
         LOCALIZED_NAME,
@@ -106,17 +115,17 @@ public class GTMaterialDumper extends DataDumper {
         DURABILITY,
         TOOL_SPEED,
         TOOL_QUALITY,
-        DUST_ITEMS,
-        METAL_ITEMS,
-        GEM_ITEMS,
-        ORE_ITEMS,
-        CELL,
-        PLASMA,
-        TOOL_HEAD_ITEMS,
-        GEAR_ITEMS,
-        EMPTY,
-        GAS,
-        FLUID,
+//        DUST_ITEMS,
+//        METAL_ITEMS,
+//        GEM_ITEMS,
+//        ORE_ITEMS,
+//        CELL,
+//        PLASMA,
+//        TOOL_HEAD_ITEMS,
+//        GEAR_ITEMS,
+//        EMPTY,
+//        GAS,
+//        FLUID,
         MOD,
         PIPE,
         FLUID + PIPE + TINY,
@@ -174,6 +183,7 @@ public class GTMaterialDumper extends DataDumper {
 //        TINKER_ARROW_SPEED,
 //        TINKER_WEIGHT,
 //        TINKER_BREAK_CHANCE
+        ORE_PREFIXES,
     };
 
     public GTMaterialDumper() {
@@ -194,28 +204,20 @@ public class GTMaterialDumper extends DataDumper {
         materialMap.put(DURABILITY, String.valueOf(m.mDurability));
         materialMap.put(TOOL_SPEED, String.valueOf(m.mToolSpeed));
         materialMap.put(TOOL_QUALITY, String.valueOf(m.mToolQuality));
-        if (m.hasDustItems())
-            materialMap.put(DUST_ITEMS, TRUE);
-        if (m.hasMetalItems())
-            materialMap.put(METAL_ITEMS, TRUE);
-        if (m.hasGemItems())
-            materialMap.put(GEM_ITEMS, TRUE);
-        if (m.hasOresItems())
-            materialMap.put(ORE_ITEMS, TRUE);
-        if (m.hasCell())
-            materialMap.put(CELL, TRUE);
-        if (m.hasPlasma())
-            materialMap.put(PLASMA, TRUE);
-        if (m.hasToolHeadItems())
-            materialMap.put(TOOL_HEAD_ITEMS, TRUE);
-        if (m.hasGemItems())
-            materialMap.put(GEAR_ITEMS, TRUE);
-        if (m.hasEmpty())
-            materialMap.put(EMPTY, TRUE);
-        if (m.hasCorrespondingGas())
-            materialMap.put(GAS, TRUE);
-        if (m.hasCorrespondingFluid())
-            materialMap.put(FLUID, TRUE);
+//        if (m.hasEmpty())
+//            materialMap.put(EMPTY, TRUE);
+        List<OrePrefixes> o = new LinkedList<>();
+        for (OrePrefixes prefix : OrePrefixes.VALUES) {
+            ItemStack prefixItem = GTOreDictUnificator.get(prefix, m, 1);
+            if (prefixItem == null)
+                continue;
+            o.add(prefix);
+        }
+        materialMap.put(ORE_PREFIXES, getExistOreprefixes(o));
+//        if (m.hasCorrespondingGas())
+//            materialMap.put(GAS, TRUE);
+//        if (m.hasCorrespondingFluid())
+//            materialMap.put(FLUID, TRUE);
         putModName(materialMap, "GregTech");
         totalMap.put(defaultLocalName, materialMap);
     }
@@ -231,28 +233,13 @@ public class GTMaterialDumper extends DataDumper {
         materialMap.put(DURABILITY, String.valueOf(m.mDurability));
         materialMap.put(TOOL_SPEED, String.valueOf(m.mToolSpeed));
         materialMap.put(TOOL_QUALITY, String.valueOf(m.mToolQuality));
-        if (m.hasDustItems())
-            materialMap.put(DUST_ITEMS, TRUE);
-        if (m.hasMetalItems())
-            materialMap.put(METAL_ITEMS, TRUE);
-        if (m.hasGemItems())
-            materialMap.put(GEM_ITEMS, TRUE);
-        if (m.hasOresItems())
-            materialMap.put(ORE_ITEMS, TRUE);
-        if (m.hasCell())
-            materialMap.put(CELL, TRUE);
-        if (m.hasPlasma())
-            materialMap.put(PLASMA, TRUE);
-        if (m.hasToolHeadItems())
-            materialMap.put(TOOL_HEAD_ITEMS, TRUE);
-        if (m.hasGemItems())
-            materialMap.put(GEAR_ITEMS, TRUE);
-        if (m.hasEmpty())
-            materialMap.put(EMPTY, TRUE);
-        if (m.hasCorrespondingGas())
-            materialMap.put(GAS, TRUE);
-        if (m.hasCorrespondingFluid())
-            materialMap.put(FLUID, TRUE);
+        List<OrePrefixes> o = new LinkedList<>();
+        for (OrePrefixes prefix : OrePrefixes.VALUES) {
+            if (!w.hasItemType(prefix))
+                continue;
+            o.add(prefix);
+        }
+        materialMap.put(ORE_PREFIXES, getExistOreprefixes(o));
         putModName(materialMap, w.getOwner());
         totalMap.put(defaultLocalName, materialMap);
     }
@@ -266,38 +253,34 @@ public class GTMaterialDumper extends DataDumper {
 //            materialMap.put("Durability", String.valueOf(m.vDurability));
 //            materialMap.put("ToolSpeed", String.valueOf(m.vHarvestLevel * 2 + m.vTier));
 //            materialMap.put("ToolQuality", String.valueOf(m.vToolQuality));
-        if (ItemUtils.checkForInvalidItems(new ItemStack[] {m.getDust(1)}))
-            materialMap.put(DUST_ITEMS, TRUE);
-        if (m.hasSolidForm())
-            materialMap.put(METAL_ITEMS, TRUE);
-        if (m.hasOre())
-            materialMap.put(ORE_ITEMS, TRUE);
-        if (ItemUtils.checkForInvalidItems(new ItemStack[] {m.getCell(1)}))
-            materialMap.put(CELL, TRUE);
-        if (m.getPlasma() != null)
-            materialMap.put(PLASMA, TRUE);
-        if (ItemUtils.checkForInvalidItems(new ItemStack[] {m.getGear(1)}))
-            materialMap.put(GEAR_ITEMS, TRUE);
-        if (m.getFluid() != null)
-            switch (m.getState()) {
-                case GAS:
-                case PURE_GAS:
-                    materialMap.put(GAS, TRUE);
-                    break;
-                case PLASMA:
-                    materialMap.put(PLASMA, TRUE);
-                    break;
-                default:
-                    materialMap.put(FLUID, TRUE);
-                    break;
-            }
+        List<OrePrefixes> o = new LinkedList<>();
+        for (OrePrefixes prefix : OrePrefixes.VALUES) {
+            ItemStack prefixItem = m.getComponentByPrefix(prefix, 1);
+            if (prefixItem == null)
+                continue;
+            o.add(prefix);
+        }
+        materialMap.put(ORE_PREFIXES, getExistOreprefixes(o));
+//        if (m.getFluid() != null)
+//            switch (m.getState()) {
+//                case GAS:
+//                case PURE_GAS:
+//                    materialMap.put(GAS, TRUE);
+//                    break;
+//                case PLASMA:
+//                    materialMap.put(PLASMA, TRUE);
+//                    break;
+//                default:
+//                    materialMap.put(FLUID, TRUE);
+//                    break;
+//            }
         putModName(materialMap, "GT++");
         totalMap.put(defaultLocalName, materialMap);
     }
 
     private static void putModName(Map<String, String> materialMap, String modName) {
         if (modName == null) modName = "BartWorks";
-        materialMap.merge(MOD, modName, (a, b) -> a + ", " + b);
+        materialMap.merge(MOD, modName, (a, b) -> a + ";;;" + b);
     }
 
     private static void dumpPipeEntity(MetaPipeEntity pipeEntity, Map<String, Map<String, String>> totalMap) {
@@ -376,6 +359,16 @@ public class GTMaterialDumper extends DataDumper {
     }
 
     @Override
+    public int getKeyIndex() {
+        return 0;
+    }
+
+    @Override
+    public String getKeyStr() {
+        return "gtMaterials";
+    }
+
+    @Override
     public String[] header() {
         return HEADER;
     }
@@ -446,7 +439,7 @@ public class GTMaterialDumper extends DataDumper {
         }
         return totalMap.values()
             .stream()
-            .map(innerMap -> Arrays.stream(HEADER)
+            .map(innerMap -> Arrays.stream(header())
                 .map(key -> innerMap.getOrDefault(key, ""))
                 .toArray(String[]::new))
             .collect(Collectors.toCollection(LinkedList::new));
@@ -458,8 +451,29 @@ public class GTMaterialDumper extends DataDumper {
             "nei.options.tools.dump.gtnhdumper.gtmaterial.dumped", "dumps/" + file.getName());
     }
 
+    private static String getExistOreprefixes(List<OrePrefixes> orePrefixes) {
+        if (orePrefixes == null)
+            return null;
+        return orePrefixes.stream().map(OrePrefixes::toString).collect(Collectors.joining(";;;"));
+    }
+
+    @Override
+    public String getFileExtension() {
+        return getFileExtensionWiki();
+    }
+
     @Override
     public int modeCount() {
-        return 1;
+        return modeCountWiki();
+    }
+
+    @Override
+    public String modeButtonText() {
+        return modeButtonTextWiki();
+    }
+
+    @Override
+    public void dumpTo(File file) throws IOException {
+        dumpToWiki(file);
     }
 }

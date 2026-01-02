@@ -4,7 +4,10 @@ import static tconstruct.library.TConstructRegistry.toolMaterials;
 
 import codechicken.nei.config.DataDumper;
 import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
+
+import com.iouter.gtnhdumper.common.json.WikiJsonInterface;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.StatCollector;
 import tconstruct.library.TConstructRegistry;
@@ -12,9 +15,19 @@ import tconstruct.library.tools.ArrowMaterial;
 import tconstruct.library.tools.BowMaterial;
 import tconstruct.library.tools.ToolMaterial;
 
-public class TICMaterialDumper extends DataDumper {
+public class TICMaterialDumper extends DataDumper implements WikiJsonInterface {
     public TICMaterialDumper() {
         super("tools.dump.gtnhdumper.ticmaterial");
+    }
+
+    @Override
+    public int getKeyIndex() {
+        return 1;
+    }
+
+    @Override
+    public String getKeyStr() {
+        return "ticMaterials";
     }
 
     @Override
@@ -58,7 +71,7 @@ public class TICMaterialDumper extends DataDumper {
                 ability += " " + toRomaNumber((int) Math.abs(m.stonebound));
             }
             if (m.reinforced() > 0) {
-                if (ability != "") ability += " / ";
+                if (ability != "") ability += ";;;";
                 ability += getReinforcedString(m.reinforced());
             }
             list.add(new String[] {
@@ -85,11 +98,6 @@ public class TICMaterialDumper extends DataDumper {
     public ChatComponentTranslation dumpMessage(File file) {
         return new ChatComponentTranslation(
                 "nei.options.tools.dump.gtnhdumper.ticmaterial.dumped", "dumps/" + file.getName());
-    }
-
-    @Override
-    public int modeCount() {
-        return 1;
     }
 
     public static String getReinforcedString(int reinforced) {
@@ -124,5 +132,25 @@ public class TICMaterialDumper extends DataDumper {
             default:
                 return String.valueOf(num);
         }
+    }
+
+    @Override
+    public String getFileExtension() {
+        return getFileExtensionWiki();
+    }
+
+    @Override
+    public int modeCount() {
+        return modeCountWiki();
+    }
+
+    @Override
+    public String modeButtonText() {
+        return modeButtonTextWiki();
+    }
+
+    @Override
+    public void dumpTo(File file) throws IOException {
+        dumpToWiki(file);
     }
 }

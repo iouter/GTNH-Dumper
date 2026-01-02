@@ -38,6 +38,7 @@ public class RecipeItem {
             this.key = null;
             this.amount = null;
         }
+        this.withNBT(stack);
     }
 
     public RecipeItem(ItemStack[] stacks) {
@@ -50,6 +51,7 @@ public class RecipeItem {
                 this.key = "#" + oD;
             } else {
                 this.keys = Arrays.stream(stacks).map(Utils::getItemKey).toArray(String[]::new);
+                this.withNBT(stack);
             }
         }
         int amount = stack.stackSize;

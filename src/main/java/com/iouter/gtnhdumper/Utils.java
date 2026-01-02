@@ -79,22 +79,22 @@ public class Utils {
         return list;
     }
 
-    public static ArrayList<RecipeItem> getRecipeItems(ArrayList<ItemStack[]> itemStacks) {
-        ArrayList<RecipeItem> list = new ArrayList<>();
+    public static ArrayList<Object> getRecipeItems(ArrayList<ItemStack[]> itemStacks) {
+        ArrayList<Object> list = new ArrayList<>();
         for (ItemStack[] stack : itemStacks) {
             if (stack == null)
                 continue;
-            RecipeItem recipeItem = new RecipeItem(stack).withNBT(stack[0]);
+            RecipeItem recipeItem = new RecipeItem(stack);
             list.add(recipeItem);
         }
         return list;
     }
 
-    public static ArrayList<RecipeItem> getRecipeItems(List<PositionedStack> positionedStacks) {
+    public static ArrayList<Object> getRecipeItems(List<PositionedStack> positionedStacks) {
         return getRecipeItems(getItemStacks(positionedStacks));
     }
 
-    public static ArrayList<RecipeItem> getRecipeItems(PositionedStack positionedStack) {
+    public static ArrayList<Object> getRecipeItems(PositionedStack positionedStack) {
         return getRecipeItems(getItemStacks(positionedStack));
     }
 

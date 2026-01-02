@@ -32,9 +32,4 @@ public class GTOreVeinDumper extends DataDumper {
         return new ChatComponentTranslation(
             "nei.options.tools.dump.gtnhdumper.gtorevein.dumped", "dumps/" + file.getName());
     }
-
-    @Override
-    public int modeCount() {
-        return 1;
-    }
 }

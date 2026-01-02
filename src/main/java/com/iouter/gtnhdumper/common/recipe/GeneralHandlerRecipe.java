@@ -56,7 +56,7 @@ public class GeneralHandlerRecipe{
 
             }
             for (TemplateRecipeHandler.CachedRecipe recipe : recipeHandler.arecipes) {
-                ArrayList<RecipeItem> otherItems;
+                ArrayList<Object> otherItems;
                 try {
                     otherItems = Utils.getRecipeItems(recipe.getOtherStacks());
                     if (otherItems.isEmpty())
