@@ -10,6 +10,7 @@ import com.google.common.base.Objects;
 import com.iouter.gtnhdumper.Utils;
 import com.iouter.gtnhdumper.common.recipe.base.BaseRecipe;
 import com.iouter.gtnhdumper.common.recipe.base.RecipeItem;
+import com.iouter.gtnhdumper.common.recipe.base.RecipeUtil;
 import net.minecraft.item.ItemStack;
 
 import java.util.ArrayList;
@@ -54,12 +55,12 @@ public class ShapedCraftingHandlerRecipe{
             TemplateRecipeHandler recipeHandler = (TemplateRecipeHandler) handler;
             recipeHandler.loadCraftingRecipes(recipeHandler.getOverlayIdentifier(), (Object) null);
             for (TemplateRecipeHandler.CachedRecipe recipe : recipeHandler.arecipes) {
-                RecipeItem[] inputItems = new RecipeItem[9];
+                Object[] inputItems = new Object[9];
                 for (PositionedStack p : recipe.getIngredients()) {
                     int serial = Utils.getCraftingSerial(p) - 1;
                     if (serial == -1)
                         continue;
-                    inputItems[serial] = new RecipeItem(p.items);
+                    inputItems[serial] = RecipeUtil.getRecipeItems(p.items);
                 }
                 ArrayList<Object> otherItems = Utils.getRecipeItems(recipe.getOtherStacks());
                 if (otherItems.isEmpty())

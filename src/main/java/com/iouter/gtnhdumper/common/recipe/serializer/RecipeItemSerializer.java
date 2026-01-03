@@ -14,20 +14,13 @@ public class RecipeItemSerializer implements JsonSerializer<RecipeItem> {
     public JsonElement serialize(RecipeItem src, Type typeOfSrc, JsonSerializationContext context) {
         boolean hasOnlyKey = src.amount == null && src.chance == null && src.nbt == null;
 
-        if (hasOnlyKey) {
-            if (src.key != null && src.keys == null)
-                return new JsonPrimitive(src.key);
-            if (src.key == null && src.keys != null)
-                return context.serialize(src.keys);
-            if (src.key == null)
-                return new JsonPrimitive("");
+        if (hasOnlyKey && src.key != null) {
+            return new JsonPrimitive(src.key);
         }
 
         JsonObject obj = new JsonObject();
         if (src.key != null) {
             obj.addProperty("key", src.key);
-        }else if (src.keys != null) {
-            obj.add("key", context.serialize(src.keys));
         }
         if (src.amount != null) {
             if (src.amount == 0)

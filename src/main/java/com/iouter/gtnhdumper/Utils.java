@@ -3,6 +3,7 @@ package com.iouter.gtnhdumper;
 import codechicken.lib.inventory.InventoryUtils;
 import codechicken.nei.PositionedStack;
 import com.iouter.gtnhdumper.common.recipe.base.RecipeItem;
+import com.iouter.gtnhdumper.common.recipe.base.RecipeUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -84,7 +85,7 @@ public class Utils {
         for (ItemStack[] stack : itemStacks) {
             if (stack == null)
                 continue;
-            RecipeItem recipeItem = new RecipeItem(stack);
+            Object recipeItem = RecipeUtil.getRecipeItems(stack);
             list.add(recipeItem);
         }
         return list;

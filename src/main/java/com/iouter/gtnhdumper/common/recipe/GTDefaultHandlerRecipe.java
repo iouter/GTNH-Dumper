@@ -9,6 +9,7 @@ import com.gtnewhorizons.modularui.api.drawable.FallbackableUITexture;
 import com.iouter.gtnhdumper.Utils;
 import com.iouter.gtnhdumper.common.recipe.base.RecipeFluid;
 import com.iouter.gtnhdumper.common.recipe.base.RecipeItem;
+import com.iouter.gtnhdumper.common.recipe.base.RecipeUtil;
 import gregtech.api.recipe.BasicUIProperties;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.RecipeMapBackend;
@@ -88,21 +89,13 @@ public class GTDefaultHandlerRecipe{
                         inputItems.add(new RecipeItem(stackAlt));
                     } else if (stackObj instanceof ItemStack[]) {
                         ItemStack[] stacks = (ItemStack[]) stackObj;
-                        String oD = Utils.getOreDictByItems(stacks, oreDictMap);
-                        if (oD == null) {
-                            if (stacks.length == 1)
-                                inputItems.add(new RecipeItem(stacks[0]));
-                            else
-                                inputItems.add(Arrays.stream(stacks).map(RecipeItem::new).toArray(RecipeItem[]::new));
-                        } else {
-                            inputItems.add(new RecipeItem("#" + oD, stacks[0].stackSize));
-                        }
+                        inputItems.add(RecipeUtil.getRecipeItems(stacks));
                     }
                 } else {
                     ItemStack stack = gtRecipe.mInputs[i];
                     if (stack == null)
                         continue;
-                    inputItems.add(new RecipeItem(NEIServerUtils.extractRecipeItems(GTOreDictUnificator.getNonUnifiedStacks(stack))));
+                    inputItems.add(RecipeUtil.getRecipeItems(NEIServerUtils.extractRecipeItems(GTOreDictUnificator.getNonUnifiedStacks(stack))));
                 }
             }
             if (inputItems.isEmpty())

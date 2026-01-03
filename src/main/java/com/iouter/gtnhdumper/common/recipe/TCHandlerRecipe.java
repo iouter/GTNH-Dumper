@@ -9,6 +9,7 @@ import codechicken.nei.recipe.TemplateRecipeHandler;
 import com.google.common.base.Objects;
 import com.iouter.gtnhdumper.Utils;
 import com.iouter.gtnhdumper.common.recipe.base.RecipeItem;
+import com.iouter.gtnhdumper.common.recipe.base.RecipeUtil;
 import com.iouter.gtnhdumper.common.recipe.base.TCRecipe;
 import net.glease.tc4tweak.api.infusionrecipe.EnhancedInfusionRecipe;
 import net.glease.tc4tweak.api.infusionrecipe.InfusionRecipeExt;
@@ -78,7 +79,7 @@ public class TCHandlerRecipe {
             for (Object o : ThaumcraftApi.getCraftingRecipes()) {
                 if (o instanceof ShapedArcaneRecipe) {
                     ShapedArcaneRecipe tcRecipe = (ShapedArcaneRecipe) o;
-                    RecipeItem[] inputItems = new RecipeItem[9];
+                    Object[] inputItems = new Object[9];
                     for (int i = 0; i < tcRecipe.getInput().length; i++) {
                         Object oInput = tcRecipe.getInput()[i];
                         if (isItem(oInput)) {
@@ -101,7 +102,7 @@ public class TCHandlerRecipe {
                             .stream(tcRecipe.getInput().toArray())
                             .filter(TCHandlerRecipe::isItem)
                             .map(TCHandlerRecipe::getItemFromObject)
-                            .toArray(RecipeItem[]::new))
+                            .toArray(Object[]::new))
                         .withInputAspects(tcRecipe.getAspects())
                         .withOutputItems(new RecipeItem(tcRecipe.getRecipeOutput()))
                         .withResearch(tcRecipe.getResearch()));
@@ -145,7 +146,7 @@ public class TCHandlerRecipe {
                                 .stream()
                                 .map(rI -> getItemFromObject(rI.getRepresentativeStacks()))
                                 .filter(java.util.Objects::nonNull)
-                                .toArray(RecipeItem[]::new))
+                                .toArray(Object[]::new))
                             .withInputAspects(tcRecipe.getAspects())
                             .withOutputItems(getItemFromObject(outputStack))
                             .withInstability(tcRecipe.getInstability())
@@ -167,12 +168,9 @@ public class TCHandlerRecipe {
             || (o instanceof List && !((List<?>) o).isEmpty()));
     }
 
-    public static RecipeItem getItemFromObject(Object o) {
+    public static Object getItemFromObject(Object o) {
         ItemStack[] stacks = NEIServerUtils.extractRecipeItems(o);
-        stacks = Arrays.stream(stacks).filter(java.util.Objects::nonNull).toArray(ItemStack[]::new);
-        if (stacks.length == 0)
-            return null;
-        return new RecipeItem(stacks);
+        return RecipeUtil.getRecipeItems(stacks);
     }
 
 }

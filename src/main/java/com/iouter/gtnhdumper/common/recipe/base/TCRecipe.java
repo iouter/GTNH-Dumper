@@ -3,12 +3,12 @@ package com.iouter.gtnhdumper.common.recipe.base;
 import thaumcraft.api.aspects.AspectList;
 
 public class TCRecipe {
-    private RecipeItem keyItem;
+    private Object keyItem;
 
-    private RecipeItem[] inputItems;
+    private Object[] inputItems;
     private AspectList inputAspects;
 
-    private RecipeItem[] outputItems;
+    private Object[] outputItems;
     private AspectList outputAspects;
 
     private String research;
@@ -17,12 +17,12 @@ public class TCRecipe {
 
     public TCRecipe() {}
 
-    public TCRecipe withKeyItem(RecipeItem keyItem) {
+    public TCRecipe withKeyItem(Object keyItem) {
         this.keyItem = keyItem;
         return this;
     }
 
-    public TCRecipe withInputItems(RecipeItem... recipeItems) {
+    public TCRecipe withInputItems(Object... recipeItems) {
         this.inputItems = recipeItems;
         return this;
     }
@@ -32,7 +32,7 @@ public class TCRecipe {
         return this;
     }
 
-    public TCRecipe withOutputItems(RecipeItem... recipeItems) {
+    public TCRecipe withOutputItems(Object... recipeItems) {
         this.outputItems = recipeItems;
         return this;
     }

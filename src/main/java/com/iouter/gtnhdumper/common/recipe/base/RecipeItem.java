@@ -10,7 +10,6 @@ public class RecipeItem {
     public static final Map<String, String[]> oreDictMap = Utils.getOreDict();
 
     public String key;
-    public String[] keys;
     public final Integer amount;
     public Integer chance;
     public String nbt;
@@ -39,27 +38,6 @@ public class RecipeItem {
             this.amount = null;
         }
         this.withNBT(stack);
-    }
-
-    public RecipeItem(ItemStack[] stacks) {
-        final ItemStack stack = stacks[0];
-        if (stacks.length == 1) {
-            this.key = Utils.getItemKey(stack);
-        } else {
-            final String oD = Utils.getOreDictByItems(stacks, oreDictMap);
-            if (oD != null) {
-                this.key = "#" + oD;
-            } else {
-                this.keys = Arrays.stream(stacks).map(Utils::getItemKey).toArray(String[]::new);
-                this.withNBT(stack);
-            }
-        }
-        int amount = stack.stackSize;
-        if (amount != 1) {
-            this.amount = amount;
-        } else {
-            this.amount = null;
-        }
     }
 
     public RecipeItem withChance(int chance) {
