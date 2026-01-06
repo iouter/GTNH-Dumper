@@ -5,7 +5,7 @@ import net.minecraftforge.fluids.FluidStack;
 
 public class RecipeFluid {
     private final String key;
-    private final int amount;
+    private long amount;
     private Integer chance;
     public String nbt;
 
@@ -36,6 +36,11 @@ public class RecipeFluid {
         if (nbt != null) {
             return withNBT(nbt);
         }
+        return this;
+    }
+
+    public RecipeFluid withAmount(long amount) {
+        this.amount = amount;
         return this;
     }
 }

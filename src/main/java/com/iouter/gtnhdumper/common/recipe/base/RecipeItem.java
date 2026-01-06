@@ -10,7 +10,7 @@ public class RecipeItem {
     public static final Map<String, String[]> oreDictMap = Utils.getOreDict();
 
     public String key;
-    public final Integer amount;
+    public Long amount;
     public Integer chance;
     public String nbt;
 
@@ -18,7 +18,7 @@ public class RecipeItem {
     public RecipeItem(String key, int amount) {
         this.key = key;
         if (amount != 1) {
-            this.amount = amount;
+            this.amount = (long) amount;
         } else {
             this.amount = null;
         }
@@ -29,7 +29,7 @@ public class RecipeItem {
             this.key = Utils.getItemKey(stack);
             int amount = stack.stackSize;
             if (amount != 1) {
-                this.amount = amount;
+                this.amount = (long) amount;
             } else {
                 this.amount = null;
             }
@@ -60,6 +60,11 @@ public class RecipeItem {
         if (nbt != null) {
             return withNBT(nbt);
         }
+        return this;
+    }
+
+    public RecipeItem withAmount(long amount) {
+        this.amount = amount;
         return this;
     }
 }

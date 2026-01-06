@@ -35,7 +35,7 @@ public class OreDictionaryDumper extends WikiDumper {
         for (String key : map.keySet()) {
             list.add(new String[]{
                 key,
-                String.join(", ", map.get(key))
+                String.join(ARRAY_SEPARATOR, map.get(key))
             });
         }
         return list;

@@ -11,7 +11,7 @@ public class GTRecipe{
     private final ArrayList<RecipeFluid> outputFluids;
     private final ArrayList<Object> otherItems;
     private final Integer eut;
-    private final Integer duration;
+    private final Long duration;
     private Integer specialValue;
     private final Map<String, Object> metadata;
 
@@ -19,7 +19,7 @@ public class GTRecipe{
                     ArrayList<RecipeFluid> inputFluids,
                     ArrayList<Object> outputItems,
                     ArrayList<RecipeFluid> outputFluids,
-                    ArrayList<Object> otherItems, int eut, int duration, Integer specialValue, Map<String, Object> metadata) {
+                    ArrayList<Object> otherItems, int eut, long duration, int specialValue, Map<String, Object> metadata) {
         this.inputItems = inputItems;
         this.inputFluids = inputFluids;
         this.outputItems = outputItems;

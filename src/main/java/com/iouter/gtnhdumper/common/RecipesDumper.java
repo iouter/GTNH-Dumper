@@ -86,7 +86,8 @@ public class RecipesDumper extends DataDumper {
             String modID = info != null ? info.getModId() : "Unknown";
             String id = Utils.getAfterLastDot(handlerId);
             String clazz = Utils.getAfterLastDot(handlerName);
-            File file = new File( "dumps/recipes/" + modID + "/" + clazz + "_" + id + ".json");
+            String fileName = "dumps/recipes/" + modID + "/" + clazz + "_" + id + ".json";
+            File file = new File(fileName);
             File parentDir = file.getParentFile();
             if (parentDir != null && !parentDir.exists()) {
                 parentDir.mkdirs();
