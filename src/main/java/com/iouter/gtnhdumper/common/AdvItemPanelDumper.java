@@ -46,8 +46,8 @@ public class AdvItemPanelDumper extends WikiDumper {
     }
 
     @Override
-    public Iterable<String[]> dump(int mode) {
-        LinkedList<String[]> list = new LinkedList<>();
+    public Iterable<Object[]> dumpObject(int mode) {
+        LinkedList<Object[]> list = new LinkedList<>();
 
         List<ItemStack> itemStacks = new ArrayList<>();
 

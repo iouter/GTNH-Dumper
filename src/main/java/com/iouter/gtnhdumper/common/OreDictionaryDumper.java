@@ -29,13 +29,13 @@ public class OreDictionaryDumper extends WikiDumper {
     }
 
     @Override
-    public Iterable<String[]> dump(int mode) {
-        LinkedList<String[]> list = new LinkedList<>();
+    public Iterable<Object[]> dumpObject(int mode) {
+        LinkedList<Object[]> list = new LinkedList<>();
         Map<String, String[]> map = Utils.getOreDict();
         for (String key : map.keySet()) {
-            list.add(new String[]{
+            list.add(new Object[]{
                 key,
-                String.join(ARRAY_SEPARATOR, map.get(key))
+                map.get(key)
             });
         }
         return list;

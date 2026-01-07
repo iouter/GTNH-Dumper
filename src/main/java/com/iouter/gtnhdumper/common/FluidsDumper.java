@@ -65,8 +65,8 @@ public class FluidsDumper extends WikiDumper {
     }
 
     @Override
-    public Iterable<String[]> dump(int mode) {
-        LinkedList<String[]> list = new LinkedList<>();
+    public Iterable<Object[]> dumpObject(int mode) {
+        LinkedList<Object[]> list = new LinkedList<>();
         Map<String, Fluid> fluids = FluidRegistry.getRegisteredFluids();
         for (String fluidKey : fluids.keySet()) {
             Fluid fluid = fluids.get(fluidKey);
@@ -80,14 +80,36 @@ public class FluidsDumper extends WikiDumper {
             boolean isGaseous = fluid.isGaseous();
             boolean canBePlaced = fluid.canBePlacedInWorld();
             if (!CommonProxy.isGTLoaded) {
-                list.add(new String[]{"fluid." + fluidKey, originalName, translatedName, String.valueOf(luminosity), String.valueOf(density), String.valueOf(temperature), String.valueOf(viscosity), String.valueOf(isGaseous), String.valueOf(canBePlaced)});
+                list.add(new Object[]{
+                    "fluid." + fluidKey,
+                    originalName,
+                    translatedName,
+                    luminosity,
+                    density,
+                    temperature,
+                    viscosity,
+                    isGaseous,
+                    canBePlaced
+                });
                 continue;
             }
             int id = fluid.getID();
             ItemStack gtDisplay = new ItemStack(ItemList.Display_Fluid.getItem(), 1, id);
             String gtDisplayKey = Utils.getItemKey(gtDisplay);
             String tooltips = Utils.getTooltip(gtDisplay);
-            list.add(new String[]{"fluid." + fluidKey, originalName, translatedName, String.valueOf(luminosity), String.valueOf(density), String.valueOf(temperature), String.valueOf(viscosity), String.valueOf(isGaseous), String.valueOf(canBePlaced), gtDisplayKey, tooltips});
+            list.add(new Object[]{
+                "fluid." + fluidKey,
+                originalName,
+                translatedName,
+                luminosity,
+                density,
+                temperature,
+                viscosity,
+                isGaseous,
+                canBePlaced,
+                gtDisplayKey,
+                tooltips
+            });
         }
         return list;
     }

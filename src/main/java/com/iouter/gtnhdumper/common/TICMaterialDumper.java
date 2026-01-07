@@ -50,20 +50,23 @@ public class TICMaterialDumper extends WikiDumper {
     }
 
     @Override
-    public Iterable<String[]> dump(int mode) {
-        LinkedList<String[]> list = new LinkedList<>();
+    public Iterable<Object[]> dumpObject(int mode) {
+        LinkedList<Object[]> list = new LinkedList<>();
         for (int index : toolMaterials.keySet()) {
             ToolMaterial m = toolMaterials.get(index);
             ArrowMaterial arrowMaterial = TConstructRegistry.getArrowMaterial(index);
             BowMaterial bowMaterial = TConstructRegistry.getBowMaterial(index);
-            String mass = "", breakChance = "", drawspeed = "", flightSpeedMax = "";
+            Float mass = null;
+            Float breakChance = null;
+            Integer drawSpeed = null;
+            Float flightSpeedMax = null;
             if (arrowMaterial != null) {
-                mass = String.valueOf(arrowMaterial.mass);
-                breakChance = String.valueOf(arrowMaterial.breakChance);
+                mass = arrowMaterial.mass;
+                breakChance = arrowMaterial.breakChance;
             }
             if (bowMaterial != null) {
-                drawspeed = String.valueOf(bowMaterial.drawspeed);
-                flightSpeedMax = String.valueOf(bowMaterial.flightSpeedMax);
+                drawSpeed = bowMaterial.drawspeed;
+                flightSpeedMax = bowMaterial.flightSpeedMax;
             }
             String ability = m.ability();
             if (m.stonebound > 0 && ability != "") {
@@ -73,18 +76,18 @@ public class TICMaterialDumper extends WikiDumper {
                 if (!Objects.equals(ability, "")) ability += ARRAY_SEPARATOR;
                 ability += getReinforcedString(m.reinforced());
             }
-            list.add(new String[] {
-                String.valueOf(index),
+            list.add(new Object[] {
+                index,
                 m.name(),
                 m.prefixName(),
-                String.valueOf(m.durability()),
-                String.valueOf(m.handleDurability()),
-                String.valueOf(Math.round(m.durability() * m.handleDurability())),
-                String.valueOf(m.toolSpeed() / 100F),
-                String.valueOf(m.harvestLevel()),
-                String.valueOf(m.attack()),
+                m.durability(),
+                m.handleDurability(),
+                Math.round(m.durability() * m.handleDurability()),
+                m.toolSpeed() / 100F,
+                m.harvestLevel(),
+                m.attack(),
                 ability,
-                drawspeed,
+                drawSpeed,
                 flightSpeedMax,
                 mass,
                 breakChance

@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -213,5 +214,25 @@ public class Utils {
         } catch (Exception e) {
             return "ERROR";
         }
+    }
+
+    public static boolean isItemStackEqual(ItemStack a, ItemStack b) {
+        if (a == null) {
+            return b == null;
+        }
+        final boolean nameEqual = Item.itemRegistry.getNameForObject(a.getItem()).equals(Item.itemRegistry.getNameForObject(b.getItem()));
+        final boolean metaEqual = InventoryUtils.actualDamage(a) == InventoryUtils.actualDamage(b);
+        final boolean sizeEqual = a.stackSize == b.stackSize;
+        final boolean nbtEqual = Objects.equals(a.stackTagCompound, b.stackTagCompound);
+        return nameEqual && metaEqual && sizeEqual && nbtEqual;
+    }
+
+    public static boolean isStacksContain(ItemStack s, ItemStack[] stacks) {
+        for (ItemStack stack : stacks) {
+            if (isItemStackEqual(s, stack)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

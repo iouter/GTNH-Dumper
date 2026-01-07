@@ -54,16 +54,16 @@ public class TC4ResearchDumper extends WikiDumper {
     }
 
     @Override
-    public Iterable<String[]> dump(int mode) {
-        LinkedList<String[]> list = new LinkedList<>();
+    public Iterable<Object[]> dumpObject(int mode) {
+        LinkedList<Object[]> list = new LinkedList<>();
         for (ResearchCategoryList r : ResearchCategories.researchCategories.values()) {
             for (ResearchItem m : r.research.values()) {
-                list.add(new String[] {
+                list.add(new Object[] {
                     m.getName(),
                     m.key,
                     ResearchCategories.getCategoryName(m.category),
-                    String.valueOf(m.getComplexity()),
-                    String.valueOf(ThaumcraftApi.getWarp(m.key)),
+                    m.getComplexity(),
+                    ThaumcraftApi.getWarp(m.key),
                     getResearchsName(m.parents),
                     getResearchsName(m.parentsHidden),
                     getItemStacksName(m.getItemTriggers()),
@@ -82,49 +82,48 @@ public class TC4ResearchDumper extends WikiDumper {
                 "nei.options.tools.dump.gtnhdumper.tc4research.dumped", "dumps/" + file.getName());
     }
 
-    public static String getResearchsName(String[] list) {
+    public static List<String> getResearchsName(String[] list) {
         if (list == null) return null;
         List<String> nameList = new ArrayList<>();
         for (String str : list) {
             nameList.add(ResearchCategories.getResearch(str).getName());
         }
-        return String.join(ARRAY_SEPARATOR, nameList);
+        return nameList;
     }
 
-    public static String getItemStacksName(ItemStack[] itemStacks) {
+    public static List<String> getItemStacksName(ItemStack[] itemStacks) {
         if (itemStacks == null) return null;
         List<String> nameList = new ArrayList<>();
         for (ItemStack i : itemStacks) {
             nameList.add(i.getDisplayName());
         }
-        return String.join(ARRAY_SEPARATOR, nameList);
+        return nameList;
     }
 
-    public static String getAspectsName(Aspect[] aspects) {
+    public static List<String> getAspectsName(Aspect[] aspects) {
         if (aspects == null) return null;
         List<String> nameList = new ArrayList<>();
         for (Aspect a : aspects) {
 
             nameList.add(a.getName());
         }
-        return String.join(ARRAY_SEPARATOR, nameList);
+        return nameList;
     }
 
-    public static String getEnTitiesName(String[] list) {
+    public static List<String> getEnTitiesName(String[] list) {
         if (list == null) return null;
         List<String> nameList = new ArrayList<>();
         for (String str : list) {
             nameList.add(StatCollector.translateToLocal("entity." + str + ".name"));
         }
-        return String.join(ARRAY_SEPARATOR, nameList);
+        return nameList;
     }
 
-    public String getKillerTrigger(ResearchItem researchItem) {
+    public String[] getKillerTrigger(ResearchItem researchItem) {
         if (CommonProxy.isAutomagyLoaded) {
             if (researchItem.category.equals("AUTOMAGY")) {
                 Set<String> nameList = getKeysByValue(ModResearchItems.cluesOnKill, researchItem.key);
-                String[] list = nameList.toArray(new String[0]);
-                return String.join(ARRAY_SEPARATOR, list);
+                return nameList.toArray(new String[0]);
             }
         }
         return null;
