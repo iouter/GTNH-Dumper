@@ -36,24 +36,31 @@ public class KeySimulator {
         Field bufferField;
         Object buffer;
 
-        // 尝试获取标准 LWJGL 2.9.1 的字段
         try {
+            // 尝试标准 LWJGL 2 字段
             bufferField = Keyboard.class.getDeclaredField("keyDownBuffer");
             bufferField.setAccessible(true);
             buffer = bufferField.get(null);
-        } catch (NoSuchFieldException e) {
-            // 兼容某些修改版 LWJGL
-            bufferField = Keyboard.class.getDeclaredField("keyDownBuffer");
-            bufferField.setAccessible(true);
-            buffer = bufferField.get(null);
+        } catch (NoSuchFieldException e1) {
+            try {
+                // 尝试 lwjgl3ify (LWJGL 3) 的字段
+                bufferField = Keyboard.class.getDeclaredField("keys");
+                bufferField.setAccessible(true);
+                buffer = bufferField.get(null);
+            } catch (NoSuchFieldException e2) {
+                throw new RuntimeException(
+                    "Failed to find key buffer field. Unsupported LWJGL version.",
+                    e2
+                );
+            }
         }
 
         // 根据实际类型创建访问器
         if (buffer instanceof boolean[]) {
-            logger.info("[KeySimulator] Detected boolean[] buffer");
+            logger.info("[KeySimulator] Using LWJGL 2 boolean[] buffer");
             accessor = new BooleanArrayAccessor((boolean[]) buffer);
         } else if (buffer instanceof ByteBuffer) {
-            logger.info("[KeySimulator] Detected ByteBuffer buffer");
+            logger.info("[KeySimulator] Using LWJGL 3 ByteBuffer buffer (lwjgl3ify)");
             accessor = new ByteBufferAccessor((ByteBuffer) buffer);
         } else {
             throw new UnsupportedOperationException(
