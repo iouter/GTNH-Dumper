@@ -50,7 +50,7 @@ public class GTMaterialDumper extends WikiDumper {
     private static final String TRUE = "true";
     private static final String FALSE = "false";
 
-    private static final String NAME = "name";
+    private static final String NAME = "Name";
     private static final String DEFAULT_NAME = "DefaultName";
     private static final String LOCALIZED_NAME = "LocalizedName";
 
@@ -233,6 +233,10 @@ public class GTMaterialDumper extends WikiDumper {
                 }
             }
 
+        }
+        if (orePrefixesMap.isEmpty()) {
+            materialMap.put(ORE_PREFIXES, null);
+            return;
         }
         materialMap.put(ORE_PREFIXES, orePrefixesMap);
     }
