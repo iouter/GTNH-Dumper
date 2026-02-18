@@ -12,6 +12,7 @@ import com.iouter.gtnhdumper.common.recipe.serializer.FluidStackSerializer;
 import com.iouter.gtnhdumper.common.recipe.serializer.ItemStackSerializer;
 import com.iouter.gtnhdumper.common.recipe.serializer.MaterialsSerializer;
 import com.iouter.gtnhdumper.common.recipe.serializer.RecipeItemSerializer;
+import com.iouter.gtnhdumper.common.recipe.serializer.SafeDoubleSerializer;
 import gregtech.api.enums.Element;
 import gregtech.api.enums.Materials;
 import net.minecraft.item.ItemStack;
@@ -131,6 +132,8 @@ public abstract class WikiDumper extends DataDumper{
         GsonBuilder gsonBuilder = new GsonBuilder()
             .setPrettyPrinting()
             .serializeSpecialFloatingPointValues()
+            .registerTypeAdapter(Double.class, new SafeDoubleSerializer())
+            .registerTypeAdapter(Double.TYPE, new SafeDoubleSerializer())
             .disableHtmlEscaping()
             .registerTypeAdapter(RecipeItem.class, new RecipeItemSerializer())
             .registerTypeAdapter(ItemStack.class, new ItemStackSerializer())

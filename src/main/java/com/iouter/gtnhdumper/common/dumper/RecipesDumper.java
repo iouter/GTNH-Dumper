@@ -1,4 +1,4 @@
-package com.iouter.gtnhdumper.common;
+package com.iouter.gtnhdumper.common.dumper;
 
 import codechicken.nei.config.DataDumper;
 import codechicken.nei.recipe.GuiRecipeTab;
@@ -11,6 +11,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.iouter.gtnhdumper.CommonProxy;
 import com.iouter.gtnhdumper.Utils;
+import com.iouter.gtnhdumper.common.recipe.AvaExtremeShapedHandlerRecipe;
 import com.iouter.gtnhdumper.common.recipe.GTDefaultHandlerRecipe;
 import com.iouter.gtnhdumper.common.recipe.GeneralHandlerRecipe;
 import com.iouter.gtnhdumper.common.recipe.ShapedCraftingHandlerRecipe;
@@ -23,6 +24,7 @@ import com.iouter.gtnhdumper.common.recipe.serializer.FluidStackSerializer;
 import com.iouter.gtnhdumper.common.recipe.serializer.ItemStackSerializer;
 import com.iouter.gtnhdumper.common.recipe.serializer.MaterialsSerializer;
 import com.iouter.gtnhdumper.common.recipe.serializer.RecipeItemSerializer;
+import com.iouter.gtnhdumper.common.recipe.serializer.SafeDoubleSerializer;
 import gregtech.api.enums.Element;
 import gregtech.api.enums.Materials;
 import gregtech.nei.GTNEIDefaultHandler;
@@ -60,7 +62,12 @@ public class RecipesDumper extends DataDumper {
                 return new TCHandlerRecipe(recipeHandler);
             }
         }
-        if (clazz.contains("Shaped")) {
+        if (CommonProxy.isAvaritiaLoaded) {
+            if (clazz.equals("ExtremeShapedRecipeHandler")) {
+                return new AvaExtremeShapedHandlerRecipe(recipeHandler);
+            }
+        }
+        if (clazz.contains("Shaped") && !clazz.equals("RecipeHandlerRollingMachineShaped")) {
             return new ShapedCraftingHandlerRecipe(recipeHandler);
         }
         return new GeneralHandlerRecipe(recipeHandler);
@@ -94,6 +101,8 @@ public class RecipesDumper extends DataDumper {
             }
             GsonBuilder gsonBuilder = new GsonBuilder()
                 .setPrettyPrinting()
+                .registerTypeAdapter(Double.class, new SafeDoubleSerializer())
+                .registerTypeAdapter(Double.TYPE, new SafeDoubleSerializer())
                 .registerTypeAdapter(RecipeItem.class, new RecipeItemSerializer())
                 .registerTypeAdapter(ItemStack.class, new ItemStackSerializer())
                 .registerTypeAdapter(FluidStack.class, new FluidStackSerializer());

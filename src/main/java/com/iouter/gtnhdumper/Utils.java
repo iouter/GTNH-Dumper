@@ -235,4 +235,11 @@ public class Utils {
         }
         return false;
     }
+
+    public static String replaceIllegalChars(String input) {
+        return input.replace("/", "_1_")
+            .replace(":", "_2_")
+            .replace("*", "_3_")
+            .replace("\"", "_4_");
+    }
 }

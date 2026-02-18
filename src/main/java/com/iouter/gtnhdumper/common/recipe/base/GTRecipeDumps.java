@@ -3,7 +3,7 @@ package com.iouter.gtnhdumper.common.recipe.base;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class GTRecipe{
+public class GTRecipeDumps {
 
     private final ArrayList<Object> inputItems;
     private final ArrayList<RecipeFluid> inputFluids;
@@ -15,11 +15,11 @@ public class GTRecipe{
     private Integer specialValue;
     private final Map<String, Object> metadata;
 
-    public GTRecipe(ArrayList<Object> inputItems,
-                    ArrayList<RecipeFluid> inputFluids,
-                    ArrayList<Object> outputItems,
-                    ArrayList<RecipeFluid> outputFluids,
-                    ArrayList<Object> otherItems, int eut, long duration, int specialValue, Map<String, Object> metadata) {
+    public GTRecipeDumps(ArrayList<Object> inputItems,
+                         ArrayList<RecipeFluid> inputFluids,
+                         ArrayList<Object> outputItems,
+                         ArrayList<RecipeFluid> outputFluids,
+                         ArrayList<Object> otherItems, int eut, long duration, int specialValue, Map<String, Object> metadata) {
         this.inputItems = inputItems;
         this.inputFluids = inputFluids;
         this.outputItems = outputItems;

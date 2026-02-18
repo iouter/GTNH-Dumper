@@ -1,213 +1,180 @@
 package com.iouter.gtnhdumper.common.utils;
 
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.lwjgl.input.Keyboard;
+import com.iouter.gtnhdumper.GTNHDumper;
+import org.lwjglx.input.KeyCodes;
+import org.lwjglx.input.Keyboard;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-public class KeySimulator {
-    private static final Logger logger = LogManager.getLogger("KeySimulator");
+/**
+ * 双模式按键模拟器 - 同时兼容 LWJGL2 (原版 1.7.10) 和 LWJGL3 (lwjgl3ify)
+ * 通过运行时检测自动选择合适的实现
+ */
+public final class KeySimulator {
 
-    // 抽象按键访问器
-    private interface KeyAccessor {
-        boolean isKeyDown(int key);
-        void setKeyDown(int key, boolean state);
-        void saveState(int[] keys, boolean[] states);
-        void restoreState(int[] keys, boolean[] states);
+    // 兼容模式
+    private enum Mode {
+        UNKNOWN,
+        LWJGL2,    // 原版 1.7.10 (使用 keyDownBuffer)
+        LWJGL3_SDL // lwjgl3ify (使用 sdlKeyPressedArray)
     }
 
-    private static KeyAccessor accessor;
-    private static boolean initialized = false;
+    private static Mode mode = Mode.UNKNOWN;
+    private static final Map<Integer, Boolean> ORIGINAL_STATES_LWJGL2 = new HashMap<>();
+    private static final Map<Integer, Byte> ORIGINAL_STATES_LWJGL3 = new HashMap<>();
 
-    static {
+    // LWJGL2 字段
+    private static Field keyDownBufferField;
+
+    private KeySimulator() {
+    }
+
+    /**
+     * 初始化 - 检测运行时环境
+     */
+    private static synchronized void init() {
+        if (mode != Mode.UNKNOWN) {
+            return;
+        }
+
         try {
-            init();
-        } catch (Throwable t) {
-            logger.error("KeySimulator initialization failed!", t);
+            // 尝试检测 LWJGL3 (lwjgl3ify) 模式
+            Class<?> keyboardClass = Class.forName("org.lwjglx.input.Keyboard");
+            mode = Mode.LWJGL3_SDL;
+            GTNHDumper.LOG.info("[KeySimulator] Detected LWJGL3 SDL mode (lwjgl3ify)");
+            return;
+        } catch (Exception e) {
+            GTNHDumper.LOG.debug("[KeySimulator] SDL mode not available", e);
         }
-    }
-
-    private static void init() throws Exception {
-        Field bufferField;
-        Object buffer;
 
         try {
-            // 尝试标准 LWJGL 2 字段
-            bufferField = Keyboard.class.getDeclaredField("keyDownBuffer");
-            bufferField.setAccessible(true);
-            buffer = bufferField.get(null);
-        } catch (NoSuchFieldException e1) {
-            try {
-                // 尝试 lwjgl3ify (LWJGL 3) 的字段
-                bufferField = Keyboard.class.getDeclaredField("keys");
-                bufferField.setAccessible(true);
-                buffer = bufferField.get(null);
-            } catch (NoSuchFieldException e2) {
-                throw new RuntimeException(
-                    "Failed to find key buffer field. Unsupported LWJGL version.",
-                    e2
-                );
-            }
-        }
+            // 尝试检测 LWJGL2 (原版) 模式
+            Class<?> keyboardClass = Class.forName("org.lwjgl.input.Keyboard");
+            keyDownBufferField = keyboardClass.getDeclaredField("keyDownBuffer");
+            keyDownBufferField.setAccessible(true);
 
-        // 根据实际类型创建访问器
-        if (buffer instanceof boolean[]) {
-            logger.info("[KeySimulator] Using LWJGL 2 boolean[] buffer");
-            accessor = new BooleanArrayAccessor((boolean[]) buffer);
-        } else if (buffer instanceof ByteBuffer) {
-            logger.info("[KeySimulator] Using LWJGL 3 ByteBuffer buffer (lwjgl3ify)");
-            accessor = new ByteBufferAccessor((ByteBuffer) buffer);
-        } else {
-            throw new UnsupportedOperationException(
-                "Unsupported key buffer type: " + buffer.getClass().getName()
-            );
+            mode = Mode.LWJGL2;
+            GTNHDumper.LOG.info("[KeySimulator] Detected LWJGL2 mode (vanilla)");
+            return;
+        } catch (Exception e) {
+            GTNHDumper.LOG.error("[KeySimulator] Failed to detect input mode!", e);
+            mode = Mode.UNKNOWN;
         }
-
-        initialized = true;
     }
 
-    // =============== 通用 API ===============
-    public static void withKeysPressed(Map<Integer, Boolean> keyStates, Runnable action) {
-        if (!initialized || accessor == null) {
-            logger.warn("[KeySimulator] Not initialized, running action directly");
+    /**
+     * 在按键按下状态下执行操作
+     */
+    public static void withKeyPressed(Runnable action, int... keys) {
+        if (action == null || keys == null || keys.length == 0) {
             action.run();
             return;
         }
 
-        int[] keys = new int[keyStates.size()];
-        boolean[] originalStates = new boolean[keyStates.size()];
-        boolean[] newStates = new boolean[keyStates.size()];
-
-        int i = 0;
-        for (Map.Entry<Integer, Boolean> entry : keyStates.entrySet()) {
-            keys[i] = entry.getKey();
-            newStates[i] = entry.getValue();
-            i++;
-        }
-
-        // 保存原始状态
-        accessor.saveState(keys, originalStates);
-
-        try {
-            // 应用新状态
-            for (i = 0; i < keys.length; i++) {
-                accessor.setKeyDown(keys[i], newStates[i]);
-            }
+        init();
+        if (mode == Mode.UNKNOWN) {
+            GTNHDumper.LOG.warn("[KeySimulator] Unknown input mode - executing action directly");
             action.run();
+            return;
+        }
+
+        switch (mode) {
+            case LWJGL2:
+                simulateLwjgl2(keys, action);
+                break;
+            case LWJGL3_SDL:
+                simulateLwjgl3(keys, action);
+                break;
+        }
+    }
+
+    /**
+     * LWJGL2 模式实现 (原版 1.7.10)
+     */
+    private static void simulateLwjgl2(int[] keys, Runnable action) {
+        boolean[] buffer = null;
+        try {
+            buffer = (boolean[]) keyDownBufferField.get(null);
+
+            // 保存原始状态并设置新状态
+            for (int key : keys) {
+                if (key >= 0 && key < buffer.length) {
+                    ORIGINAL_STATES_LWJGL2.put(key, buffer[key]);
+                    buffer[key] = true;
+                }
+            }
+
+            action.run();
+        } catch (Exception e) {
+            GTNHDumper.LOG.error("[KeySimulator] LWJGL2 simulation failed", e);
         } finally {
-            // 恢复原始状态
-            accessor.restoreState(keys, originalStates);
-        }
-    }
-
-    public static void withKeyPressed(Runnable action, int key) {
-        Map<Integer, Boolean> states = new HashMap<>();
-        states.put(key, true);
-        withKeysPressed(states, action);
-    }
-
-    public static void withKeysPressed(Runnable action, int... keys) {
-        Map<Integer, Boolean> states = new HashMap<>();
-        for (int key : keys) {
-            states.put(key, true);
-        }
-        withKeysPressed(states, action);
-    }
-
-    // =============== 具体实现 ===============
-    private static class BooleanArrayAccessor implements KeyAccessor {
-        private final boolean[] buffer;
-
-        BooleanArrayAccessor(boolean[] buffer) {
-            this.buffer = buffer;
-        }
-
-        @Override
-        public boolean isKeyDown(int key) {
-            return key >= 0 && key < buffer.length && buffer[key];
-        }
-
-        @Override
-        public void setKeyDown(int key, boolean state) {
-            if (key >= 0 && key < buffer.length) {
-                buffer[key] = state;
-            }
-        }
-
-        @Override
-        public void saveState(int[] keys, boolean[] states) {
-            for (int i = 0; i < keys.length; i++) {
-                if (keys[i] >= 0 && keys[i] < buffer.length) {
-                    states[i] = buffer[keys[i]];
+            // 100% 恢复原始状态
+            if (buffer != null) {
+                for (int key : keys) {
+                    Boolean original = ORIGINAL_STATES_LWJGL2.get(key);
+                    if (original != null && key >= 0 && key < buffer.length) {
+                        buffer[key] = original;
+                    }
                 }
             }
-        }
-
-        @Override
-        public void restoreState(int[] keys, boolean[] states) {
-            for (int i = 0; i < keys.length; i++) {
-                if (keys[i] >= 0 && keys[i] < buffer.length) {
-                    buffer[keys[i]] = states[i];
-                }
-            }
+            ORIGINAL_STATES_LWJGL2.clear();
         }
     }
 
-    private static class ByteBufferAccessor implements KeyAccessor {
-        private final ByteBuffer buffer;
+    /**
+     * LWJGL3 模式实现 (lwjgl3ify)
+     */
+    private static void simulateLwjgl3(int[] keys, Runnable action) {
+        ByteBuffer buffer = Keyboard.sdlKeyPressedArray;
+        try {
+            if (buffer == null) {
+                GTNHDumper.LOG.error("[KeySimulator] SDL key pressed array is null!");
+                action.run();
+                return;
+            }
 
-        ByteBufferAccessor(ByteBuffer buffer) {
-            this.buffer = buffer;
-            logger.debug("[KeySimulator] ByteBuffer limit: " + buffer.limit());
-        }
-
-        @Override
-        public boolean isKeyDown(int key) {
-            if (key < 0 || key >= buffer.limit()) return false;
-            return buffer.get(key) != 0;
-        }
-
-        @Override
-        public void setKeyDown(int key, boolean state) {
-            if (key < 0 || key >= buffer.limit()) return;
-            buffer.put(key, state ? (byte) 1 : (byte) 0);
-        }
-
-        @Override
-        public void saveState(int[] keys, boolean[] states) {
-            for (int i = 0; i < keys.length; i++) {
-                int key = keys[i];
-                if (key >= 0 && key < buffer.limit()) {
-                    states[i] = buffer.get(key) != 0;
+            // 保存原始状态并设置新状态
+            for (int lwjglKey : keys) {
+                int sdlScancode = KeyCodes.lwjglToSdlScancode(lwjglKey);
+                if (sdlScancode > 0 && sdlScancode < buffer.limit()) {
+                    byte original = buffer.get(sdlScancode);
+                    ORIGINAL_STATES_LWJGL3.put(sdlScancode, original);
+                    buffer.put(sdlScancode, (byte) 1); // 1 = pressed
                 }
             }
-        }
 
-        @Override
-        public void restoreState(int[] keys, boolean[] states) {
-            for (int i = 0; i < keys.length; i++) {
-                int key = keys[i];
-                if (key >= 0 && key < buffer.limit()) {
-                    buffer.put(key, states[i] ? (byte) 1 : (byte) 0);
+            action.run();
+        } catch (Exception e) {
+            GTNHDumper.LOG.error("[KeySimulator] LWJGL3 simulation failed", e);
+        } finally {
+            // 100% 恢复原始状态
+            if (buffer != null) {
+                for (int lwjglKey : keys) {
+                    int sdlScancode = KeyCodes.lwjglToSdlScancode(lwjglKey);
+                    Byte original = ORIGINAL_STATES_LWJGL3.get(sdlScancode);
+                    if (original != null && sdlScancode > 0 && sdlScancode < buffer.limit()) {
+                        buffer.put(sdlScancode, original);
+                    }
                 }
             }
+            ORIGINAL_STATES_LWJGL3.clear();
         }
     }
 
-    // =============== 安全检查 ===============
-    public static boolean isInitialized() {
-        return initialized;
-    }
-
-    // =============== 使用示例 ===============
     public static void test() {
+        GTNHDumper.LOG.info("[KeySimulator] Dual-mode diagnostic started");
+        GTNHDumper.LOG.info("[KeySimulator] Current mode: {}", mode);
+
         withKeyPressed(() -> {
-            logger.info("Shift is pressed: " + Keyboard.isKeyDown(Keyboard.KEY_LSHIFT));
-        }, Keyboard.KEY_LSHIFT);
+            boolean shiftState = org.lwjgl.input.Keyboard.isKeyDown(org.lwjgl.input.Keyboard.KEY_LSHIFT);
+            GTNHDumper.LOG.info("[KeySimulator] TEST RESULT: Left Shift is {}",
+                shiftState ? "PRESSED" : "RELEASED");
+        }, org.lwjgl.input.Keyboard.KEY_LSHIFT);
+
+        GTNHDumper.LOG.info("[KeySimulator] Dual-mode diagnostic completed");
     }
 }

@@ -1,8 +1,10 @@
-package com.iouter.gtnhdumper.common;
+package com.iouter.gtnhdumper.common.dumper;
 
 import bartworks.system.material.Werkstoff;
 import com.iouter.gtnhdumper.Utils;
 import com.iouter.gtnhdumper.common.base.WikiDumper;
+import com.iouter.gtnhdumper.common.recipe.base.GTRecipeDumps;
+import com.iouter.gtnhdumper.common.recipe.utils.Transformer;
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.OrePrefixes;
@@ -11,39 +13,31 @@ import gregtech.api.metatileentity.MetaPipeEntity;
 import gregtech.api.metatileentity.implementations.MTECable;
 import gregtech.api.metatileentity.implementations.MTEFluidPipe;
 import gregtech.api.metatileentity.implementations.MTEItemPipe;
+import gregtech.api.recipe.RecipeMap;
+import gregtech.api.recipe.RecipeMapBackend;
+import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.util.GTOreDictUnificator;
 import gregtech.api.util.GTUtility;
 import gtPlusPlus.core.material.Material;
 import gtPlusPlus.xmod.gregtech.api.metatileentity.implementations.GTPPMTECable;
 import gtPlusPlus.xmod.gregtech.api.metatileentity.implementations.GTPPMTEFluidPipe;
-import ic2.core.item.resources.ItemCell;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraftforge.fluids.FluidStack;
 import org.apache.commons.lang3.text.WordUtils;
-import tconstruct.library.TConstructRegistry;
-import tconstruct.library.tools.ArrowMaterial;
-import tconstruct.library.tools.BowMaterial;
-import tconstruct.library.tools.ToolMaterial;
 
 import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static com.iouter.gtnhdumper.common.TICMaterialDumper.getReinforcedString;
-import static com.iouter.gtnhdumper.common.TICMaterialDumper.toRomaNumber;
-import static tconstruct.library.TConstructRegistry.toolMaterials;
 
 public class GTMaterialDumper extends WikiDumper {
 
@@ -61,16 +55,6 @@ public class GTMaterialDumper extends WikiDumper {
     private static final String TOOL_SPEED = "ToolSpeed";
     private static final String TOOL_QUALITY = "ToolQuality";
 
-    private static final String DUST_ITEMS = "DustItems";
-    private static final String METAL_ITEMS = "MetalItems";
-    private static final String GEM_ITEMS = "GemItems";
-    private static final String ORE_ITEMS = "OreItems";
-    private static final String CELL = "Cell";
-    private static final String PLASMA = "Plasma";
-    private static final String TOOL_HEAD_ITEMS = "ToolHeadItems";
-    private static final String GEAR_ITEMS = "GearItems";
-    private static final String EMPTY = "Empty";
-    private static final String GAS = "Gas";
     private static final String FLUID = "Fluid";
 
     private static final String MOD = "Mod";
@@ -93,20 +77,22 @@ public class GTMaterialDumper extends WikiDumper {
     private static final String CABLE_VOLTAGE = "CableVoltage";
     private static final String LOSS = "Loss";
 
-    private static final String TINKER_BASE_DURABILITY = "TinkerBaseDurability";
-    private static final String TINKER_HANDLE_MODIFIER = "TinkerHandleModifier";
-    private static final String TINKER_FULL_DURABILITY = "TinkerFullDurability";
-    private static final String TINKER_MINING_SPEED = "TinkerMiningSpeed";
-    private static final String TINKER_MINING_LEVEL = "TinkerMiningLevel";
-    private static final String TINKER_ATTACK_DAMAGE = "TinkerAttackDamage";
-    private static final String TINKER_ABILITY = "TinkerAbility";
-    private static final String TINKER_DRAW_SPEED = "TinkerDrawSpeed";
-    private static final String TINKER_ARROW_SPEED = "TinkerArrowSpeed";
-    private static final String TINKER_WEIGHT = "TinkerWeight";
-    private static final String TINKER_BREAK_CHANCE = "TinkerBreakChance";
-
     private static final String ORE_PREFIXES = "OrePrefixes";
 
+    public static final String ORE_TO_CRUSHED_MACERATOR = "OreToCrushedMacerator";
+    public static final String RAW_ORE_TO_CRUSHED_MACERATOR = "RawOreToCrushedMacerator";
+    public static final String CRUSHED_TO_CRUSHED_PURIFIED_ORE_WASHER = "CrushedToCrushedPurifiedOreWasher";
+    public static final String CRUSHED_TO_CRUSHED_PURIFIED_CHEMICAL_BATH = "CrushedToCrushedPurifiedChemicalBath";
+    public static final String CRUSHED_PURIFIED_TO_ANY_SIFTER = "CrushedPurifiedToAnySifter";
+    public static final String CRUSHED_TO_DUST_IMPURE_MACERATOR = "CrushedToDustImpureMacerator";
+    public static final String CRUSHED_PURIFIED_TO_CRUSHED_CENTRIFUGED_THERMAL_CENTRIFUGE = "CrushedPurifiedToCrushedCentrifugedThermalCentrifuge";
+    public static final String CRUSHED_PURIFIED_TO_DUST_PURE_MACERATOR = "CrushedPurifiedToDustPureMacerator";
+    public static final String DUST_IMPURE_TO_DUST_CENTRIFUGE = "DustImpureToDustCentrifuge";
+    public static final String CRUSHED_CENTRIFUGED_TO_DUST_MACERATOR = "CrushedCentrifugedToDustMacerator";
+    public static final String DUST_PURE_TO_DUST_CENTRIFUGE = "DustPureToDustCentrifuge";
+    public static final String DUST_PURE_TO_DUST_ELECTRO_MAGNETIC_SEPARATOR = "DustPureToDustElectroMagneticSeparator";
+    public static final String ORE_TO_FLUID_FLUID_EXTRACTOR = "OreToFluidFluidExtractor";
+    private static final String ORE_PROCESSING = "OreProcessing";
     private static final String[] HEADER = {
         NAME,
         DEFAULT_NAME,
@@ -116,17 +102,6 @@ public class GTMaterialDumper extends WikiDumper {
         DURABILITY,
         TOOL_SPEED,
         TOOL_QUALITY,
-//        DUST_ITEMS,
-//        METAL_ITEMS,
-//        GEM_ITEMS,
-//        ORE_ITEMS,
-//        CELL,
-//        PLASMA,
-//        TOOL_HEAD_ITEMS,
-//        GEAR_ITEMS,
-//        EMPTY,
-//        GAS,
-//        FLUID,
         MOD,
         PIPE,
         FLUID + PIPE + TINY,
@@ -173,18 +148,8 @@ public class GTMaterialDumper extends WikiDumper {
         "Cable08",
         "Cable12",
         "Cable16",
-//        TINKER_BASE_DURABILITY,
-//        TINKER_HANDLE_MODIFIER,
-//        TINKER_FULL_DURABILITY,
-//        TINKER_MINING_SPEED,
-//        TINKER_MINING_LEVEL,
-//        TINKER_ATTACK_DAMAGE,
-//        TINKER_ABILITY,
-//        TINKER_DRAW_SPEED,
-//        TINKER_ARROW_SPEED,
-//        TINKER_WEIGHT,
-//        TINKER_BREAK_CHANCE
         ORE_PREFIXES,
+        ORE_PROCESSING
     };
 
     public GTMaterialDumper() {
@@ -198,11 +163,9 @@ public class GTMaterialDumper extends WikiDumper {
             if (obj instanceof Map) {
                 orePrefixesMap = (Map<String, Object>) obj;
             }
-        } else {
-            orePrefixesMap = new LinkedHashMap<>();
         }
         if (orePrefixesMap == null) {
-            return;
+            orePrefixesMap = new LinkedHashMap<>();
         }
         for (OrePrefixes prefix : OrePrefixes.VALUES) {
             ItemStack prefixStack = stackSupplier.apply(prefix);
@@ -235,7 +198,6 @@ public class GTMaterialDumper extends WikiDumper {
 
         }
         if (orePrefixesMap.isEmpty()) {
-            materialMap.put(ORE_PREFIXES, null);
             return;
         }
         materialMap.put(ORE_PREFIXES, orePrefixesMap);
@@ -258,6 +220,97 @@ public class GTMaterialDumper extends WikiDumper {
         }
     }
 
+    private static Map<String, Object> getOreProcessing(Map<String, Object> orePrefixesMap) {
+        ItemStack ore = getItemStackFromMap(orePrefixesMap, OrePrefixes.ore);
+        if (ore == null) {
+            return null;
+        }
+        Map<String, Object> oreProcessingMap = new LinkedHashMap<>();
+        addOreProcessing(oreProcessingMap, ORE_TO_CRUSHED_MACERATOR, orePrefixesMap, RecipeMaps.maceratorRecipes, OrePrefixes.crushed, OrePrefixes.ore);
+        addOreProcessing(oreProcessingMap, RAW_ORE_TO_CRUSHED_MACERATOR, orePrefixesMap, RecipeMaps.maceratorRecipes, OrePrefixes.crushed, OrePrefixes.rawOre);
+        addOreProcessing(oreProcessingMap, CRUSHED_TO_CRUSHED_PURIFIED_ORE_WASHER, orePrefixesMap, RecipeMaps.oreWasherRecipes, OrePrefixes.crushedPurified, OrePrefixes.crushed);
+        addOreProcessing(oreProcessingMap, CRUSHED_TO_CRUSHED_PURIFIED_CHEMICAL_BATH, orePrefixesMap, RecipeMaps.chemicalBathRecipes, OrePrefixes.crushedPurified, OrePrefixes.crushed);
+        addOreProcessing(true, oreProcessingMap, CRUSHED_PURIFIED_TO_ANY_SIFTER, orePrefixesMap, RecipeMaps.sifterRecipes, null, OrePrefixes.crushedPurified);
+        addOreProcessing(oreProcessingMap, CRUSHED_TO_DUST_IMPURE_MACERATOR, orePrefixesMap, RecipeMaps.maceratorRecipes, OrePrefixes.dustImpure, OrePrefixes.crushed);
+        addOreProcessing(oreProcessingMap, CRUSHED_PURIFIED_TO_CRUSHED_CENTRIFUGED_THERMAL_CENTRIFUGE, orePrefixesMap, RecipeMaps.thermalCentrifugeRecipes, OrePrefixes.crushedCentrifuged, OrePrefixes.crushedPurified);
+        addOreProcessing(oreProcessingMap, CRUSHED_PURIFIED_TO_DUST_PURE_MACERATOR, orePrefixesMap, RecipeMaps.maceratorRecipes, OrePrefixes.dustPure, OrePrefixes.crushedPurified);
+        addOreProcessing(oreProcessingMap, DUST_IMPURE_TO_DUST_CENTRIFUGE, orePrefixesMap, RecipeMaps.centrifugeRecipes, OrePrefixes.dust, OrePrefixes.dustImpure);
+        addOreProcessing(oreProcessingMap, CRUSHED_CENTRIFUGED_TO_DUST_MACERATOR, orePrefixesMap, RecipeMaps.maceratorRecipes, OrePrefixes.dust, OrePrefixes.crushedCentrifuged);
+        addOreProcessing(oreProcessingMap, DUST_PURE_TO_DUST_CENTRIFUGE, orePrefixesMap, RecipeMaps.centrifugeRecipes, OrePrefixes.dust, OrePrefixes.dustPure);
+        addOreProcessing(oreProcessingMap, DUST_PURE_TO_DUST_ELECTRO_MAGNETIC_SEPARATOR, orePrefixesMap, RecipeMaps.electroMagneticSeparatorRecipes, OrePrefixes.dust, OrePrefixes.dustPure);
+        GTRecipeDumps[] fluidExtractor = RecipeMaps
+            .fluidExtractionRecipes
+            .getAllRecipes()
+            .stream()
+            .filter(gtRecipe -> Arrays.stream(gtRecipe.mInputs).anyMatch(stack -> ore.getItem() == stack.getItem() && stack.getItemDamage() == ore.getItemDamage()))
+            .filter(gtRecipe -> Arrays.stream(gtRecipe.mFluidOutputs).anyMatch(fluidStack -> {
+                FluidStack cellFluid = GTUtility.getFluidForFilledItem(getItemStackFromMap(orePrefixesMap, OrePrefixes.cell), true);
+                if (cellFluid == null) {
+                    return false;
+                }
+                return cellFluid.getFluid() == fluidStack.getFluid();
+            }))
+            .map(Transformer::transformGTRecipe)
+            .toArray(GTRecipeDumps[]::new);
+        if (fluidExtractor.length != 0) {
+            oreProcessingMap.put(ORE_TO_FLUID_FLUID_EXTRACTOR, fluidExtractor);
+        }
+        if (oreProcessingMap.isEmpty()) {
+            return null;
+        }
+        return oreProcessingMap;
+    }
+
+    public static GTRecipeDumps[] findRecipes(boolean outputItemCanBeNull, Map<String, Object> orePrefixesMap, RecipeMap<RecipeMapBackend> recipes, OrePrefixes outputPrefix, OrePrefixes... inputPrefixes) {
+        return findRecipes(outputItemCanBeNull, recipes,
+            outputPrefix != null ? getItemStackFromMap(orePrefixesMap, outputPrefix) : null,
+            Arrays.stream(inputPrefixes).map(prefix -> getItemStackFromMap(orePrefixesMap, prefix)).toArray(ItemStack[]::new));
+    }
+
+    public static GTRecipeDumps[] findRecipes(boolean outputItemCanBeNull, RecipeMap<RecipeMapBackend> recipes, ItemStack outputItem, ItemStack... inputItems) {
+        if (inputItems == null || inputItems.length == 0 || Arrays.stream(inputItems).noneMatch(Objects::nonNull)) {
+            return null;
+        }
+        if (!outputItemCanBeNull && outputItem == null) {
+            return null;
+        }
+        return recipes.getAllRecipes().stream().filter(recipe -> {
+            if (outputItem == null) {
+                return true;
+            }
+            return Arrays.stream(recipe.mOutputs).anyMatch(stack -> {
+                if (stack == null) {
+                    return false;
+                }
+                return stack.getItem() == outputItem.getItem() && stack.getItemDamage() == outputItem.getItemDamage();
+            });
+        }).filter(recipe -> Arrays.stream(inputItems).filter(Objects::nonNull).allMatch(inputItem -> Arrays.stream(recipe.mInputs).anyMatch(stack -> {
+            if (stack == null) {
+                return false;
+            }
+            return inputItem.getItem() == stack.getItem() && inputItem.getItemDamage() == stack.getItemDamage();
+        }))).map(Transformer::transformGTRecipe).toArray(GTRecipeDumps[]::new);
+    }
+
+    public static void addOreProcessing(Map<String, Object> oreProcessingMap, String processingKey, Map<String, Object> orePrefixesMap, RecipeMap<RecipeMapBackend> recipes, OrePrefixes outputPrefix, OrePrefixes... inputPrefixes) {
+        addOreProcessing(false, oreProcessingMap, processingKey, orePrefixesMap, recipes, outputPrefix, inputPrefixes);
+    }
+
+    public static void addOreProcessing(boolean outputItemCanBeNull, Map<String, Object> oreProcessingMap, String processingKey, Map<String, Object> orePrefixesMap, RecipeMap<RecipeMapBackend> recipes, OrePrefixes outputPrefix, OrePrefixes... inputPrefixes) {
+        GTRecipeDumps[] gtRecipe = findRecipes(outputItemCanBeNull, orePrefixesMap, recipes, outputPrefix, inputPrefixes);
+        if (gtRecipe != null && gtRecipe.length > 0) {
+            oreProcessingMap.put(processingKey, gtRecipe);
+        }
+    }
+
+    private static ItemStack getItemStackFromMap(Map<String, Object> orePrefixesMap, OrePrefixes prefixes) {
+        Object o = orePrefixesMap.get(prefixes.toString());
+        if (o instanceof ItemStack) {
+            return (ItemStack) o;
+        }
+        return null;
+    }
+
     private static Map<String, Object> getMaterialMap(String defaultLocalName, Map<String, Map<String, Object>> totalMap) {
         return totalMap.get(defaultLocalName) != null ? totalMap.get(defaultLocalName) : new HashMap<>();
     }
@@ -273,13 +326,11 @@ public class GTMaterialDumper extends WikiDumper {
         materialMap.put(DURABILITY, m.mDurability);
         materialMap.put(TOOL_SPEED, m.mToolSpeed);
         materialMap.put(TOOL_QUALITY, m.mToolQuality);
-//        if (m.hasEmpty())
-//            materialMap.put(EMPTY, TRUE);
         getOrePrefixesMap(orePrefixes -> GTOreDictUnificator.get(orePrefixes, m, 1), materialMap);
-//        if (m.hasCorrespondingGas())
-//            materialMap.put(GAS, TRUE);
-//        if (m.hasCorrespondingFluid())
-//            materialMap.put(FLUID, TRUE);
+        Object obj = materialMap.get(ORE_PREFIXES);
+        if (obj instanceof Map) {
+            materialMap.put(ORE_PROCESSING, getOreProcessing((Map<String, Object>) obj));
+        }
         putModName(materialMap, "GregTech");
         totalMap.put(name, materialMap);
     }
@@ -302,6 +353,10 @@ public class GTMaterialDumper extends WikiDumper {
             }
             return null;
         }, materialMap);
+        Object obj = materialMap.get(ORE_PREFIXES);
+        if (obj instanceof Map) {
+            materialMap.put(ORE_PROCESSING, getOreProcessing((Map<String, Object>) obj));
+        }
         putModName(materialMap, w.getOwner());
         totalMap.put(name, materialMap);
     }
@@ -317,26 +372,22 @@ public class GTMaterialDumper extends WikiDumper {
 //            materialMap.put("ToolSpeed", String.valueOf(m.vHarvestLevel * 2 + m.vTier));
 //            materialMap.put("ToolQuality", String.valueOf(m.vToolQuality));
         getOrePrefixesMap(orePrefixes -> m.getComponentByPrefix(orePrefixes, 1), materialMap);
-//        if (m.getFluid() != null)
-//            switch (m.getState()) {
-//                case GAS:
-//                case PURE_GAS:
-//                    materialMap.put(GAS, TRUE);
-//                    break;
-//                case PLASMA:
-//                    materialMap.put(PLASMA, TRUE);
-//                    break;
-//                default:
-//                    materialMap.put(FLUID, TRUE);
-//                    break;
-//            }
+        Object obj = materialMap.get(ORE_PREFIXES);
+        if (obj instanceof Map) {
+            materialMap.put(ORE_PROCESSING, getOreProcessing((Map<String, Object>) obj));
+        }
         putModName(materialMap, "GT++");
         totalMap.put(name, materialMap);
     }
 
     private static void putModName(Map<String, Object> materialMap, String modName) {
         if (modName == null) modName = "BartWorks";
-        materialMap.merge(MOD, modName, (a, b) -> a + ARRAY_SEPARATOR + b);
+        materialMap.merge(MOD, modName, (a, b) -> {
+            if (b.equals("GregTech")) {
+                return b + ARRAY_SEPARATOR + a;
+            }
+            return a + ARRAY_SEPARATOR + b;
+        });
     }
 
     private static void dumpPipeEntity(MetaPipeEntity pipeEntity, Map<String, Map<String, Object>> totalMap) {
@@ -432,13 +483,6 @@ public class GTMaterialDumper extends WikiDumper {
     @Override
     public Iterable<Object[]> dumpObject(int mode) {
         Map<String, Map<String, Object>> totalMap = new HashMap<>();
-        //gt5
-        Materials[] gtMaterials = Materials.values();
-        for (Materials m : gtMaterials) {
-            if (m != null) {
-                dumpGTMaterial(m, totalMap);
-            }
-        }
         //bartworks
         for (Werkstoff m : Werkstoff.werkstoffHashSet) {
             if (m != null) {
@@ -449,6 +493,13 @@ public class GTMaterialDumper extends WikiDumper {
         for (Material m : Material.mMaterialMap) {
             if (m != null)
                 dumpGTPPMaterial(m, totalMap);
+        }
+        //gt5
+        Materials[] gtMaterials = Materials.values();
+        for (Materials m : gtMaterials) {
+            if (m != null) {
+                dumpGTMaterial(m, totalMap);
+            }
         }
         // Pipe and Wire
         for (IMetaTileEntity metaTileEntity : GregTechAPI.METATILEENTITIES) {

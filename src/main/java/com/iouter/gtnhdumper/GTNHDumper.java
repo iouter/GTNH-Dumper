@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
 @Mod(modid = Tags.MODID, version = Tags.VERSION, name = Tags.MODNAME, acceptedMinecraftVersions = "[1.7.10]")
 public class GTNHDumper {
 
-    private static Logger LOG = LogManager.getLogger(Tags.MODID);
+    public static Logger LOG = LogManager.getLogger(Tags.MODID);
 
     public static final String MOD_ID = Tags.MODID;
     public static final String VERSION = Tags.VERSION;

@@ -1,7 +1,15 @@
 package com.iouter.gtnhdumper;
 
+import com.iouter.gtnhdumper.common.utils.KeySimulator;
 import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.event.*;
+import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
+import cpw.mods.fml.common.event.FMLServerStartedEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.event.FMLServerStoppedEvent;
+import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 
 public class CommonProxy {
 
@@ -10,6 +18,7 @@ public class CommonProxy {
     public static boolean isTCLoaded = Loader.isModLoaded("Thaumcraft");
     public static boolean isAutomagyLoaded = Loader.isModLoaded("Automagy");
     public static boolean isTCNEIAdditionsLoaded = Loader.isModLoaded("tcneiadditions");
+    public static boolean isAvaritiaLoaded = Loader.isModLoaded("Avaritia");
 
 
     // preInit "Run before anything else. Read your config, create blocks, items,
@@ -22,7 +31,9 @@ public class CommonProxy {
     public void init(FMLInitializationEvent event) {}
 
     // postInit "Handle interaction with other mods, complete your setup based on this."
-    public void postInit(FMLPostInitializationEvent event) {}
+    public void postInit(FMLPostInitializationEvent event) {
+        KeySimulator.test();
+    }
 
     public void serverAboutToStart(FMLServerAboutToStartEvent event) {}
 
