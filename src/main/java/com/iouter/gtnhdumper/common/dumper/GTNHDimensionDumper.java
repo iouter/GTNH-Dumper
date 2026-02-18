@@ -42,7 +42,7 @@ public class GTNHDimensionDumper extends WikiDumper {
         languageManager.onResourceManagerReload(minecraft.getResourceManager());
 
         for (int i = 0; i < DimensionHelper.DimNameTrimmed.length; i++) {
-            dimensionOriginalNames[i] = getDimLocalizedName(i);
+            dimensionOriginalNames[i] = DimensionHelper.getDimLocalizedName(DimensionHelper.getFullName(DimensionHelper.DimNameDisplayed[i]));
         }
 
         languageManager.setCurrentLanguage(currentLanguage);
@@ -56,23 +56,11 @@ public class GTNHDimensionDumper extends WikiDumper {
                 DimensionHelper.DimNameTrimmed[i],
                 fullName,
                 dimensionOriginalNames[i],
-                getDimLocalizedName(i),
+                DimensionHelper.getDimLocalizedName(DimensionHelper.DimNameTrimmed[i]),
                 DimensionHelper.getDimTier(fullName).replace("gtnop.tier.", "")
             });
         }
         return list;
-    }
-
-    private String getDimLocalizedName(int i) {
-        String keyByFull = DimensionHelper.getDimUnlocalizedName(DimensionHelper.getFullName(DimensionHelper.DimNameDisplayed[i]));
-        if (StatCollector.canTranslate(keyByFull)) {
-            return StatCollector.translateToLocal(keyByFull);
-        }
-        String keyByIn = DimensionHelper.getDimUnlocalizedName(DimensionHelper.DimNameTrimmed[i]);
-        if (StatCollector.canTranslate(keyByIn)) {
-            return StatCollector.translateToLocal(keyByIn);
-        }
-        return "ERROR";
     }
 
     @Override
