@@ -42,26 +42,37 @@ public class GTNHDimensionDumper extends WikiDumper {
         languageManager.onResourceManagerReload(minecraft.getResourceManager());
 
         for (int i = 0; i < DimensionHelper.DimNameTrimmed.length; i++) {
-            dimensionOriginalNames[i] = DimensionHelper.getDimLocalizedName(DimensionHelper.DimNameTrimmed[i]);
+            dimensionOriginalNames[i] = getDimLocalizedName(i);
         }
 
         languageManager.setCurrentLanguage(currentLanguage);
         languageManager.onResourceManagerReload(minecraft.getResourceManager());
 
-        for (int i = 0; i < DimensionHelper.DimNameTrimmed.length; i++) {
-            String dimNameTrimmed = DimensionHelper.DimNameTrimmed[i];
+        for (int i = 0; i < DimensionHelper.DimNameDisplayed.length; i++) {
             String abbreviatedName = DimensionHelper.DimNameDisplayed[i];
             String fullName = DimensionHelper.getFullName(abbreviatedName);
             list.add(new Object[] {
                 abbreviatedName,
-                dimNameTrimmed,
+                DimensionHelper.DimNameTrimmed[i],
                 fullName,
                 dimensionOriginalNames[i],
-                DimensionHelper.getDimLocalizedName(dimNameTrimmed),
+                getDimLocalizedName(i),
                 DimensionHelper.getDimTier(fullName).replace("gtnop.tier.", "")
             });
         }
         return list;
+    }
+
+    private String getDimLocalizedName(int i) {
+        String keyByFull = DimensionHelper.getDimUnlocalizedName(DimensionHelper.getFullName(DimensionHelper.DimNameDisplayed[i]));
+        if (StatCollector.canTranslate(keyByFull)) {
+            return StatCollector.translateToLocal(keyByFull);
+        }
+        String keyByIn = DimensionHelper.getDimUnlocalizedName(DimensionHelper.DimNameTrimmed[i]);
+        if (StatCollector.canTranslate(keyByIn)) {
+            return StatCollector.translateToLocal(keyByIn);
+        }
+        return "ERROR";
     }
 
     @Override
