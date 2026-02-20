@@ -126,8 +126,10 @@ public abstract class WikiDumper extends DataDumper{
         int mode = getMode();
         if (mode == 0) {
             dumpObject = getListJson(header(), dumpObject(0), getKeyStr());
+        } else if (mode == 1){
+            dumpObject = getMapJson(header(), dumpObject(1), getKeyIndex());
         } else {
-            dumpObject = getMapJson(header(), dumpObject(mode), getKeyIndex());
+            dumpObject = getJsonMap(header(), dumpObject(2).iterator().next());
         }
         GsonBuilder gsonBuilder = new GsonBuilder()
             .setPrettyPrinting()

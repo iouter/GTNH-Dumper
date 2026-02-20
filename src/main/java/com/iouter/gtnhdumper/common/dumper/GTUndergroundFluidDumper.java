@@ -20,11 +20,7 @@ public class GTUndergroundFluidDumper extends WikiDumper {
     @Override
     public String[] header() {
         return new String[] {
-            "fluid",
-            "chance",
-            "minAmount",
-            "maxAmount",
-            "dim"
+            "undergroundfluids"
         };
     }
 
@@ -35,24 +31,14 @@ public class GTUndergroundFluidDumper extends WikiDumper {
 
     @Override
     public String getKeyStr() {
-        return "name";
+        return "undergroundfluids";
     }
 
     @Override
     public Iterable<Object[]> dumpObject(int mode) {
         LinkedList<Object[]> list = new LinkedList<>();
         Map<String, List<GT5UndergroundFluidHelper.UndergroundFluidWrapper>> fluidMap = GT5UndergroundFluidHelper.getAllEntries();
-        fluidMap.keySet().forEach(fluidName -> {
-            fluidMap.get(fluidName).forEach(fluidField -> {
-                list.add(new Object[] {
-                    fluidName,
-                    fluidField.chance,
-                    fluidField.minAmount,
-                    fluidField.maxAmount,
-                    fluidField.dimension
-                });
-            });
-        });
+        list.add(new Object[] {fluidMap});
         return list;
     }
 
@@ -60,5 +46,15 @@ public class GTUndergroundFluidDumper extends WikiDumper {
     public ChatComponentTranslation dumpMessage(File file) {
         return new ChatComponentTranslation(
             "nei.options.tools.dump.gtnhdumper.gtundergroundfluid.dumped", "dumps/" + file.getName());
+    }
+
+    @Override
+    public int getMode() {
+        return 2;
+    }
+
+    @Override
+    public int modeCount() {
+        return 1;
     }
 }
