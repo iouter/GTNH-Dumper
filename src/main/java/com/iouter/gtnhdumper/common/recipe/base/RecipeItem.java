@@ -4,6 +4,8 @@ import com.iouter.gtnhdumper.Utils;
 import net.minecraft.item.ItemStack;
 
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class RecipeItem {
@@ -13,7 +15,7 @@ public class RecipeItem {
     public Long amount;
     public Integer chance;
     public String nbt;
-
+    public LinkedList<String> tooltip;
 
     public RecipeItem(String key, int amount) {
         this.key = key;
@@ -66,5 +68,17 @@ public class RecipeItem {
     public RecipeItem withAmount(long amount) {
         this.amount = amount;
         return this;
+    }
+
+    public RecipeItem withTooltip(List<String> tooltips) {
+        if (this.tooltip == null) {
+            this.tooltip = new LinkedList<>();
+        }
+        this.tooltip.addAll(tooltips);
+        return this;
+    }
+
+    public RecipeItem withTooltip(String... tooltips) {
+        return withTooltip(Arrays.asList(tooltips));
     }
 }

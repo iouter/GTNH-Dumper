@@ -1,10 +1,14 @@
-package com.iouter.gtnhdumper.common.recipe.base;
+package com.iouter.gtnhdumper.common.recipe.utils;
 
+import codechicken.nei.PositionedStack;
 import com.iouter.gtnhdumper.Utils;
+import com.iouter.gtnhdumper.common.recipe.base.RecipeItem;
 import net.minecraft.item.ItemStack;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.iouter.gtnhdumper.common.recipe.base.RecipeItem.oreDictMap;
 
@@ -42,5 +46,19 @@ public class RecipeUtil {
             }
         }
         return Arrays.stream(stacks).map(RecipeItem::new).toArray(RecipeItem[]::new);
+    }
+
+    public static Object getRecipeItems(PositionedStack stacks) {
+        return getRecipeItems(stacks.items);
+    }
+
+    public static ArrayList<Object> getRecipeItemList(ArrayList<PositionedStack> stacks) {
+        return stacks.stream().map(RecipeUtil::getRecipeItems).collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    public static ArrayList<Object> getRecipeItemList(PositionedStack stacks) {
+        ArrayList<PositionedStack> list = new ArrayList<>();
+        list.add(stacks);
+        return getRecipeItemList(list);
     }
 }

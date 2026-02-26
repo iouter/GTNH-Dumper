@@ -32,7 +32,6 @@ public class GeneralHandlerRecipe{
 
         this.identifier = handlerId;
         this.source = handlerName;
-
         HandlerInfo info = GuiRecipeTab.getHandlerInfo(handlerName, handlerId);
         final ItemStack markedItemStack = info != null ? info.getItemStack() : null;
         this.markedItem = markedItemStack != null ? Utils.getItemKeyWithNBT(markedItemStack) : "null";

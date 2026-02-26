@@ -19,6 +19,8 @@ public class CommonProxy {
     public static boolean isAutomagyLoaded = Loader.isModLoaded("Automagy");
     public static boolean isTCNEIAdditionsLoaded = Loader.isModLoaded("tcneiadditions");
     public static boolean isAvaritiaLoaded = Loader.isModLoaded("Avaritia");
+    public static boolean isFRLoaded = Loader.isModLoaded("Forestry");
+    public static boolean isNEIAddonLoaded = Loader.isModLoaded("NEIAddons");
 
 
     // preInit "Run before anything else. Read your config, create blocks, items,

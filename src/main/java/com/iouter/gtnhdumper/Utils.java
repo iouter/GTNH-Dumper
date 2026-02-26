@@ -2,8 +2,7 @@ package com.iouter.gtnhdumper;
 
 import codechicken.lib.inventory.InventoryUtils;
 import codechicken.nei.PositionedStack;
-import com.iouter.gtnhdumper.common.recipe.base.RecipeItem;
-import com.iouter.gtnhdumper.common.recipe.base.RecipeUtil;
+import com.iouter.gtnhdumper.common.recipe.utils.RecipeUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

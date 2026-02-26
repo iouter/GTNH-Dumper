@@ -1,11 +1,9 @@
 package com.iouter.gtnhdumper.common.recipe.utils;
 
 import codechicken.nei.NEIServerUtils;
-import com.iouter.gtnhdumper.GTNHDumper;
 import com.iouter.gtnhdumper.common.recipe.base.GTRecipeDumps;
 import com.iouter.gtnhdumper.common.recipe.base.RecipeFluid;
 import com.iouter.gtnhdumper.common.recipe.base.RecipeItem;
-import com.iouter.gtnhdumper.common.recipe.base.RecipeUtil;
 import gregtech.api.recipe.RecipeMetadataKey;
 import gregtech.api.recipe.metadata.IRecipeMetadataStorage;
 import gregtech.api.util.GTOreDictUnificator;

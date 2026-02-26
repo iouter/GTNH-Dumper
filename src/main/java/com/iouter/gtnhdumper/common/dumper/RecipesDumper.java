@@ -12,6 +12,7 @@ import com.google.gson.GsonBuilder;
 import com.iouter.gtnhdumper.CommonProxy;
 import com.iouter.gtnhdumper.Utils;
 import com.iouter.gtnhdumper.common.recipe.AvaExtremeShapedHandlerRecipe;
+import com.iouter.gtnhdumper.common.recipe.ForestryHandlerRecipe;
 import com.iouter.gtnhdumper.common.recipe.GTDefaultHandlerRecipe;
 import com.iouter.gtnhdumper.common.recipe.GeneralHandlerRecipe;
 import com.iouter.gtnhdumper.common.recipe.ShapedCraftingHandlerRecipe;
@@ -28,6 +29,8 @@ import com.iouter.gtnhdumper.common.recipe.serializer.SafeDoubleSerializer;
 import gregtech.api.enums.Element;
 import gregtech.api.enums.Materials;
 import gregtech.nei.GTNEIDefaultHandler;
+import net.bdew.neiaddons.forestry.BaseBreedingRecipeHandler;
+import net.bdew.neiaddons.forestry.BaseProduceRecipeHandler;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraftforge.fluids.FluidStack;
@@ -65,6 +68,13 @@ public class RecipesDumper extends DataDumper {
         if (CommonProxy.isAvaritiaLoaded) {
             if (clazz.equals("ExtremeShapedRecipeHandler")) {
                 return new AvaExtremeShapedHandlerRecipe(recipeHandler);
+            }
+        }
+        if (CommonProxy.isFRLoaded) {
+            if (CommonProxy.isNEIAddonLoaded) {
+                if (recipeHandler instanceof BaseBreedingRecipeHandler || recipeHandler instanceof BaseProduceRecipeHandler) {
+                    return new ForestryHandlerRecipe(recipeHandler);
+                }
             }
         }
         if (clazz.contains("Shaped") && !clazz.equals("RecipeHandlerRollingMachineShaped")) {
