@@ -125,7 +125,7 @@ public class AdvItemPanelDumper extends WikiDumper {
             String modid = uid.modId;
             ModContainer mod = Loader.instance().getIndexedModList().get(modid);
 
-//            ItemIconDumper.renderItem(stack, fbo, RenderItem.getInstance());
+            ItemIconDumper.renderItem(stack, fbo, RenderItem.getInstance());
 
             String nbt = Utils.getItemNBT(stack);
 

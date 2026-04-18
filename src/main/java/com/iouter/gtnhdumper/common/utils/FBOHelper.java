@@ -25,7 +25,7 @@ import java.nio.IntBuffer;
  * You should have received a copy of the MIT License along with
  * this project.   If not, see <http://opensource.org/licenses/MIT>.
  * <p>
- * Borrowed from <a href="https://github.com/Snownee/Item-Render-Dark/blob/master/src/main/java/itemrender/rendering/FBOHelper.java">Item-Render-Rebirth</a>
+ * Borrowed from <a href="https://github.com/Snownee/Item-Render-Dark/blob/master/src/main/java/itemrender/rendering/FBOHelper.java  ">Item-Render-Rebirth</a>
  */
 public final class FBOHelper {
     private int renderTextureSize = 128;
@@ -168,7 +168,7 @@ public final class FBOHelper {
         return Base64.encodeBase64String(out.toByteArray());
     }
 
-    private void createFramebuffer() {
+    public void createFramebuffer() {
         framebufferID = EXTFramebufferObject.glGenFramebuffersEXT();
         textureID = GL11.glGenTextures();
         int currentFramebuffer = GLStateManager.glGetInteger(EXTFramebufferObject.GL_FRAMEBUFFER_BINDING_EXT);
@@ -182,7 +182,7 @@ public final class FBOHelper {
         GLStateManager.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
         GLStateManager.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
         GLStateManager.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
-        GLStateManager.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL12.GL_BGRA, renderTextureSize, renderTextureSize, 0, GL12.GL_BGRA, GL11.GL_UNSIGNED_BYTE, (java.nio.ByteBuffer) null);
+        GLStateManager.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, renderTextureSize, renderTextureSize, 0, GL12.GL_BGRA, GL11.GL_UNSIGNED_BYTE, (java.nio.ByteBuffer) null);
 
         // Restore old texture
         GLStateManager.glBindTexture(GL11.GL_TEXTURE_2D, currentTexture);
