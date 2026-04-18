@@ -239,6 +239,18 @@ public class Utils {
         return input.replace("/", "_1_")
             .replace(":", "_2_")
             .replace("*", "_3_")
-            .replace("\"", "_4_");
+            .replace("\"", "_4_")
+            .replace("<", "")
+            .replace(">", "")
+            .replace("|", "")
+            .replace("\\", "")
+            .replace("?", "");
+    }
+
+    public static String replaceHuijiStrBack(String input) {
+        return input.replace("_1_", "/")
+            .replace("_2_", ":")
+            .replace("_3_", "*")
+            .replace("_4_", "\"");
     }
 }

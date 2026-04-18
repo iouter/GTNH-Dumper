@@ -11,9 +11,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureCompass;
 import net.minecraft.client.resources.data.AnimationMetadataSection;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.fluids.FluidStack;
@@ -32,12 +34,20 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class ItemIconDumper {
 
     private static final char[] BASE62 = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
     private static final int OUTPUT_LENGTH = 15;
     private static final BigInteger BASE = BigInteger.valueOf(BASE62.length);
+
+    private static final Map<Integer, FBOHelper> fbos = new HashMap<>();
+
+    private static Field frameCounterField;
+    private static Field tickCounterField;
+    private static Field animationMetadataField;
 
     private ItemIconDumper() {
     }
@@ -128,6 +138,27 @@ public class ItemIconDumper {
         return false;
     }
 
+    public static void renderItem(ItemStack itemStack, RenderItem itemRenderer) {
+        IIcon iIcon = itemStack.getIconIndex();
+        int width = iIcon.getIconWidth();
+        int height = iIcon.getIconHeight();
+        int max;
+        if (width >= height) {
+            max = width;
+        } else {
+            max = height;
+        }
+        if (itemStack.getItem() instanceof ItemBlock) {
+            max *= 4;
+        }
+        FBOHelper fbo = fbos.get(max);
+        if (fbo == null) {
+            fbo = new FBOHelper(max);
+            fbos.put(max, fbo);
+        }
+        renderItem(itemStack, fbo, itemRenderer);
+    }
+
     /**
      * Created by Jerrell Fang on 2/23/2015.
      *
@@ -180,6 +211,13 @@ public class ItemIconDumper {
             0,
             0
         );
+        itemRenderer.renderItemOverlayIntoGUI(
+            minecraft.fontRenderer,
+            minecraft.renderEngine,
+            itemStack,
+            0,
+            0
+        );
         GLStateManager.disableLighting();
         RenderHelper.disableStandardItemLighting();
         GLStateManager.glMatrixMode(GL11.GL_PROJECTION);
@@ -218,6 +256,13 @@ public class ItemIconDumper {
                 0,
                 0
             );
+            itemRenderer.renderItemOverlayIntoGUI(
+                minecraft.fontRenderer,
+                minecraft.renderEngine,
+                itemStack,
+                0,
+                0
+            );
             texture.updateAnimation();
             GLStateManager.disableLighting();
             RenderHelper.disableStandardItemLighting();
@@ -226,17 +271,34 @@ public class ItemIconDumper {
             fbo.end();
             images[getTextureIndex(texture, frames)] = fbo.saveToImage();
         }
-        BufferedImage image = concatenateImages(images);
+        BufferedImage image;
+        if (Arrays.stream(images).anyMatch(Objects::isNull)) {
+            GTNHDumper.LOG.warn("{}'s frames has null frame", itemStack.getDisplayName());
+            image = concatenateImages(Arrays.stream(images).filter(Objects::nonNull).toArray(BufferedImage[]::new));
+        } else {
+            image = concatenateImages(images);
+        }
+
         fbo.saveToFile(new File("dumps/icons/" + getIconFileNameInHuijiUpdater(itemStack)), image);
         fbo.restoreTexture();
     }
 
     public static AnimationMetadataSection getAnimationMetadata(TextureAtlasSprite texture) {
+        if (animationMetadataField == null) {
+            try {
+                animationMetadataField = texture.getClass().getDeclaredField("animationMetadata");
+            } catch (NoSuchFieldException e) {
+                try {
+                    animationMetadataField = texture.getClass().getDeclaredField("field_110982_k");
+                } catch (NoSuchFieldException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+            animationMetadataField.setAccessible(true);
+        }
         try {
-            Field field = texture.getClass().getDeclaredField("animationMetadata");
-            field.setAccessible(true);
-            return (AnimationMetadataSection) field.get(texture);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
+            return (AnimationMetadataSection) animationMetadataField.get(texture);
+        } catch (IllegalAccessException e) {
             return null;
         }
     }
@@ -281,11 +343,24 @@ public class ItemIconDumper {
         if (animation == null) {
             return -1;
         }
-        Class<?> clazz = texture.getClass();
-        Field frameCounterField = clazz.getDeclaredField("frameCounter");
-        Field tickCounterField = clazz.getDeclaredField("tickCounter");
-        frameCounterField.setAccessible(true);
-        tickCounterField.setAccessible(true);
+        if (frameCounterField == null) {
+            Class<?> clazz = texture.getClass();
+            try {
+                frameCounterField = clazz.getDeclaredField("frameCounter");
+            } catch (NoSuchFieldException e) {
+                frameCounterField = clazz.getDeclaredField("field_110973_g");
+            }
+            frameCounterField.setAccessible(true);
+        }
+        if (tickCounterField == null) {
+            Class<?> clazz = texture.getClass();
+            try {
+                tickCounterField = clazz.getDeclaredField("tickCounter");
+            } catch (NoSuchFieldException e) {
+                tickCounterField = clazz.getDeclaredField("field_110983_h");
+            }
+            tickCounterField.setAccessible(true);
+        }
         int frameCounter = frameCounterField.getInt(texture);
         int tickCounter = tickCounterField.getInt(texture);
         int sum = 0;

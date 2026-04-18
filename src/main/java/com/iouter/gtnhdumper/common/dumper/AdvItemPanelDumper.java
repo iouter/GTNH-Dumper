@@ -67,32 +67,6 @@ public class AdvItemPanelDumper extends WikiDumper {
         };
     }
 
-    public int getRes() {
-        int i = renderTag(name + ".res").getIntValue(0);
-        if (i >= resolutions.length || i < 0) renderTag().setIntValue(i = 0);
-        return resolutions[i];
-    }
-
-    public Rectangle4i resButtonSize() {
-        int width = 50;
-        return new Rectangle4i(modeButtonSize().x - width - 6, 0, width, 20);
-    }
-
-    @Override
-    public void draw(int mousex, int mousey, float frame) {
-        super.draw(mousex, mousey, frame);
-        int res = getRes();
-        drawButton(mousex, mousey, resButtonSize(), res + "x" + res);
-    }
-
-    @Override
-    public void mouseClicked(int mousex, int mousey, int button) {
-        if (resButtonSize().contains(mousex, mousey)) {
-            NEIClientUtils.playClickSound();
-            getTag(name + ".res").setIntValue((renderTag(name + ".res").getIntValue(0) + 1) % resolutions.length);
-        } else super.mouseClicked(mousex, mousey, button);
-    }
-
     @Override
     public Iterable<Object[]> dumpObject(int mode) {
         LinkedList<Object[]> list = new LinkedList<>();
@@ -106,8 +80,6 @@ public class AdvItemPanelDumper extends WikiDumper {
             item.getSubItems(item, CreativeTabs.tabAllSearch, sub);
             itemStacks.addAll(sub);
         }
-
-        FBOHelper fbo = new FBOHelper(getRes());
 
         Map<ItemStack, String> originalNameMap = getOriginalNameMap(itemStacks);
 
@@ -125,7 +97,7 @@ public class AdvItemPanelDumper extends WikiDumper {
             String modid = uid.modId;
             ModContainer mod = Loader.instance().getIndexedModList().get(modid);
 
-            ItemIconDumper.renderItem(stack, fbo, RenderItem.getInstance());
+            ItemIconDumper.renderItem(stack, RenderItem.getInstance());
 
             String nbt = Utils.getItemNBT(stack);
 
@@ -173,7 +145,7 @@ public class AdvItemPanelDumper extends WikiDumper {
                 tooltips[TOOLTIP_LCONTROL],
                 tooltips[TOOLTIP_LSHIFT_AND_LCONTROL],
                 modName,
-                ItemIconDumper.getIconFileName(stack)
+                Utils.replaceHuijiStrBack(ItemIconDumper.getIconFileName(stack))
             });
         }
         return list;
