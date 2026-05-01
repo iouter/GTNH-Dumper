@@ -1,11 +1,8 @@
 package com.iouter.gtnhdumper.common.dumper;
 
-import codechicken.lib.vec.Rectangle4i;
-import codechicken.nei.NEIClientUtils;
 import codechicken.nei.guihook.GuiContainerManager;
 import com.iouter.gtnhdumper.Utils;
 import com.iouter.gtnhdumper.common.base.WikiDumper;
-import com.iouter.gtnhdumper.common.utils.FBOHelper;
 import com.iouter.gtnhdumper.common.utils.KeySimulator;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
@@ -97,7 +94,7 @@ public class AdvItemPanelDumper extends WikiDumper {
             String modid = uid.modId;
             ModContainer mod = Loader.instance().getIndexedModList().get(modid);
 
-            ItemIconDumper.renderItem(stack, RenderItem.getInstance());
+            ItemIconDumper.prepareRenderItem(stack, RenderItem.getInstance());
 
             String nbt = Utils.getItemNBT(stack);
 

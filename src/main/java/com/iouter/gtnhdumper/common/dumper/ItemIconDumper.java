@@ -1,18 +1,21 @@
 package com.iouter.gtnhdumper.common.dumper;
 
+import bartworks.system.material.BWMetaGeneratedOres;
 import com.gtnewhorizons.angelica.glsm.GLStateManager;
 import com.iouter.gtnhdumper.GTNHDumper;
 import com.iouter.gtnhdumper.Utils;
+import com.iouter.gtnhdumper.common.utils.DynamicTexture;
 import com.iouter.gtnhdumper.common.utils.FBOHelper;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.registry.GameData;
+import gregtech.common.blocks.GTBlockOre;
 import gregtech.common.items.ItemVolumetricFlask;
+import gtPlusPlus.core.block.base.BlockBaseOre;
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureCompass;
-import net.minecraft.client.resources.data.AnimationMetadataSection;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -35,7 +38,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class ItemIconDumper {
 
@@ -138,25 +140,33 @@ public class ItemIconDumper {
         return false;
     }
 
-    public static void renderItem(ItemStack itemStack, RenderItem itemRenderer) {
+    public static void prepareRenderItem(ItemStack itemStack, RenderItem itemRenderer) {
         IIcon iIcon = itemStack.getIconIndex();
-        int width = iIcon.getIconWidth();
-        int height = iIcon.getIconHeight();
-        int max;
-        if (width >= height) {
-            max = width;
+        if (iIcon == null) {
+            iIcon = Objects.requireNonNull(itemStack.getItem()).getIconFromDamageForRenderPass(itemStack.getItemDamage(), 0);
+        }
+
+        int size;
+        if (iIcon == null) {
+            GTNHDumper.LOG.error("Can't find {}'s icon, set render size to 128", itemStack.getDisplayName());
+            size = 128;
         } else {
-            max = height;
+            int width = iIcon.getIconWidth();
+            int height = iIcon.getIconHeight();
+            size = Math.max(width, height);
+            if (itemStack.getItem() instanceof ItemBlock) {
+                if (RenderBlocks.renderItemIn3d(((ItemBlock) itemStack.getItem()).field_150939_a.getRenderType())) {
+                    size = 256;
+                }
+            }
         }
-        if (itemStack.getItem() instanceof ItemBlock) {
-            max *= 4;
-        }
-        FBOHelper fbo = fbos.get(max);
+
+        FBOHelper fbo = fbos.get(size);
         if (fbo == null) {
-            fbo = new FBOHelper(max);
-            fbos.put(max, fbo);
+            fbo = new FBOHelper(size);
+            fbos.put(size, fbo);
         }
-        renderItem(itemStack, fbo, itemRenderer);
+        renderGeneralItem(itemStack, fbo, itemRenderer);
     }
 
     /**
@@ -166,32 +176,8 @@ public class ItemIconDumper {
      * <p>
      * Borrowed from <a href="https://github.com/Snownee/Item-Render-Dark/blob/master/src/main/java/itemrender/rendering/Renderer.java">Item-Render-Rebirth</a>
      */
-    public static void renderItem(ItemStack itemStack, FBOHelper fbo, RenderItem itemRenderer) {
-        if (isValidRender(itemStack)) {
-            return;
-        }
+    public static BufferedImage renderItem(ItemStack itemStack, FBOHelper fbo, RenderItem itemRenderer, float scale, DynamicTexture dynamicTexture) {
         Minecraft minecraft = FMLClientHandler.instance().getClient();
-        float scale = 1f;
-        IIcon iIcon = itemStack.getIconIndex();
-        if (iIcon instanceof TextureAtlasSprite) {
-            TextureAtlasSprite texture = (TextureAtlasSprite) iIcon;
-            if (texture.hasAnimationMetadata()) {
-                AnimationMetadataSection animation = getAnimationMetadata(texture);
-                if (animation != null && texture.getFrameCount() > 1) {
-                    int frameTextureSize = animation.getFrameCount() == 0 ? texture.getFrameCount() : animation.getFrameCount();
-                    int[] frames = new int[frameTextureSize];
-                    for (int i = 0; i < frameTextureSize; i++) {
-                        frames[i] = animation.getFrameTimeSingle(i);
-                    }
-                    try {
-                        renderDynamicItem(itemStack, fbo, itemRenderer, frames);
-                    } catch (NoSuchFieldException | IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    }
-                    return;
-                }
-            }
-        }
         fbo.begin();
         GLStateManager.glMatrixMode(GL11.GL_PROJECTION);
         GLStateManager.glPushMatrix();
@@ -211,65 +197,42 @@ public class ItemIconDumper {
             0,
             0
         );
-        itemRenderer.renderItemOverlayIntoGUI(
-            minecraft.fontRenderer,
-            minecraft.renderEngine,
-            itemStack,
-            0,
-            0
-        );
+        if (dynamicTexture != null) {
+            dynamicTexture.updateAnimation();
+        }
         GLStateManager.disableLighting();
         RenderHelper.disableStandardItemLighting();
         GLStateManager.glMatrixMode(GL11.GL_PROJECTION);
         GL11.glPopMatrix();
-
         fbo.end();
+        if (itemStack.getItem() instanceof ItemBlock) {
+            Block block = ((ItemBlock) itemStack.getItem()).field_150939_a;
+            if (block instanceof GTBlockOre || block instanceof BWMetaGeneratedOres || block instanceof BlockBaseOre) {
+                return makeNonTransparentOpaque(fbo.saveToImage());
+            }
+        }
+        return fbo.saveToImage();
+    }
 
-        BufferedImage image = fbo.saveToImage();
+    public static void renderGeneralItem(ItemStack itemStack, FBOHelper fbo, RenderItem itemRenderer) {
+        if (isValidRender(itemStack)) {
+            return;
+        }
+        DynamicTexture dynamicTexture = new DynamicTexture(itemStack);
+        if (dynamicTexture.isDynamic()) {
+            renderDynamicItem(itemStack, fbo, itemRenderer, dynamicTexture);
+            return;
+        }
+        BufferedImage image = renderItem(itemStack, fbo, itemRenderer, 1f, null);
         fbo.saveToFile(new File("dumps/icons/" + getIconFileNameInHuijiUpdater(itemStack)), image);
         fbo.restoreTexture();
     }
 
-    public static void renderDynamicItem(ItemStack itemStack, FBOHelper fbo, RenderItem itemRenderer, int[] frames) throws NoSuchFieldException, IllegalAccessException {
-        Minecraft minecraft = FMLClientHandler.instance().getClient();
-        float scale = 1f;
-        int frameCount = Arrays.stream(frames).sum();
+    public static void renderDynamicItem(ItemStack itemStack, FBOHelper fbo, RenderItem itemRenderer, DynamicTexture dynamicTexture){
+        int frameCount = dynamicTexture.lcm;
         BufferedImage[] images = new BufferedImage[frameCount];
-        TextureAtlasSprite texture = (TextureAtlasSprite) itemStack.getIconIndex();
         for (int i = 0; i < frameCount; i++) {
-            fbo.begin();
-            GLStateManager.glMatrixMode(GL11.GL_PROJECTION);
-            GLStateManager.glPushMatrix();
-            GLStateManager.glLoadIdentity();
-            GLStateManager.glOrtho(0, 16, 0, 16, -150.0F, 150.0F);
-            GLStateManager.glMatrixMode(GL11.GL_MODELVIEW);
-            RenderHelper.enableGUIStandardItemLighting();
-            GLStateManager.enableRescaleNormal();
-            GLStateManager.enableColorMaterial();
-            GLStateManager.enableLighting();
-            GLStateManager.glTranslated(8 * (1 - scale), 8 * (1 - scale), 0);
-            GLStateManager.glScaled(scale, scale, scale);
-            itemRenderer.renderItemAndEffectIntoGUI(
-                minecraft.fontRenderer,
-                minecraft.renderEngine,
-                itemStack,
-                0,
-                0
-            );
-            itemRenderer.renderItemOverlayIntoGUI(
-                minecraft.fontRenderer,
-                minecraft.renderEngine,
-                itemStack,
-                0,
-                0
-            );
-            texture.updateAnimation();
-            GLStateManager.disableLighting();
-            RenderHelper.disableStandardItemLighting();
-            GLStateManager.glMatrixMode(GL11.GL_PROJECTION);
-            GL11.glPopMatrix();
-            fbo.end();
-            images[getTextureIndex(texture, frames)] = fbo.saveToImage();
+            images[dynamicTexture.getIndex()] = renderItem(itemStack, fbo, itemRenderer, 1f, dynamicTexture);
         }
         BufferedImage image;
         if (Arrays.stream(images).anyMatch(Objects::isNull)) {
@@ -281,26 +244,6 @@ public class ItemIconDumper {
 
         fbo.saveToFile(new File("dumps/icons/" + getIconFileNameInHuijiUpdater(itemStack)), image);
         fbo.restoreTexture();
-    }
-
-    public static AnimationMetadataSection getAnimationMetadata(TextureAtlasSprite texture) {
-        if (animationMetadataField == null) {
-            try {
-                animationMetadataField = texture.getClass().getDeclaredField("animationMetadata");
-            } catch (NoSuchFieldException e) {
-                try {
-                    animationMetadataField = texture.getClass().getDeclaredField("field_110982_k");
-                } catch (NoSuchFieldException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-            animationMetadataField.setAccessible(true);
-        }
-        try {
-            return (AnimationMetadataSection) animationMetadataField.get(texture);
-        } catch (IllegalAccessException e) {
-            return null;
-        }
     }
 
     /**
@@ -338,36 +281,19 @@ public class ItemIconDumper {
         return result;
     }
 
-    private static int getTextureIndex(TextureAtlasSprite texture, int[] frames) throws NoSuchFieldException, IllegalAccessException {
-        AnimationMetadataSection animation = getAnimationMetadata(texture);
-        if (animation == null) {
-            return -1;
-        }
-        if (frameCounterField == null) {
-            Class<?> clazz = texture.getClass();
-            try {
-                frameCounterField = clazz.getDeclaredField("frameCounter");
-            } catch (NoSuchFieldException e) {
-                frameCounterField = clazz.getDeclaredField("field_110973_g");
+    public static BufferedImage makeNonTransparentOpaque(BufferedImage img) {
+        int w = img.getWidth();
+        int h = img.getHeight();
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                int argb = img.getRGB(x, y);
+                int alpha = (argb >> 24) & 0xFF;
+                if (alpha != 0) { // 不是完全透明
+                    argb = (0xFF << 24) | (argb & 0x00FFFFFF);
+                    img.setRGB(x, y, argb);
+                }
             }
-            frameCounterField.setAccessible(true);
         }
-        if (tickCounterField == null) {
-            Class<?> clazz = texture.getClass();
-            try {
-                tickCounterField = clazz.getDeclaredField("tickCounter");
-            } catch (NoSuchFieldException e) {
-                tickCounterField = clazz.getDeclaredField("field_110983_h");
-            }
-            tickCounterField.setAccessible(true);
-        }
-        int frameCounter = frameCounterField.getInt(texture);
-        int tickCounter = tickCounterField.getInt(texture);
-        int sum = 0;
-        for (int i = 0; i < frameCounter; i++) {
-            sum += frames[i];
-        }
-        sum += tickCounter;
-        return sum;
+        return img;
     }
 }
