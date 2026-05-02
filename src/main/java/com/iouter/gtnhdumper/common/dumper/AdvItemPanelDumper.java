@@ -58,7 +58,8 @@ public class AdvItemPanelDumper extends WikiDumper {
             "tooltipsCtrl",
             "tooltipsShiftAndCtrl",
             "mod",
-            "icon"
+            "icon",
+            "frameCount"
         };
     }
 
@@ -130,7 +131,7 @@ public class AdvItemPanelDumper extends WikiDumper {
                     tooltips[TOOLTIP_LSHIFT_AND_LCONTROL] = tooltipShiftAndCtrl;
                 }
             }, Keyboard.KEY_LSHIFT, Keyboard.KEY_LCONTROL);
-            list.add(new String[] {
+            list.add(new Object[] {
                 Utils.getItemKey(stack),
                 nbt,
                 originalNameMap.get(stack),
@@ -140,7 +141,8 @@ public class AdvItemPanelDumper extends WikiDumper {
                 tooltips[TOOLTIP_LCONTROL],
                 tooltips[TOOLTIP_LSHIFT_AND_LCONTROL],
                 modName,
-                Utils.replaceHuijiStrBack(ItemIconDumper.getIconFileName(stack))
+                Utils.replaceHuijiStrBack(ItemIconDumper.getIconFileName(stack)),
+                ItemIconDumper.getItemFrameCount(stack)
             });
         }
         return list;

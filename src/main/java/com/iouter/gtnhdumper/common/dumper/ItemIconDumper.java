@@ -2,6 +2,7 @@ package com.iouter.gtnhdumper.common.dumper;
 
 import bartworks.system.material.BWMetaGeneratedOres;
 import com.gtnewhorizons.angelica.glsm.GLStateManager;
+import com.iouter.gtnhdumper.CommonProxy;
 import com.iouter.gtnhdumper.GTNHDumper;
 import com.iouter.gtnhdumper.Utils;
 import com.iouter.gtnhdumper.common.utils.DynamicTexture;
@@ -11,6 +12,7 @@ import cpw.mods.fml.common.registry.GameData;
 import gregtech.common.blocks.GTBlockOre;
 import gregtech.common.items.ItemVolumetricFlask;
 import gtPlusPlus.core.block.base.BlockBaseOre;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -44,6 +46,7 @@ public class ItemIconDumper {
     private static final char[] BASE62 = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
     private static final int OUTPUT_LENGTH = 15;
     private static final BigInteger BASE = BigInteger.valueOf(BASE62.length);
+    private static final Object2IntOpenHashMap<ItemStack> frameCountMap = new Object2IntOpenHashMap<>();
 
     private static final Map<Integer, FBOHelper> fbos = new HashMap<>();
 
@@ -128,7 +131,7 @@ public class ItemIconDumper {
     }
 
     private static boolean isValidRender(ItemStack stack) {
-        if (stack.getItem() instanceof ItemVolumetricFlask) {
+        if (CommonProxy.isGTLoaded && stack.getItem() instanceof ItemVolumetricFlask) {
             ItemVolumetricFlask flask = (ItemVolumetricFlask) stack.getItem();
             if (flask != null) {
                 FluidStack fs = flask.getFluid(stack);
@@ -207,7 +210,7 @@ public class ItemIconDumper {
         fbo.end();
         if (itemStack.getItem() instanceof ItemBlock) {
             Block block = ((ItemBlock) itemStack.getItem()).field_150939_a;
-            if (block instanceof GTBlockOre || block instanceof BWMetaGeneratedOres || block instanceof BlockBaseOre) {
+            if (CommonProxy.isGTLoaded && (block instanceof GTBlockOre || block instanceof BWMetaGeneratedOres || block instanceof BlockBaseOre)) {
                 return makeNonTransparentOpaque(fbo.saveToImage());
             }
         }
@@ -219,10 +222,11 @@ public class ItemIconDumper {
             return;
         }
         DynamicTexture dynamicTexture = new DynamicTexture(itemStack);
-        if (dynamicTexture.isDynamic()) {
+        if (!getIconFileName(itemStack).contains("Botania:prismarine") && dynamicTexture.isDynamic()) {
             renderDynamicItem(itemStack, fbo, itemRenderer, dynamicTexture);
             return;
         }
+        frameCountMap.put(itemStack, 1);
         BufferedImage image = renderItem(itemStack, fbo, itemRenderer, 1f, null);
         fbo.saveToFile(new File("dumps/icons/" + getIconFileNameInHuijiUpdater(itemStack)), image);
         fbo.restoreTexture();
@@ -241,7 +245,7 @@ public class ItemIconDumper {
         } else {
             image = concatenateImages(images);
         }
-
+        frameCountMap.put(itemStack, image.getWidth() / image.getHeight());
         fbo.saveToFile(new File("dumps/icons/" + getIconFileNameInHuijiUpdater(itemStack)), image);
         fbo.restoreTexture();
     }
@@ -341,5 +345,9 @@ public class ItemIconDumper {
 
         // 全部相同，返回只含第一张的数组
         return true;
+    }
+
+    public static int getItemFrameCount(ItemStack stack) {
+        return frameCountMap.getInt(stack);
     }
 }
