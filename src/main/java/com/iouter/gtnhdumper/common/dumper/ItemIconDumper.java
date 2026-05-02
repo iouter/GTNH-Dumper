@@ -257,6 +257,10 @@ public class ItemIconDumper {
             throw new IllegalArgumentException("Image array cannot be empty");
         }
 
+        if (deduplicateByPixel(images)) {
+            return images[0];
+        }
+
         // 1. 计算目标图像尺寸
         int totalWidth = Arrays.stream(images).mapToInt(BufferedImage::getWidth).sum();
         int maxHeight = Arrays.stream(images).mapToInt(BufferedImage::getHeight).max().orElse(0);
@@ -295,5 +299,47 @@ public class ItemIconDumper {
             }
         }
         return img;
+    }
+
+    /**
+     * 如果数组中所有图像像素完全相同，返回仅包含第一个元素的数组；否则返回原数组。
+     *
+     * @param images BufferedImage 数组
+     * @return 是否有重复
+     */
+    public static boolean deduplicateByPixel(BufferedImage[] images) {
+        if (images == null || images.length <= 1) {
+            return true;
+        }
+
+        BufferedImage first = images[0];
+        // 如果第一张为 null，则直接返回原数组（或根据需求处理）
+        if (first == null) {
+            return false;
+        }
+
+        int width = first.getWidth();
+        int height = first.getHeight();
+
+        // 逐张比较
+        for (int i = 1; i < images.length; i++) {
+            BufferedImage curr = images[i];
+            if (curr == null) {
+                return false; // 存在 null，视为不同
+            }
+            // 尺寸不一致直接判定不同
+            if (curr.getWidth() != width || curr.getHeight() != height) {
+                return false;
+            }
+            // 快速比较：获取像素数组整数表示
+            int[] firstPixels = first.getRGB(0, 0, width, height, null, 0, width);
+            int[] currPixels = curr.getRGB(0, 0, width, height, null, 0, width);
+            if (!Arrays.equals(firstPixels, currPixels)) {
+                return false;
+            }
+        }
+
+        // 全部相同，返回只含第一张的数组
+        return true;
     }
 }

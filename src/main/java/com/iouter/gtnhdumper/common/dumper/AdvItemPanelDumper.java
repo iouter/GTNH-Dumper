@@ -32,8 +32,6 @@ public class AdvItemPanelDumper extends WikiDumper {
     private static final int TOOLTIP_LCONTROL = 1;
     private static final int TOOLTIP_LSHIFT_AND_LCONTROL = 2;
 
-    private static final int[] resolutions = new int[]{16, 32, 48, 64, 128, 256};
-
     public AdvItemPanelDumper() {
         super("tools.dump.gtnhdumper.advitempanel");
     }
