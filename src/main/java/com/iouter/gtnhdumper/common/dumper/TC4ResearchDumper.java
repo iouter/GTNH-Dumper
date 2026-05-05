@@ -58,14 +58,17 @@ public class TC4ResearchDumper extends WikiDumper {
         LinkedList<Object[]> list = new LinkedList<>();
         for (ResearchCategoryList r : ResearchCategories.researchCategories.values()) {
             for (ResearchItem m : r.research.values()) {
+                if (m.isVirtual()) {
+                    continue;
+                }
                 list.add(new Object[] {
                     m.getName(),
                     m.key,
                     ResearchCategories.getCategoryName(m.category),
                     m.getComplexity(),
                     ThaumcraftApi.getWarp(m.key),
-                    getResearchsName(m.parents),
-                    getResearchsName(m.parentsHidden),
+                    m.parents,
+                    m.parentsHidden,
                     getItemStacksName(m.getItemTriggers()),
                     getEnTitiesName(m.getEntityTriggers()),
                     getAspectsName(m.getAspectTriggers()),

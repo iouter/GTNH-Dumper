@@ -33,7 +33,7 @@ public class GTNHDimensionDumper extends WikiDumper {
     public Iterable<Object[]> dumpObject(int mode) {
         LinkedList<Object[]> list = new LinkedList<>();
 
-        String[] dimensionOriginalNames = new String[DimensionHelper.DimNameTrimmed.length];
+        Map<DimensionHelper.Dimension, String> originalNameMap = new HashMap<>();
 
         Minecraft minecraft = Minecraft.getMinecraft();
         LanguageManager languageManager = minecraft.getLanguageManager();
@@ -41,23 +41,21 @@ public class GTNHDimensionDumper extends WikiDumper {
         languageManager.setCurrentLanguage(new Language("en_US", "US", "English (United States)", false));
         languageManager.onResourceManagerReload(minecraft.getResourceManager());
 
-        for (int i = 0; i < DimensionHelper.DimNameTrimmed.length; i++) {
-            dimensionOriginalNames[i] = DimensionHelper.getDimLocalizedName(DimensionHelper.getFullName(DimensionHelper.DimNameDisplayed[i]));
+        for (DimensionHelper.Dimension dimension : DimensionHelper.ALL_DIMENSIONS) {
+            originalNameMap.put(dimension, DimensionHelper.getDimLocalizedName(DimensionHelper.getFullName(dimension.abbr())));
         }
 
         languageManager.setCurrentLanguage(currentLanguage);
         languageManager.onResourceManagerReload(minecraft.getResourceManager());
 
-        for (int i = 0; i < DimensionHelper.DimNameDisplayed.length; i++) {
-            String abbreviatedName = DimensionHelper.DimNameDisplayed[i];
-            String fullName = DimensionHelper.getFullName(abbreviatedName);
+        for (DimensionHelper.Dimension dimension : DimensionHelper.ALL_DIMENSIONS) {
             list.add(new Object[] {
-                abbreviatedName,
-                DimensionHelper.DimNameTrimmed[i],
-                fullName,
-                dimensionOriginalNames[i],
-                DimensionHelper.getDimLocalizedName(DimensionHelper.DimNameTrimmed[i]),
-                DimensionHelper.getDimTier(fullName).replace("gtnop.tier.", "")
+                dimension.abbr(),
+                dimension.internalName(),
+                dimension.fullName(),
+                originalNameMap.get(dimension),
+                DimensionHelper.getDimLocalizedName(DimensionHelper.getFullName(dimension.abbr())),
+                dimension.tierKey().replace("gtnop.tier.", "")
             });
         }
         return list;

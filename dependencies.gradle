@@ -4,7 +4,7 @@
 dependencies {
 	api("com.github.GTNewHorizons:NotEnoughItems:2.8.70-GTNH:dev")
 
-	compileOnly("com.github.GTNewHorizons:GT5-Unofficial:5.09.52.124:dev")
+	compileOnly("com.github.GTNewHorizons:GT5-Unofficial:5.09.52.398:dev")
 	compileOnly("com.github.GTNewHorizons:TinkersConstruct:1.13.21-GTNH:dev") { transitive = false }
 	compileOnly('thaumcraft:Thaumcraft:1.7.10-4.2.3.5:dev') { transitive = false }
 	compileOnly("curse.maven:automagy-222153:2285272") { transitive = false }
@@ -17,7 +17,7 @@ dependencies {
 
     runtimeOnly("curse.maven:cofh-core-69162:2388751")
 	runtimeOnly("com.github.GTNewHorizons:GTNHLib:0.9.3:dev")
-	runtimeOnly("com.github.GTNewHorizons:GT5-Unofficial:5.09.52.124:dev")
+	runtimeOnly("com.github.GTNewHorizons:GT5-Unofficial:5.09.52.398:dev")
 	runtimeOnly("com.github.GTNewHorizons:TinkersConstruct:1.13.21-GTNH:dev")
 	runtimeOnly("com.github.GTNewHorizons:Avaritia:1.82-pre:dev")
 	runtimeOnly("com.github.GTNewHorizons:Angelica:2.0.0-alpha8:dev")
@@ -25,6 +25,6 @@ dependencies {
     runtimeOnly("com.github.GTNewHorizons:neiaddons:1.18.0:dev")
 	// runtimeOnly("com.github.GTNewHorizons:lwjgl3ify:3.0.6:dev")
 	// runtimeOnly("com.github.GTNewHorizons:RetroFuturaBootstrap:1.0.13:dev")
-//    runtimeOnly('thaumcraft:Thaumcraft:1.7.10-4.2.3.5:dev')
+    runtimeOnly('thaumcraft:Thaumcraft:1.7.10-4.2.3.5:dev')
 //    runtimeOnly("com.github.GTNewHorizons:TCNEIAdditions:1.5.6:dev")
 }

@@ -320,9 +320,9 @@ public class GTMaterialDumper extends WikiDumper {
         Map<String, Object> materialMap = getMaterialMap(name, totalMap);
         materialMap.put(NAME, name);
         materialMap.put(DEFAULT_NAME, m.mDefaultLocalName);
-        materialMap.put(LOCALIZED_NAME, m.mLocalizedName);
-        materialMap.put(CHEMICAL_FORMULA, m.mChemicalFormula);
-        materialMap.put(FLAVOR_TEXT, m.flavorText);
+        materialMap.put(LOCALIZED_NAME, m.getLocalizedName());
+        materialMap.put(CHEMICAL_FORMULA, m.getChemicalFormula());
+        materialMap.put(FLAVOR_TEXT, m.getFlavorText());
         materialMap.put(DURABILITY, m.mDurability);
         materialMap.put(TOOL_SPEED, m.mToolSpeed);
         materialMap.put(TOOL_QUALITY, m.mToolQuality);
@@ -341,9 +341,9 @@ public class GTMaterialDumper extends WikiDumper {
         Map<String, Object> materialMap = getMaterialMap(name, totalMap);
         materialMap.put(NAME, name);
         materialMap.put(DEFAULT_NAME, m.mDefaultLocalName);
-        materialMap.put(LOCALIZED_NAME, m.mLocalizedName);
-        materialMap.put(CHEMICAL_FORMULA, m.mChemicalFormula);
-        materialMap.put(FLAVOR_TEXT, m.flavorText);
+        materialMap.put(LOCALIZED_NAME, m.getLocalizedName());
+        materialMap.put(CHEMICAL_FORMULA, m.getChemicalFormula());
+        materialMap.put(FLAVOR_TEXT, m.getFlavorText());
         materialMap.put(DURABILITY, m.mDurability);
         materialMap.put(TOOL_SPEED, m.mToolSpeed);
         materialMap.put(TOOL_QUALITY, m.mToolQuality);
@@ -366,7 +366,7 @@ public class GTMaterialDumper extends WikiDumper {
         Map<String, Object> materialMap = getMaterialMap(name, totalMap);
         materialMap.put(NAME, name);
         materialMap.put(DEFAULT_NAME, name);
-        materialMap.put(LOCALIZED_NAME, m.getTranslatedName());
+        materialMap.put(LOCALIZED_NAME, m.getLocalizedName());
         materialMap.put(CHEMICAL_FORMULA, m.vChemicalFormula);
 //            materialMap.put("Durability", String.valueOf(m.vDurability));
 //            materialMap.put("ToolSpeed", String.valueOf(m.vHarvestLevel * 2 + m.vTier));
