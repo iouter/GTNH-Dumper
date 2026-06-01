@@ -49,7 +49,17 @@ public class TC4ResearchDumper extends WikiDumper {
             "ItemTriggers",
             "EntityTriggers",
             "AspectTriggers",
-            "KillerTriggers"
+            "KillerTriggers",
+            "Siblings",
+            "IsSpecial",
+            "IsSecondary",
+            "IsRound",
+            "IsStub",
+            "IsVirtual",
+            "IsConcealed",
+            "IsHidden",
+            "IsLost",
+            "IsAutoUnlock"
         };
     }
 
@@ -58,9 +68,6 @@ public class TC4ResearchDumper extends WikiDumper {
         LinkedList<Object[]> list = new LinkedList<>();
         for (ResearchCategoryList r : ResearchCategories.researchCategories.values()) {
             for (ResearchItem m : r.research.values()) {
-                if (m.isVirtual()) {
-                    continue;
-                }
                 list.add(new Object[] {
                     m.getName(),
                     m.key,
@@ -72,7 +79,17 @@ public class TC4ResearchDumper extends WikiDumper {
                     getItemStacksName(m.getItemTriggers()),
                     getEnTitiesName(m.getEntityTriggers()),
                     getAspectsName(m.getAspectTriggers()),
-                    getKillerTrigger(m)
+                    getKillerTrigger(m),
+                    m.siblings,
+                    m.isSpecial(),
+                    m.isSecondary(),
+                    m.isRound(),
+                    m.isStub(),
+                    m.isVirtual(),
+                    m.isConcealed(),
+                    m.isHidden(),
+                    m.isLost(),
+                    m.isAutoUnlock()
                 });
             }
         }

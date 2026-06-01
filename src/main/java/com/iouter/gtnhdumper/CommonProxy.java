@@ -17,10 +17,11 @@ public class CommonProxy {
     public static boolean isTiCLoaded = Loader.isModLoaded("TConstruct");
     public static boolean isTCLoaded = Loader.isModLoaded("Thaumcraft");
     public static boolean isAutomagyLoaded = Loader.isModLoaded("Automagy");
-    public static boolean isTCNEIAdditionsLoaded = Loader.isModLoaded("tcneiadditions");
     public static boolean isAvaritiaLoaded = Loader.isModLoaded("Avaritia");
     public static boolean isFRLoaded = Loader.isModLoaded("Forestry");
     public static boolean isNEIAddonLoaded = Loader.isModLoaded("NEIAddons");
+    public static boolean isBQLoaded = Loader.isModLoaded("betterquesting");
+    public static boolean isMobsInfoLoaded = Loader.isModLoaded("mobsinfo");
 
 
     // preInit "Run before anything else. Read your config, create blocks, items,

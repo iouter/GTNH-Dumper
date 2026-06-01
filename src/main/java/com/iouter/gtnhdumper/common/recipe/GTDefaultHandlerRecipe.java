@@ -1,21 +1,19 @@
 package com.iouter.gtnhdumper.common.recipe;
 
-import codechicken.nei.recipe.GuiRecipeTab;
-import codechicken.nei.recipe.HandlerInfo;
-import codechicken.nei.recipe.RecipeCatalysts;
-import com.google.common.base.Objects;
+import codechicken.nei.recipe.IRecipeHandler;
+import com.google.gson.JsonObject;
 import com.gtnewhorizons.modularui.api.drawable.FallbackableUITexture;
-import com.iouter.gtnhdumper.Utils;
-import com.iouter.gtnhdumper.common.recipe.base.GTRecipeDumps;
+import com.iouter.gtnhdumper.GTNHDumper;
+import com.iouter.gtnhdumper.common.recipe.base.BaseHandlerRecipe;
 import com.iouter.gtnhdumper.common.recipe.base.RecipeFluid;
 import com.iouter.gtnhdumper.common.recipe.base.RecipeItem;
-import com.iouter.gtnhdumper.common.recipe.utils.Transformer;
+import com.iouter.gtnhdumper.common.utils.Transformer;
+import com.iouter.gtnhdumper.common.utils.Utils;
 import gregtech.api.enums.Materials;
 import gregtech.api.recipe.BasicUIProperties;
 import gregtech.api.recipe.RecipeCategory;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.RecipeMapBackend;
-import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.util.GTRecipe;
 import gregtech.nei.GTNEIDefaultHandler;
 import net.minecraft.item.ItemStack;
@@ -30,54 +28,41 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Map;
 
-public class GTDefaultHandlerRecipe{
-    private final String name;
-    private final String identifier;
-    private final String source;
-    private final String markedItem;
-    private final ArrayList<String> catalysts;
-    private final String progressBar;
-    private Integer amperage;
-    private final ArrayList<GTRecipeDumps> recipes;
+public class GTDefaultHandlerRecipe extends BaseHandlerRecipe {
 
-    public GTDefaultHandlerRecipe(GTNEIDefaultHandler handler) {
-        this.name = handler.getRecipeName();
-        this.catalysts = new ArrayList<>();
+    public GTDefaultHandlerRecipe (GTNEIDefaultHandler handler) {
+        super(handler);
+    }
 
-        System.out.println("正在导出：" + name);
-
-        final String handlerName = handler.getHandlerId();
-        final String handlerId = Objects.firstNonNull(
-            handler.getOverlayIdentifier(),
-            "null");
-
-        this.identifier = handlerId;
-        this.source = handlerName;
-
-        HandlerInfo info = GuiRecipeTab.getHandlerInfo(handlerName, handlerId);
-        final ItemStack markedItemStack = info != null ? info.getItemStack() : null;
-        this.markedItem = markedItemStack != null ? Utils.getItemKeyWithNBT(markedItemStack) : "null";
-
-        RecipeCatalysts.getRecipeCatalysts(handler).forEach(positionedStack -> {
-            ItemStack[] items = positionedStack.items;
-            if (items == null)
-                return;
-            for (ItemStack stack: items) {
-                catalysts.add(Utils.getItemKeyWithNBT(stack));
-            }
-        });
-
-        this.progressBar = Utils.getAfterLastChar(getProgressBar(getUIProperties(handler)), '/');
-        RecipeCategory category = getRecipeCategory(handler);
+    @Override
+    public void addJsonObject(JsonObject json, IRecipeHandler baseHandler) {
+        if (!(baseHandler instanceof GTNEIDefaultHandler)) {
+            return;
+        }
+        GTNEIDefaultHandler handler = (GTNEIDefaultHandler) baseHandler;
         RecipeMap<?> recipeMap = handler.getRecipeMap();
+
+        json.addProperty("progressBar", Utils.getAfterLastChar(getProgressBar(getUIProperties(handler)), '/'));
+
         int amperage = recipeMap.getAmperage();
         if (amperage > 1)
-            this.amperage = amperage;
+            json.addProperty("amperage", amperage);
+    }
+
+    @Override
+    public List<?> getRecipes(IRecipeHandler baseHandler) {
+        if (!(baseHandler instanceof GTNEIDefaultHandler)) {
+            return null;
+        }
+        GTNEIDefaultHandler handler = (GTNEIDefaultHandler) baseHandler;
+        List<GTDumpedRecipe> recipes = new ArrayList<>();
+        RecipeCategory category = getRecipeCategory(handler);
+        RecipeMap<?> recipeMap = handler.getRecipeMap();
         RecipeMapBackend recipeMapBackend = recipeMap.getBackend();
         Collection<GTRecipe> gtRecipes = recipeMapBackend.getAllRecipes();
-        recipes = new ArrayList<>();
         if (recipeMap.getFrontend() instanceof EyeOfHarmonyFrontend) {
             try {
                 EyeOfHarmonyRecipeStorage storage = TecTech.eyeOfHarmonyRecipeStorage;
@@ -105,7 +90,7 @@ public class GTDefaultHandlerRecipe{
                     for (FluidStackLong fluidStackLong : recipe.getOutputFluids()) {
                         outputFluids.add(new RecipeFluid(fluidStackLong.fluidStack).withAmount(fluidStackLong.amount));
                     }
-                    recipes.add(new GTRecipeDumps(
+                    recipes.add(new GTDumpedRecipe(
                         inputItems,
                         inputFluids,
                         outputItems,
@@ -118,11 +103,12 @@ public class GTDefaultHandlerRecipe{
                     ));
                 }
             } catch (NoSuchFieldException | IllegalAccessException e) {
-                e.printStackTrace();
+                GTNHDumper.LOG.error(e);
             }
-            return;
+            return null;
         }
         gtRecipes.stream().filter(gtRecipe -> gtRecipe.getRecipeCategory() == category).map(Transformer::transformGTRecipe).forEach(recipes::add);
+        return recipes;
     }
 
     public static BasicUIProperties getUIProperties(GTNEIDefaultHandler handler) {
@@ -175,4 +161,35 @@ public class GTDefaultHandlerRecipe{
             throw new RuntimeException("Failed to access recipeCategory field", e);
         }
     }
+
+    public static class GTDumpedRecipe {
+
+        private final ArrayList<Object> inputItems;
+        private final ArrayList<RecipeFluid> inputFluids;
+        private final ArrayList<Object> outputItems;
+        private final ArrayList<RecipeFluid> outputFluids;
+        private final ArrayList<Object> otherItems;
+        private final Integer eut;
+        private final Long duration;
+        private Integer specialValue;
+        private final Map<String, Object> metadata;
+
+        public GTDumpedRecipe(ArrayList<Object> inputItems,
+                              ArrayList<RecipeFluid> inputFluids,
+                              ArrayList<Object> outputItems,
+                              ArrayList<RecipeFluid> outputFluids,
+                              ArrayList<Object> otherItems, int eut, long duration, int specialValue, Map<String, Object> metadata) {
+            this.inputItems = inputItems;
+            this.inputFluids = inputFluids;
+            this.outputItems = outputItems;
+            this.outputFluids = outputFluids;
+            this.otherItems = otherItems;
+            this.eut = eut;
+            this.duration = duration;
+            this.metadata = metadata;
+            if (specialValue != 0)
+                this.specialValue = specialValue;
+        }
+    }
 }
+

@@ -1,65 +1,31 @@
 package com.iouter.gtnhdumper.common.recipe;
 
-import codechicken.nei.recipe.GuiRecipeTab;
-import codechicken.nei.recipe.HandlerInfo;
 import codechicken.nei.recipe.IRecipeHandler;
-import codechicken.nei.recipe.RecipeCatalysts;
-import codechicken.nei.recipe.TemplateRecipeHandler;
-import com.google.common.base.Objects;
-import com.iouter.gtnhdumper.Utils;
-import com.iouter.gtnhdumper.common.recipe.base.ForestryRecipe;
+import com.iouter.gtnhdumper.common.recipe.base.BaseHandlerRecipe;
 import com.iouter.gtnhdumper.common.recipe.base.RecipeItem;
-import com.iouter.gtnhdumper.common.recipe.utils.RecipeUtil;
+import com.iouter.gtnhdumper.common.utils.RecipeUtil;
 import forestry.api.apiculture.IAlleleBeeSpeciesCustom;
 import forestry.api.apiculture.IJubilanceProvider;
 import forestry.api.genetics.IAlleleSpecies;
-import net.bdew.neiaddons.forestry.AddonForestry;
 import net.bdew.neiaddons.forestry.BaseBreedingRecipeHandler;
 import net.bdew.neiaddons.forestry.BaseProduceRecipeHandler;
 import net.bdew.neiaddons.forestry.GeneticsUtils;
-import net.bdew.neiaddons.utils.LabeledPositionedStack;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-public class ForestryHandlerRecipe {
-    private final String name;
-    private final String identifier;
-    private final String source;
-    private final String markedItem;
-    private final ArrayList<String> catalysts;
-    private final ArrayList<ForestryRecipe> recipes;
+public class ForestryHandlerRecipe extends BaseHandlerRecipe {
 
     public ForestryHandlerRecipe(IRecipeHandler handler) {
-        this.name = handler.getRecipeName();
-        this.catalysts = new ArrayList<>();
+        super(handler);
+    }
 
-        final String handlerName = handler.getHandlerId();
-        final String handlerId = Objects.firstNonNull(
-            handler instanceof TemplateRecipeHandler ? ((TemplateRecipeHandler) handler).getOverlayIdentifier()
-                : null,
-            "null");
-
-        this.identifier = handlerId;
-        this.source = handlerName;
-
-        HandlerInfo info = GuiRecipeTab.getHandlerInfo(handlerName, handlerId);
-        final ItemStack markedItemStack = info != null ? info.getItemStack() : null;
-        this.markedItem = markedItemStack != null ? Utils.getItemKeyWithNBT(markedItemStack) : "null";
-
-        RecipeCatalysts.getRecipeCatalysts(handler).stream().forEach(positionedStack -> {
-            ItemStack[] items = positionedStack.items;
-            if (items == null)
-                return;
-            for (ItemStack stack : items) {
-                catalysts.add(Utils.getItemKeyWithNBT(stack));
-            }
-        });
-        this.recipes = new ArrayList<>();
+    @Override
+    public List<?> getRecipes(IRecipeHandler handler) {
+        List<ForestryRecipe> recipes = new ArrayList<>();
         if (handler instanceof BaseBreedingRecipeHandler) {
             BaseBreedingRecipeHandler breeding = (BaseBreedingRecipeHandler) handler;
             try {
@@ -103,20 +69,63 @@ public class ForestryHandlerRecipe {
                 recipes.add(recipe);
             }
         }
+        return recipes;
     }
 
-    public static Object getRecipeItems(LabeledPositionedStack stacks) {
-        Object o = RecipeUtil.getRecipeItems(stacks.items);
-        if (o instanceof RecipeItem) {
-            return ((RecipeItem) o).withTooltip(stacks.getTooltip());
-        }
-        return o;
-    }
+    public static class ForestryRecipe {
+        private ArrayList<Object> inputItems;
+        private ArrayList<Object> outputItems;
+        private ArrayList<Object> otherItems;
+        private Collection<String> requirements;
+        private Float chance;
 
-    public static ArrayList<Object> getRecipeItemList(ArrayList<LabeledPositionedStack> stacks) {
-        if (stacks == null) {
-            return null;
+        public ForestryRecipe setInputItems(ArrayList<Object> inputItems) {
+            this.inputItems = inputItems;
+            return this;
         }
-        return stacks.stream().map(ForestryHandlerRecipe::getRecipeItems).collect(Collectors.toCollection(ArrayList::new));
+
+        public ForestryRecipe setOutputItems(ArrayList<Object> outputItems) {
+            this.outputItems = outputItems;
+            return this;
+        }
+
+        public ForestryRecipe setOtherItems(ArrayList<Object> otherItems) {
+            this.otherItems = otherItems;
+            return this;
+        }
+
+        public ForestryRecipe setInputItems(Object inputItems) {
+            if (this.inputItems == null) {
+                this.inputItems = new ArrayList<>();
+            }
+            this.inputItems.add(inputItems);
+            return this;
+        }
+
+        public ForestryRecipe setOutputItems(Object outputItems) {
+            if (this.outputItems == null) {
+                this.outputItems = new ArrayList<>();
+            }
+            this.outputItems.add(outputItems);
+            return this;
+        }
+
+        public ForestryRecipe setOtherItems(Object otherItems) {
+            if (this.otherItems == null) {
+                this.otherItems = new ArrayList<>();
+            }
+            this.otherItems.add(otherItems);
+            return this;
+        }
+
+        public ForestryRecipe setChance(float chance) {
+            this.chance = chance;
+            return this;
+        }
+
+        public ForestryRecipe setRequirements(Collection<String> requirements) {
+            this.requirements = requirements;
+            return this;
+        }
     }
 }

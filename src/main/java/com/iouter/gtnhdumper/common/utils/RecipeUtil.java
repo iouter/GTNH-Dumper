@@ -1,7 +1,6 @@
-package com.iouter.gtnhdumper.common.recipe.utils;
+package com.iouter.gtnhdumper.common.utils;
 
 import codechicken.nei.PositionedStack;
-import com.iouter.gtnhdumper.Utils;
 import com.iouter.gtnhdumper.common.recipe.base.RecipeItem;
 import net.minecraft.item.ItemStack;
 
@@ -16,12 +15,16 @@ public class RecipeUtil {
     private RecipeUtil() {}
 
     public static Object getRecipeItems(ItemStack[] stacks) {
+        return getRecipeItems(stacks, 10000);
+    }
+
+    public static Object getRecipeItems(ItemStack[] stacks, int chance) {
         if (stacks == null || stacks.length == 0) {
             return null;
         }
         stacks = Arrays.stream(stacks).filter(Objects::nonNull).toArray(ItemStack[]::new);
         if (stacks.length == 1) {
-            return new RecipeItem(stacks[0]);
+            return new RecipeItem(stacks[0]).withChance(chance);
         }
         final ItemStack stack0 = stacks[0];
         final int amount = stack0.stackSize;
@@ -32,20 +35,17 @@ public class RecipeUtil {
                 return false;
             }
             if (nbt == null) {
-                if (Utils.getItemNBT(stack) == null) {
-                    return isAmountEqual;
-                }
-                return false;
+                return Utils.getItemNBT(stack) == null;
             }
             return nbt.equals(Utils.getItemNBT(stack));
         });
         if (isDataEqual) {
             final String oD = Utils.getOreDictByItems(stacks, oreDictMap);
             if (oD != null) {
-                return new RecipeItem("#" + oD, amount).withNBT(nbt);
+                return new RecipeItem("#" + oD, amount).withNBT(nbt).withChance(chance);
             }
         }
-        return Arrays.stream(stacks).map(RecipeItem::new).toArray(RecipeItem[]::new);
+        return Arrays.stream(stacks).map(o -> new RecipeItem(o).withChance(chance)).toArray(RecipeItem[]::new);
     }
 
     public static Object getRecipeItems(PositionedStack stacks) {

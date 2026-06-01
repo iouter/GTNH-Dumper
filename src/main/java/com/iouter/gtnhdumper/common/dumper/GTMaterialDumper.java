@@ -1,10 +1,10 @@
 package com.iouter.gtnhdumper.common.dumper;
 
 import bartworks.system.material.Werkstoff;
-import com.iouter.gtnhdumper.Utils;
 import com.iouter.gtnhdumper.common.base.WikiDumper;
-import com.iouter.gtnhdumper.common.recipe.base.GTRecipeDumps;
-import com.iouter.gtnhdumper.common.recipe.utils.Transformer;
+import com.iouter.gtnhdumper.common.recipe.GTDefaultHandlerRecipe;
+import com.iouter.gtnhdumper.common.utils.Transformer;
+import com.iouter.gtnhdumper.common.utils.Utils;
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.OrePrefixes;
@@ -238,7 +238,7 @@ public class GTMaterialDumper extends WikiDumper {
         addOreProcessing(oreProcessingMap, CRUSHED_CENTRIFUGED_TO_DUST_MACERATOR, orePrefixesMap, RecipeMaps.maceratorRecipes, OrePrefixes.dust, OrePrefixes.crushedCentrifuged);
         addOreProcessing(oreProcessingMap, DUST_PURE_TO_DUST_CENTRIFUGE, orePrefixesMap, RecipeMaps.centrifugeRecipes, OrePrefixes.dust, OrePrefixes.dustPure);
         addOreProcessing(oreProcessingMap, DUST_PURE_TO_DUST_ELECTRO_MAGNETIC_SEPARATOR, orePrefixesMap, RecipeMaps.electroMagneticSeparatorRecipes, OrePrefixes.dust, OrePrefixes.dustPure);
-        GTRecipeDumps[] fluidExtractor = RecipeMaps
+        GTDefaultHandlerRecipe.GTDumpedRecipe[] fluidExtractor = RecipeMaps
             .fluidExtractionRecipes
             .getAllRecipes()
             .stream()
@@ -251,7 +251,7 @@ public class GTMaterialDumper extends WikiDumper {
                 return cellFluid.getFluid() == fluidStack.getFluid();
             }))
             .map(Transformer::transformGTRecipe)
-            .toArray(GTRecipeDumps[]::new);
+            .toArray(GTDefaultHandlerRecipe.GTDumpedRecipe[]::new);
         if (fluidExtractor.length != 0) {
             oreProcessingMap.put(ORE_TO_FLUID_FLUID_EXTRACTOR, fluidExtractor);
         }
@@ -261,13 +261,13 @@ public class GTMaterialDumper extends WikiDumper {
         return oreProcessingMap;
     }
 
-    public static GTRecipeDumps[] findRecipes(boolean outputItemCanBeNull, Map<String, Object> orePrefixesMap, RecipeMap<RecipeMapBackend> recipes, OrePrefixes outputPrefix, OrePrefixes... inputPrefixes) {
+    public static GTDefaultHandlerRecipe.GTDumpedRecipe[] findRecipes(boolean outputItemCanBeNull, Map<String, Object> orePrefixesMap, RecipeMap<RecipeMapBackend> recipes, OrePrefixes outputPrefix, OrePrefixes... inputPrefixes) {
         return findRecipes(outputItemCanBeNull, recipes,
             outputPrefix != null ? getItemStackFromMap(orePrefixesMap, outputPrefix) : null,
             Arrays.stream(inputPrefixes).map(prefix -> getItemStackFromMap(orePrefixesMap, prefix)).toArray(ItemStack[]::new));
     }
 
-    public static GTRecipeDumps[] findRecipes(boolean outputItemCanBeNull, RecipeMap<RecipeMapBackend> recipes, ItemStack outputItem, ItemStack... inputItems) {
+    public static GTDefaultHandlerRecipe.GTDumpedRecipe[] findRecipes(boolean outputItemCanBeNull, RecipeMap<RecipeMapBackend> recipes, ItemStack outputItem, ItemStack... inputItems) {
         if (inputItems == null || inputItems.length == 0 || Arrays.stream(inputItems).noneMatch(Objects::nonNull)) {
             return null;
         }
@@ -289,7 +289,7 @@ public class GTMaterialDumper extends WikiDumper {
                 return false;
             }
             return inputItem.getItem() == stack.getItem() && inputItem.getItemDamage() == stack.getItemDamage();
-        }))).map(Transformer::transformGTRecipe).toArray(GTRecipeDumps[]::new);
+        }))).map(Transformer::transformGTRecipe).toArray(GTDefaultHandlerRecipe.GTDumpedRecipe[]::new);
     }
 
     public static void addOreProcessing(Map<String, Object> oreProcessingMap, String processingKey, Map<String, Object> orePrefixesMap, RecipeMap<RecipeMapBackend> recipes, OrePrefixes outputPrefix, OrePrefixes... inputPrefixes) {
@@ -297,7 +297,7 @@ public class GTMaterialDumper extends WikiDumper {
     }
 
     public static void addOreProcessing(boolean outputItemCanBeNull, Map<String, Object> oreProcessingMap, String processingKey, Map<String, Object> orePrefixesMap, RecipeMap<RecipeMapBackend> recipes, OrePrefixes outputPrefix, OrePrefixes... inputPrefixes) {
-        GTRecipeDumps[] gtRecipe = findRecipes(outputItemCanBeNull, orePrefixesMap, recipes, outputPrefix, inputPrefixes);
+        GTDefaultHandlerRecipe.GTDumpedRecipe[] gtRecipe = findRecipes(outputItemCanBeNull, orePrefixesMap, recipes, outputPrefix, inputPrefixes);
         if (gtRecipe != null && gtRecipe.length > 0) {
             oreProcessingMap.put(processingKey, gtRecipe);
         }

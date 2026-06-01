@@ -1,24 +1,7 @@
 package com.iouter.gtnhdumper.common.base;
 
 import codechicken.nei.config.DataDumper;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.iouter.gtnhdumper.CommonProxy;
-import com.iouter.gtnhdumper.common.recipe.base.RecipeItem;
-import com.iouter.gtnhdumper.common.recipe.serializer.AspectListSerializer;
-import com.iouter.gtnhdumper.common.recipe.serializer.AspectSerializer;
-import com.iouter.gtnhdumper.common.recipe.serializer.ElementSerializer;
-import com.iouter.gtnhdumper.common.recipe.serializer.FluidStackSerializer;
-import com.iouter.gtnhdumper.common.recipe.serializer.ItemStackSerializer;
-import com.iouter.gtnhdumper.common.recipe.serializer.MaterialsSerializer;
-import com.iouter.gtnhdumper.common.recipe.serializer.RecipeItemSerializer;
-import com.iouter.gtnhdumper.common.recipe.serializer.SafeDoubleSerializer;
-import gregtech.api.enums.Element;
-import gregtech.api.enums.Materials;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
-import thaumcraft.api.aspects.Aspect;
-import thaumcraft.api.aspects.AspectList;
+import com.iouter.gtnhdumper.GTNHDumper;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -131,28 +114,10 @@ public abstract class WikiDumper extends DataDumper{
         } else {
             dumpObject = getJsonMap(header(), dumpObject(2).iterator().next());
         }
-        GsonBuilder gsonBuilder = new GsonBuilder()
-            .setPrettyPrinting()
-            .serializeSpecialFloatingPointValues()
-            .registerTypeAdapter(Double.class, new SafeDoubleSerializer())
-            .registerTypeAdapter(Double.TYPE, new SafeDoubleSerializer())
-            .disableHtmlEscaping()
-            .registerTypeAdapter(RecipeItem.class, new RecipeItemSerializer())
-            .registerTypeAdapter(ItemStack.class, new ItemStackSerializer())
-            .registerTypeAdapter(FluidStack.class, new FluidStackSerializer());
-        if (CommonProxy.isGTLoaded) {
-            gsonBuilder.registerTypeAdapter(Element.class, new ElementSerializer())
-                .registerTypeAdapter(Materials.class, new MaterialsSerializer());
-        }
-        if (CommonProxy.isTCLoaded) {
-            gsonBuilder.registerTypeAdapter(Aspect.class, new AspectSerializer())
-                .registerTypeAdapter(AspectList.class, new AspectListSerializer());
-        }
-        Gson gson = gsonBuilder.create();
         try (FileWriter writer = new FileWriter(file)) {
-            gson.toJson(dumpObject, writer);
+            GTNHDumper.GSON.toJson(dumpObject, writer);
         } catch (IOException e) {
-            e.printStackTrace();
+            GTNHDumper.LOG.error(e);
         }
     }
 }

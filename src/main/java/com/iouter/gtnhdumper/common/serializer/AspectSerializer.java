@@ -1,4 +1,4 @@
-package com.iouter.gtnhdumper.common.recipe.serializer;
+package com.iouter.gtnhdumper.common.serializer;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;

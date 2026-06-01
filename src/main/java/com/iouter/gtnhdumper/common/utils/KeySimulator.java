@@ -5,7 +5,6 @@ import org.lwjglx.input.KeyCodes;
 import org.lwjglx.input.Keyboard;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;

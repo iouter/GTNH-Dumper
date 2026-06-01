@@ -145,7 +145,7 @@ public final class FBOHelper {
         return image;
     }
 
-    public void saveToFile(File file, BufferedImage image) {
+    public static void saveToFile(File file, BufferedImage image) {
         file.mkdirs();
 
         try {

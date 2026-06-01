@@ -1,8 +1,8 @@
 package com.iouter.gtnhdumper.common.dumper;
 
 import com.iouter.gtnhdumper.CommonProxy;
-import com.iouter.gtnhdumper.Utils;
 import com.iouter.gtnhdumper.common.base.WikiDumper;
+import com.iouter.gtnhdumper.common.utils.Utils;
 import gregtech.api.enums.ItemList;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentTranslation;

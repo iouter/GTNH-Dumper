@@ -1,27 +1,54 @@
-package com.iouter.gtnhdumper;
+package com.iouter.gtnhdumper.common.utils;
 
 import codechicken.lib.inventory.InventoryUtils;
 import codechicken.nei.PositionedStack;
-import com.iouter.gtnhdumper.common.recipe.utils.RecipeUtil;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.iouter.gtnhdumper.CommonProxy;
+import com.iouter.gtnhdumper.GTNHDumper;
+import com.iouter.gtnhdumper.common.recipe.base.RecipeItem;
+import com.iouter.gtnhdumper.common.serializer.AspectListSerializer;
+import com.iouter.gtnhdumper.common.serializer.AspectSerializer;
+import com.iouter.gtnhdumper.common.serializer.ElementSerializer;
+import com.iouter.gtnhdumper.common.serializer.FluidStackSerializer;
+import com.iouter.gtnhdumper.common.serializer.ItemStackSerializer;
+import com.iouter.gtnhdumper.common.serializer.MaterialsSerializer;
+import com.iouter.gtnhdumper.common.serializer.NBTTagCompoundSerializer;
+import com.iouter.gtnhdumper.common.serializer.RecipeItemSerializer;
+import com.iouter.gtnhdumper.common.serializer.SafeDoubleSerializer;
+import gregtech.api.enums.Element;
+import gregtech.api.enums.Materials;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidStack;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
 
 import java.lang.reflect.Field;
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Utils {
     public static final Minecraft minecraft = Minecraft.getMinecraft();
+    private static final char[] BASE62 = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+    private static final int OUTPUT_LENGTH = 15;
+    private static final BigInteger BASE = BigInteger.valueOf(BASE62.length);
 
     public static String getItemKeyWithNBT(ItemStack stack) {
         final String nbt = getItemNBT(stack);
@@ -124,7 +151,7 @@ public class Utils {
                 map.put(name, items.stream().map(Utils::getItemKey).toArray(String[]::new));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            GTNHDumper.LOG.error(e);
         }
         return map;
     }
@@ -236,10 +263,10 @@ public class Utils {
     }
 
     public static String replaceIllegalChars(String input) {
-        return input.replace("/", "_1_")
-            .replace(":", "_2_")
-            .replace("*", "_3_")
-            .replace("\"", "_4_")
+        return input.replace("/", "")
+            .replace(":", "")
+            .replace("*", "")
+            .replace("\"", "")
             .replace("<", "")
             .replace(">", "")
             .replace("|", "")
@@ -247,10 +274,91 @@ public class Utils {
             .replace("?", "");
     }
 
-    public static String replaceHuijiStrBack(String input) {
-        return input.replace("_1_", "/")
-            .replace("_2_", ":")
-            .replace("_3_", "*")
-            .replace("_4_", "\"");
+    public static String replaceHuijiIllegalChars(String input) {
+        return input.replace("/", "_")
+            .replace(":", "_")
+            .replace("*", "_")
+            .replace("\"", "_")
+            .replace("<", "_")
+            .replace(">", "_")
+            .replace("|", "_")
+            .replace("\\", "_")
+            .replace("?", "_");
+    }
+
+    public static String replacePathIllegalChars(String input) {
+        return input.replace(":", "_")
+            .replace("*", "_")
+            .replace("\"", "_")
+            .replace("<", "_")
+            .replace(">", "_")
+            .replace("|", "_")
+            .replace("?", "_");
+    }
+
+    public static Gson getGsonInstance() {
+        GsonBuilder gsonBuilder = new GsonBuilder()
+            .setPrettyPrinting()
+            .serializeSpecialFloatingPointValues()
+            .registerTypeAdapter(Double.class, new SafeDoubleSerializer())
+            .registerTypeAdapter(Double.TYPE, new SafeDoubleSerializer())
+            .disableHtmlEscaping()
+            .registerTypeAdapter(RecipeItem.class, new RecipeItemSerializer())
+            .registerTypeAdapter(ItemStack.class, new ItemStackSerializer())
+            .registerTypeAdapter(FluidStack.class, new FluidStackSerializer())
+            .registerTypeAdapter(NBTTagCompound.class, new NBTTagCompoundSerializer());
+        if (CommonProxy.isGTLoaded) {
+            gsonBuilder.registerTypeAdapter(Element.class, new ElementSerializer())
+                .registerTypeAdapter(Materials.class, new MaterialsSerializer());
+        }
+        if (CommonProxy.isTCLoaded) {
+            gsonBuilder.registerTypeAdapter(Aspect.class, new AspectSerializer())
+                .registerTypeAdapter(AspectList.class, new AspectListSerializer());
+        }
+        return gsonBuilder.create();
+    }
+
+    public static String uuidToBase64(UUID uuid) {
+        ByteBuffer buffer = ByteBuffer.allocate(16);
+        buffer.putLong(uuid.getMostSignificantBits());
+        buffer.putLong(uuid.getLeastSignificantBits());
+        byte[] bytes = buffer.array();
+
+        String base64 = Base64.getEncoder().encodeToString(bytes);
+        return base64.replaceAll("=", "");
+    }
+
+    public static String getItemStackShortKey(ItemStack stack) {
+        String hash = hashNBT(stack);
+        if (hash != null) {
+            return getItemKey(stack) + "_" + hash;
+        }
+        return getItemKey(stack);
+
+    }
+
+    public static String hashNBT(ItemStack stack) {
+        String nbt = getItemNBT(stack);
+        if (nbt == null) return null;
+        try {
+            byte[] fullHash = MessageDigest.getInstance("SHA-256")
+                .digest(nbt.getBytes(StandardCharsets.UTF_8));
+
+            byte[] folded = new byte[16];
+            for (int i = 0; i < 16; i++) {
+                folded[i] = (byte) (fullHash[i] ^ fullHash[i + 16]);
+            }
+
+            BigInteger value = new BigInteger(1, folded);
+            char[] buffer = new char[OUTPUT_LENGTH];
+            for (int i = OUTPUT_LENGTH - 1; i >= 0; i--) {
+                BigInteger[] div = value.divideAndRemainder(BASE);
+                buffer[i] = BASE62[div[1].intValue()];
+                value = div[0];
+            }
+            return new String(buffer);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

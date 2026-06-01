@@ -1,22 +1,26 @@
 package com.iouter.gtnhdumper.common.recipe.base;
 
-import com.iouter.gtnhdumper.Utils;
+import com.iouter.gtnhdumper.common.utils.Utils;
 import net.minecraftforge.fluids.FluidStack;
 
 public class RecipeFluid {
     private final String key;
-    private long amount;
+    private Long amount;
     private Integer chance;
     public String nbt;
 
 
-    public RecipeFluid(String key, int amount) {
+    public RecipeFluid(String key, long amount) {
         this.key = key;
-        this.amount = amount;
+        if (amount != 0) {
+            this.amount = amount;
+        } else {
+            this.amount = null;
+        }
     }
 
     public RecipeFluid(FluidStack stack) {
-        this("fluid." + stack.getFluid().getName(), stack.amount);
+        this("fluid." + stack.getFluid().getName(), (long) stack.amount);
     }
 
     public RecipeFluid withChance(int chance) {

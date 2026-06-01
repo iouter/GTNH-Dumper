@@ -5,9 +5,7 @@ import gtneioreplugin.util.DimensionHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.Language;
 import net.minecraft.client.resources.LanguageManager;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.StatCollector;
 
 import java.io.File;
 import java.util.HashMap;

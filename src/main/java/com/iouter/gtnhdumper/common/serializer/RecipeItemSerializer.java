@@ -1,4 +1,4 @@
-package com.iouter.gtnhdumper.common.recipe.serializer;
+package com.iouter.gtnhdumper.common.serializer;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -8,7 +8,6 @@ import com.google.gson.JsonSerializer;
 import com.iouter.gtnhdumper.common.recipe.base.RecipeItem;
 
 import java.lang.reflect.Type;
-import java.util.StringJoiner;
 
 public class RecipeItemSerializer implements JsonSerializer<RecipeItem> {
     @Override

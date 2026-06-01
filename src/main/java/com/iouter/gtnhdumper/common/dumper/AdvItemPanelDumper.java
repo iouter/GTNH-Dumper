@@ -1,13 +1,17 @@
 package com.iouter.gtnhdumper.common.dumper;
 
 import codechicken.nei.guihook.GuiContainerManager;
-import com.iouter.gtnhdumper.Utils;
+import codechicken.nei.shadow.org.apache.commons.csv.CSVFormat;
+import codechicken.nei.shadow.org.apache.commons.csv.CSVPrinter;
+import com.iouter.gtnhdumper.CommonProxy;
 import com.iouter.gtnhdumper.common.base.WikiDumper;
 import com.iouter.gtnhdumper.common.utils.KeySimulator;
+import com.iouter.gtnhdumper.common.utils.Utils;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.common.registry.GameRegistry;
+import net.glease.tc4tweak.modules.objectTag.GetObjectTags;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.resources.Language;
@@ -20,11 +24,16 @@ import net.minecraft.util.EnumChatFormatting;
 import org.lwjgl.input.Keyboard;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class AdvItemPanelDumper extends WikiDumper {
 
@@ -43,12 +52,13 @@ public class AdvItemPanelDumper extends WikiDumper {
 
     @Override
     public String getKeyStr() {
-        return "items";
+        return "shortKey";
     }
 
     @Override
     public String[] header() {
         return new String[] {
+            "shortKey",
             "key",
             "nbt",
             "originalName",
@@ -59,7 +69,8 @@ public class AdvItemPanelDumper extends WikiDumper {
             "tooltipsShiftAndCtrl",
             "mod",
             "icon",
-            "frameCount"
+            "frameCount",
+            "aspect"
         };
     }
 
@@ -76,6 +87,9 @@ public class AdvItemPanelDumper extends WikiDumper {
             item.getSubItems(item, CreativeTabs.tabAllSearch, sub);
             itemStacks.addAll(sub);
         }
+
+        Map<String, String> redirectMap = new HashMap<>();
+        Set<String> itemNameSet = new HashSet<>();
 
         Map<ItemStack, String> originalNameMap = getOriginalNameMap(itemStacks);
 
@@ -131,20 +145,45 @@ public class AdvItemPanelDumper extends WikiDumper {
                     tooltips[TOOLTIP_LSHIFT_AND_LCONTROL] = tooltipShiftAndCtrl;
                 }
             }, Keyboard.KEY_LSHIFT, Keyboard.KEY_LCONTROL);
+
+            final String translatedName = EnumChatFormatting.getTextWithoutFormattingCodes(GuiContainerManager.itemDisplayNameShort(stack));
+            final String imageName = ItemIconDumper.getIconFileName(stack);
+            final String vaildFileName = Utils.replaceIllegalChars(translatedName);
+            if (itemNameSet.add(vaildFileName)) {
+                redirectMap.put("File:" + vaildFileName + ".png", "File:" + imageName);
+            } else {
+                int i = 2;
+                while (!itemNameSet.add(vaildFileName + " " + i)) {
+                    i++;
+                }
+                redirectMap.put("File:" + vaildFileName + " " + i + ".png", "File:" + imageName);
+            }
+
             list.add(new Object[] {
+                Utils.getItemStackShortKey(stack),
                 Utils.getItemKey(stack),
                 nbt,
                 originalNameMap.get(stack),
-                EnumChatFormatting.getTextWithoutFormattingCodes(GuiContainerManager.itemDisplayNameShort(stack)),
+                translatedName,
                 tooltip,
                 tooltips[TOOLTIP_LSHIFT],
                 tooltips[TOOLTIP_LCONTROL],
                 tooltips[TOOLTIP_LSHIFT_AND_LCONTROL],
                 modName,
-                Utils.replaceHuijiStrBack(ItemIconDumper.getIconFileName(stack)),
-                ItemIconDumper.getItemFrameCount(stack)
+                imageName,
+                ItemIconDumper.getItemFrameCount(stack),
+                CommonProxy.isTCLoaded ? GetObjectTags.getObjectTags(stack) : null
             });
         }
+
+        try (CSVPrinter printer = new CSVPrinter(Files.newBufferedWriter(Paths.get("dumps/image_redirect.csv")), CSVFormat.DEFAULT)) {
+            for (Map.Entry<String, String> e : redirectMap.entrySet()) {
+                printer.printRecord(e.getKey(), e.getValue());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         return list;
     }
 

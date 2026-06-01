@@ -11,6 +11,9 @@ nei.options.tools.dump.gtnhdumper.gtoreveins=GT Ore Veins
 nei.options.tools.dump.gtnhdumper.gtsmalloreveins=GT Small Ore Veins
 nei.options.tools.dump.gtnhdumper.gtundergroundfluids=GT Underground Fluids
 nei.options.tools.dump.gtnhdumper.gtnhdimensions=GTNH Dimensions
+nei.options.tools.dump.gtnhdumper.gtstructures=GT Structures
+nei.options.tools.dump.gtnhdumper.quests=Quests
+nei.options.tools.dump.gtnhdumper.questlines=Questlines
 
 nei.options.tools.dump.gtnhdumper.advitempanel.dumped=Advanced Item Panel were dumped to %s
 nei.options.tools.dump.gtnhdumper.gtmaterial.dumped=GT Material were dumped to %s
@@ -23,3 +26,6 @@ nei.options.tools.dump.gtnhdumper.gtorevein.dumped=GT Ore Vein were dumped to %s
 nei.options.tools.dump.gtnhdumper.gtsmallorevein.dumped=GT Small Ore Vein were dumped to %s
 nei.options.tools.dump.gtnhdumper.gtundergroundfluid.dumped=GT Underground Fluid were dumped to %s
 nei.options.tools.dump.gtnhdumper.gtnhdimension.dumped=GTNH Dimension were dumped to %s
+
+nei.options.tools.dump.gtnhdumper.quest.dumped=Quest were dumped to %s
+nei.options.tools.dump.gtnhdumper.questline.dumped=Questline were dumped to %s

@@ -1,7 +1,7 @@
 package com.iouter.gtnhdumper.common.dumper;
 
-import com.iouter.gtnhdumper.Utils;
 import com.iouter.gtnhdumper.common.base.WikiDumper;
+import com.iouter.gtnhdumper.common.utils.Utils;
 import net.minecraft.util.ChatComponentTranslation;
 
 import java.io.File;

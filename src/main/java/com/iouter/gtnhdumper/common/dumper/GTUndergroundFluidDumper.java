@@ -1,8 +1,6 @@
 package com.iouter.gtnhdumper.common.dumper;
 
 import com.iouter.gtnhdumper.common.base.WikiDumper;
-import gtneioreplugin.util.DimensionHelper;
-import gtneioreplugin.util.GT5OreSmallHelper;
 import gtneioreplugin.util.GT5UndergroundFluidHelper;
 import net.minecraft.util.ChatComponentTranslation;
 

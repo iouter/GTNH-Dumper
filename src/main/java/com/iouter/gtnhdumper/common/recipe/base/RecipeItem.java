@@ -1,10 +1,10 @@
 package com.iouter.gtnhdumper.common.recipe.base;
 
-import com.iouter.gtnhdumper.Utils;
+import com.iouter.gtnhdumper.common.utils.Utils;
 import net.minecraft.item.ItemStack;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -15,12 +15,12 @@ public class RecipeItem {
     public Long amount;
     public Integer chance;
     public String nbt;
-    public LinkedList<String> tooltip;
+    public List<String> tooltip;
 
-    public RecipeItem(String key, int amount) {
+    public RecipeItem(String key, long amount) {
         this.key = key;
         if (amount != 1) {
-            this.amount = (long) amount;
+            this.amount = amount;
         } else {
             this.amount = null;
         }
@@ -72,7 +72,7 @@ public class RecipeItem {
 
     public RecipeItem withTooltip(List<String> tooltips) {
         if (this.tooltip == null) {
-            this.tooltip = new LinkedList<>();
+            this.tooltip = new ArrayList<>();
         }
         this.tooltip.addAll(tooltips);
         return this;

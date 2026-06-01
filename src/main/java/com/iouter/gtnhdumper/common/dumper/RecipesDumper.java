@@ -7,35 +7,34 @@ import codechicken.nei.recipe.HandlerInfo;
 import codechicken.nei.recipe.IRecipeHandler;
 import codechicken.nei.recipe.TemplateRecipeHandler;
 import com.google.common.base.Objects;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.gtnewhorizons.aspectrecipeindex.nei.AlchemyRecipeHandler;
+import com.gtnewhorizons.aspectrecipeindex.nei.AspectCombinationHandler;
+import com.gtnewhorizons.aspectrecipeindex.nei.InfusionRecipeHandler;
+import com.gtnewhorizons.aspectrecipeindex.nei.arcaneworkbench.ShapedArcaneRecipeHandler;
+import com.gtnewhorizons.aspectrecipeindex.nei.arcaneworkbench.ShapelessArcaneRecipeHandler;
 import com.iouter.gtnhdumper.CommonProxy;
-import com.iouter.gtnhdumper.Utils;
+import com.iouter.gtnhdumper.GTNHDumper;
 import com.iouter.gtnhdumper.common.recipe.AvaExtremeShapedHandlerRecipe;
 import com.iouter.gtnhdumper.common.recipe.ForestryHandlerRecipe;
 import com.iouter.gtnhdumper.common.recipe.GTDefaultHandlerRecipe;
+import com.iouter.gtnhdumper.common.recipe.GasSiphonHandlerRecipe;
 import com.iouter.gtnhdumper.common.recipe.GeneralHandlerRecipe;
+import com.iouter.gtnhdumper.common.recipe.MobHandlerInfernalRecipe;
+import com.iouter.gtnhdumper.common.recipe.MobHandlerRecipe;
 import com.iouter.gtnhdumper.common.recipe.ShapedCraftingHandlerRecipe;
+import com.iouter.gtnhdumper.common.recipe.SpacePumpModuleHandlerRecipe;
 import com.iouter.gtnhdumper.common.recipe.TCHandlerRecipe;
-import com.iouter.gtnhdumper.common.recipe.base.RecipeItem;
-import com.iouter.gtnhdumper.common.recipe.serializer.AspectListSerializer;
-import com.iouter.gtnhdumper.common.recipe.serializer.AspectSerializer;
-import com.iouter.gtnhdumper.common.recipe.serializer.ElementSerializer;
-import com.iouter.gtnhdumper.common.recipe.serializer.FluidStackSerializer;
-import com.iouter.gtnhdumper.common.recipe.serializer.ItemStackSerializer;
-import com.iouter.gtnhdumper.common.recipe.serializer.MaterialsSerializer;
-import com.iouter.gtnhdumper.common.recipe.serializer.RecipeItemSerializer;
-import com.iouter.gtnhdumper.common.recipe.serializer.SafeDoubleSerializer;
-import gregtech.api.enums.Element;
-import gregtech.api.enums.Materials;
+import com.iouter.gtnhdumper.common.recipe.base.BaseHandlerRecipe;
+import com.iouter.gtnhdumper.common.utils.Utils;
+import com.kuba6000.mobsinfo.nei.MobHandler;
+import com.kuba6000.mobsinfo.nei.MobHandlerInfernal;
+import fox.spiteful.avaritia.compat.nei.ExtremeShapedRecipeHandler;
 import gregtech.nei.GTNEIDefaultHandler;
+import gtnhintergalactic.nei.GasSiphonRecipeHandler;
+import gtnhintergalactic.nei.SpacePumpModuleRecipeHandler;
 import net.bdew.neiaddons.forestry.BaseBreedingRecipeHandler;
 import net.bdew.neiaddons.forestry.BaseProduceRecipeHandler;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentTranslation;
-import net.minecraftforge.fluids.FluidStack;
-import thaumcraft.api.aspects.Aspect;
-import thaumcraft.api.aspects.AspectList;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -48,25 +47,30 @@ public class RecipesDumper extends DataDumper {
         super("tools.dump.gtnhdumper.recipe");
     }
 
-    private static Object dumpRecipes(IRecipeHandler recipeHandler) {
+    private static BaseHandlerRecipe dumpRecipes(IRecipeHandler recipeHandler) {
         final String clazz = Utils.getAfterLastDot(recipeHandler.getHandlerId()).replace(".", "_");
         if (CommonProxy.isGTLoaded) {
+            if (recipeHandler instanceof GasSiphonRecipeHandler) {
+                return new GasSiphonHandlerRecipe(recipeHandler);
+            }
+            if (recipeHandler instanceof SpacePumpModuleRecipeHandler) {
+                return new SpacePumpModuleHandlerRecipe(recipeHandler);
+            }
             if (recipeHandler instanceof GTNEIDefaultHandler) {
-                GTNEIDefaultHandler gtDefaultHandler = (GTNEIDefaultHandler) recipeHandler;
-                return new GTDefaultHandlerRecipe(gtDefaultHandler);
+                return new GTDefaultHandlerRecipe((GTNEIDefaultHandler) recipeHandler);
             }
         }
-        if (CommonProxy.isTCNEIAdditionsLoaded) {
-            if (clazz.equals("AspectCombinationHandler") ||
-                clazz.equals("ArcaneCraftingShapedHandler") ||
-                clazz.equals("ArcaneCraftingShapelessHandler") ||
-                clazz.equals("TCNACrucibleRecipeHandler") ||
-                clazz.equals("TCNAInfusionRecipeHandler")) {
+        if (CommonProxy.isTCLoaded) {
+            if (recipeHandler instanceof AspectCombinationHandler ||
+                recipeHandler instanceof ShapedArcaneRecipeHandler ||
+                recipeHandler instanceof ShapelessArcaneRecipeHandler ||
+                recipeHandler instanceof AlchemyRecipeHandler ||
+                recipeHandler instanceof InfusionRecipeHandler) {
                 return new TCHandlerRecipe(recipeHandler);
             }
         }
         if (CommonProxy.isAvaritiaLoaded) {
-            if (clazz.equals("ExtremeShapedRecipeHandler")) {
+            if (recipeHandler instanceof ExtremeShapedRecipeHandler) {
                 return new AvaExtremeShapedHandlerRecipe(recipeHandler);
             }
         }
@@ -75,6 +79,14 @@ public class RecipesDumper extends DataDumper {
                 if (recipeHandler instanceof BaseBreedingRecipeHandler || recipeHandler instanceof BaseProduceRecipeHandler) {
                     return new ForestryHandlerRecipe(recipeHandler);
                 }
+            }
+        }
+        if (CommonProxy.isMobsInfoLoaded) {
+            if (recipeHandler instanceof MobHandler) {
+                return new MobHandlerRecipe((MobHandler) recipeHandler);
+            }
+            if (recipeHandler instanceof MobHandlerInfernal) {
+                return new MobHandlerInfernalRecipe((MobHandlerInfernal) recipeHandler);
             }
         }
         if (clazz.contains("Shaped") && !clazz.equals("RecipeHandlerRollingMachineShaped")) {
@@ -96,7 +108,7 @@ public class RecipesDumper extends DataDumper {
             recipesList.add(new String[]{handler.getRecipeName()});
             final String handlerName = handler.getHandlerId();
             final String handlerId = Objects.firstNonNull(
-                handler instanceof TemplateRecipeHandler ? ((TemplateRecipeHandler) handler).getOverlayIdentifier()
+                handler instanceof TemplateRecipeHandler ? handler.getOverlayIdentifier()
                     : null,
                 "null");
             HandlerInfo info = GuiRecipeTab.getHandlerInfo(handlerName, handlerId);
@@ -104,37 +116,22 @@ public class RecipesDumper extends DataDumper {
             String id = Utils.getAfterLastDot(handlerId);
             String clazz = Utils.getAfterLastDot(handlerName);
             String fileName = "dumps/recipes/" + modID + "/" + clazz + "_" + id + ".json";
+            fileName = Utils.replacePathIllegalChars(fileName);
             File file = new File(fileName);
             File parentDir = file.getParentFile();
             if (parentDir != null && !parentDir.exists()) {
                 parentDir.mkdirs();
             }
-            GsonBuilder gsonBuilder = new GsonBuilder()
-                .setPrettyPrinting()
-                .registerTypeAdapter(Double.class, new SafeDoubleSerializer())
-                .registerTypeAdapter(Double.TYPE, new SafeDoubleSerializer())
-                .registerTypeAdapter(RecipeItem.class, new RecipeItemSerializer())
-                .registerTypeAdapter(ItemStack.class, new ItemStackSerializer())
-                .registerTypeAdapter(FluidStack.class, new FluidStackSerializer());
-            if (CommonProxy.isGTLoaded) {
-                gsonBuilder.registerTypeAdapter(Element.class, new ElementSerializer())
-                    .registerTypeAdapter(Materials.class, new MaterialsSerializer());
-            }
-            if (CommonProxy.isTCLoaded) {
-                gsonBuilder.registerTypeAdapter(Aspect.class, new AspectSerializer())
-                    .registerTypeAdapter(AspectList.class, new AspectListSerializer());
-            }
-            Gson gson = gsonBuilder.create();
             try (FileWriter writer = new FileWriter(file)) {
-                gson.toJson(dumpRecipes(handler), writer);
-                System.out.println("已写入：" + file.getAbsolutePath());
+                GTNHDumper.GSON.toJson(dumpRecipes(handler).build(), writer);
+                GTNHDumper.info("已写入：" + file.getAbsolutePath());
             } catch (IOException e) {
                 file.deleteOnExit();
-                e.printStackTrace();
+                GTNHDumper.LOG.error(e);
             } catch (Exception e) {
-                System.out.println("导出" + name + "时发生错误：" + e.getLocalizedMessage());
+                GTNHDumper.info("导出" + name + "时发生错误：" + e.getLocalizedMessage());
                 file.deleteOnExit();
-                e.printStackTrace();
+                GTNHDumper.LOG.error(e);
             }
         }
         return recipesList;

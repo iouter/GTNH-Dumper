@@ -1,7 +1,7 @@
-package com.iouter.gtnhdumper.common.recipe.utils;
+package com.iouter.gtnhdumper.common.utils;
 
 import codechicken.nei.NEIServerUtils;
-import com.iouter.gtnhdumper.common.recipe.base.GTRecipeDumps;
+import com.iouter.gtnhdumper.common.recipe.GTDefaultHandlerRecipe;
 import com.iouter.gtnhdumper.common.recipe.base.RecipeFluid;
 import com.iouter.gtnhdumper.common.recipe.base.RecipeItem;
 import gregtech.api.recipe.RecipeMetadataKey;
@@ -9,18 +9,17 @@ import gregtech.api.recipe.metadata.IRecipeMetadataStorage;
 import gregtech.api.util.GTOreDictUnificator;
 import gregtech.api.util.GTRecipe;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.FluidStack;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class Transformer {
     private Transformer() {}
 
-    public static GTRecipeDumps transformGTRecipe(GTRecipe src) {
+    public static GTDefaultHandlerRecipe.GTDumpedRecipe transformGTRecipe(GTRecipe src) {
         if (src == null) {
             return null;
         }
@@ -57,7 +56,7 @@ public class Transformer {
         }
         if (metadata != null && metadata.isEmpty())
             metadata = null;
-        return new GTRecipeDumps(
+        return new GTDefaultHandlerRecipe.GTDumpedRecipe(
             inputItems,
             inputFluids,
             outputItems,
@@ -73,21 +72,22 @@ public class Transformer {
     public static ArrayList<Object> getInputItems(GTRecipe gtRecipe) {
         ArrayList<Object> inputItems = new ArrayList<>();
         for (int i = 0; i < gtRecipe.mInputs.length; i++) {
+            int chance = gtRecipe.getInputChance(i);
             if (gtRecipe instanceof GTRecipe.GTRecipe_WithAlt) {
                 GTRecipe.GTRecipe_WithAlt gtRecipeWithAlt = (GTRecipe.GTRecipe_WithAlt) gtRecipe;
                 Object stackObj = gtRecipeWithAlt.getAltRepresentativeInput(i);
                 if (stackObj instanceof ItemStack) {
                     ItemStack stackAlt = (ItemStack) stackObj;
-                    inputItems.add(new RecipeItem(stackAlt));
+                    inputItems.add(new RecipeItem(stackAlt).withChance(chance));
                 } else if (stackObj instanceof ItemStack[]) {
                     ItemStack[] stacks = (ItemStack[]) stackObj;
-                    inputItems.add(RecipeUtil.getRecipeItems(stacks));
+                    inputItems.add(RecipeUtil.getRecipeItems(stacks, chance));
                 }
             } else {
                 ItemStack stack = gtRecipe.mInputs[i];
                 if (stack == null)
                     continue;
-                inputItems.add(RecipeUtil.getRecipeItems(NEIServerUtils.extractRecipeItems(GTOreDictUnificator.getNonUnifiedStacks(stack))));
+                inputItems.add(RecipeUtil.getRecipeItems(NEIServerUtils.extractRecipeItems(GTOreDictUnificator.getNonUnifiedStacks(stack)), chance));
             }
         }
         if (inputItems.isEmpty())
@@ -106,14 +106,22 @@ public class Transformer {
     }
 
     public static ArrayList<RecipeFluid> getInputFluids(GTRecipe gtRecipe) {
-        ArrayList<RecipeFluid> inputFluids = Arrays.stream(gtRecipe.mFluidInputs).map(fluidStack -> new RecipeFluid(fluidStack).withNBT(fluidStack)).collect(Collectors.toCollection(ArrayList::new));
+        ArrayList<RecipeFluid> inputFluids = new ArrayList<>();
+        for (int i = 0; i < gtRecipe.mFluidInputs.length; i++) {
+            final FluidStack stack = gtRecipe.mFluidInputs[i];
+            inputFluids.add(new RecipeFluid(stack).withNBT(stack).withChance(gtRecipe.getFluidInputChance(i)));
+        }
         if (inputFluids.isEmpty())
             return null;
         return inputFluids;
     }
 
     public static ArrayList<RecipeFluid> getOutputFluids(GTRecipe gtRecipe) {
-        ArrayList<RecipeFluid> outputFluids = Arrays.stream(gtRecipe.mFluidOutputs).map(fluidStack -> new RecipeFluid(fluidStack).withNBT(fluidStack)).collect(Collectors.toCollection(ArrayList::new));
+        ArrayList<RecipeFluid> outputFluids = new ArrayList<>();
+        for (int i = 0; i < gtRecipe.mFluidOutputs.length; i++) {
+            final FluidStack stack = gtRecipe.mFluidOutputs[i];
+            outputFluids.add(new RecipeFluid(stack).withNBT(stack).withChance(gtRecipe.getFluidOutputChance(i)));
+        }
         if (outputFluids.isEmpty())
             return null;
         return outputFluids;

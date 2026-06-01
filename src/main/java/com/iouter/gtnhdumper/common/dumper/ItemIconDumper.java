@@ -4,9 +4,9 @@ import bartworks.system.material.BWMetaGeneratedOres;
 import com.gtnewhorizons.angelica.glsm.GLStateManager;
 import com.iouter.gtnhdumper.CommonProxy;
 import com.iouter.gtnhdumper.GTNHDumper;
-import com.iouter.gtnhdumper.Utils;
 import com.iouter.gtnhdumper.common.utils.DynamicTexture;
 import com.iouter.gtnhdumper.common.utils.FBOHelper;
+import com.iouter.gtnhdumper.common.utils.Utils;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.registry.GameData;
 import gregtech.common.blocks.GTBlockOre;
@@ -29,11 +29,6 @@ import org.lwjgl.opengl.GL11;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.lang.reflect.Field;
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -43,61 +38,18 @@ import java.util.Objects;
 
 public class ItemIconDumper {
 
-    private static final char[] BASE62 = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
-    private static final int OUTPUT_LENGTH = 15;
-    private static final BigInteger BASE = BigInteger.valueOf(BASE62.length);
     private static final Object2IntOpenHashMap<ItemStack> frameCountMap = new Object2IntOpenHashMap<>();
-
     private static final Map<Integer, FBOHelper> fbos = new HashMap<>();
-
-    private static Field frameCounterField;
-    private static Field tickCounterField;
-    private static Field animationMetadataField;
 
     private ItemIconDumper() {
     }
 
     public static String getIconFileName(ItemStack stack) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("ICON");
-        sb.append("_");
-        sb.append(Utils.getItemKey(stack));
-        String hashNBT = hashNBT(stack);
-        if (hashNBT != null) {
-            sb.append('_');
-            sb.append(hashNBT);
-        }
-        sb.append(".png");
-        return sb.toString();
+        return getIconFileName(stack, false);
     }
 
-    public static String getIconFileNameInHuijiUpdater(ItemStack stack) {
-        return Utils.replaceIllegalChars(getIconFileName(stack));
-    }
-
-    public static String hashNBT(ItemStack stack) {
-        String nbt = Utils.getItemNBT(stack);
-        if (nbt == null) return null;
-        try {
-            byte[] fullHash = MessageDigest.getInstance("SHA-256")
-                .digest(nbt.getBytes(StandardCharsets.UTF_8));
-
-            byte[] folded = new byte[16];
-            for (int i = 0; i < 16; i++) {
-                folded[i] = (byte) (fullHash[i] ^ fullHash[i + 16]);
-            }
-
-            BigInteger value = new BigInteger(1, folded);
-            char[] buffer = new char[OUTPUT_LENGTH];
-            for (int i = OUTPUT_LENGTH - 1; i >= 0; i--) {
-                BigInteger[] div = value.divideAndRemainder(BASE);
-                buffer[i] = BASE62[div[1].intValue()];
-                value = div[0];
-            }
-            return new String(buffer);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
+    public static String getIconFileName(ItemStack stack, boolean isDynamic) {
+        return "icon_" + Utils.replaceHuijiIllegalChars(Utils.getItemStackShortKey(stack)) + (isDynamic ? "_dynamic" : "") + ".png";
     }
 
     public static void testHashNBT() {
@@ -115,7 +67,7 @@ public class ItemIconDumper {
 
         for (ItemStack stack : itemStacks) {
             String nbt = Utils.getItemNBT(stack);
-            String hashNBT = hashNBT(stack);
+            String hashNBT = Utils.hashNBT(stack);
             if (hashNBT == null) continue;
             String temp = hashMap.get(nbt);
             if (temp == null) {
@@ -228,7 +180,7 @@ public class ItemIconDumper {
         }
         frameCountMap.put(itemStack, 1);
         BufferedImage image = renderItem(itemStack, fbo, itemRenderer, 1f, null);
-        fbo.saveToFile(new File("dumps/icons/" + getIconFileNameInHuijiUpdater(itemStack)), image);
+        FBOHelper.saveToFile(new File("dumps/icons/" + getIconFileName(itemStack)), image);
         fbo.restoreTexture();
     }
 
@@ -241,12 +193,12 @@ public class ItemIconDumper {
         BufferedImage image;
         if (Arrays.stream(images).anyMatch(Objects::isNull)) {
             GTNHDumper.LOG.warn("{}'s frames has null frame", itemStack.getDisplayName());
-            image = concatenateImages(Arrays.stream(images).filter(Objects::nonNull).toArray(BufferedImage[]::new));
-        } else {
-            image = concatenateImages(images);
+            images = Arrays.stream(images).filter(Objects::nonNull).toArray(BufferedImage[]::new);
         }
+        image = concatenateImages(images);
         frameCountMap.put(itemStack, image.getWidth() / image.getHeight());
-        fbo.saveToFile(new File("dumps/icons/" + getIconFileNameInHuijiUpdater(itemStack)), image);
+        FBOHelper.saveToFile(new File("dumps/icons/" + getIconFileName(itemStack)), images[0]);
+        FBOHelper.saveToFile(new File("dumps/icons/" + getIconFileName(itemStack, true)), image);
         fbo.restoreTexture();
     }
 
