@@ -9,6 +9,7 @@ import thaumcraft.api.aspects.AspectList;
 
 import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
+import java.util.Objects;
 
 public class AspectListSerializer implements JsonSerializer<AspectList> {
     @Override
@@ -18,7 +19,13 @@ public class AspectListSerializer implements JsonSerializer<AspectList> {
         }
         JsonObject obj = new JsonObject();
         LinkedHashMap<Aspect, Integer> aspects = src.aspects;
+        if (aspects == null || aspects.isEmpty() || aspects.keySet().stream().allMatch(Objects::isNull)) {
+            return null;
+        }
         for (Aspect aspect : aspects.keySet()) {
+            if (aspect == null) {
+                continue;
+            }
             obj.addProperty(aspect.getName(), aspects.get(aspect));
         }
         return obj;
