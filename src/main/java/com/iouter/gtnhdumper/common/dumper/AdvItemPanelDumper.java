@@ -30,6 +30,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -88,7 +89,7 @@ public class AdvItemPanelDumper extends WikiDumper {
             itemStacks.addAll(sub);
         }
 
-        Map<String, String> redirectMap = new HashMap<>();
+        Map<String, String> redirectMap = new LinkedHashMap<>();
         Set<String> itemNameSet = new HashSet<>();
 
         Map<ItemStack, String> originalNameMap = getOriginalNameMap(itemStacks);

@@ -13,7 +13,7 @@ import net.minecraftforge.fluids.FluidStack;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Transformer {
@@ -38,7 +38,7 @@ public class Transformer {
         if (otherItems.isEmpty())
             otherItems = null;
         IRecipeMetadataStorage metadataStorage = src.getMetadataStorage();
-        Map<String, Object> metadata = new HashMap<>();
+        Map<String, Object> metadata = new LinkedHashMap<>();
         try {
             Class<?> clazz = RecipeMetadataKey.class;
             Field idField = clazz.getDeclaredField("identifier");

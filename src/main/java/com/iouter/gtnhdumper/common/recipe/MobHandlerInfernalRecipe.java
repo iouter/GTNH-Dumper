@@ -203,7 +203,6 @@ public class MobHandlerInfernalRecipe extends BaseHandlerRecipe {
     @Setter
     @Accessors(chain = true)
     private static class MobInfernalItem extends RecipeItem {
-        private double chance;
         private double chanceAlways;
         private boolean enchantable;
 
@@ -221,6 +220,11 @@ public class MobHandlerInfernalRecipe extends BaseHandlerRecipe {
             this.chance = recipeItem.chance;
             this.nbt = recipeItem.nbt;
             this.tooltip = recipeItem.tooltip;
+        }
+
+        public MobInfernalItem setChance(double chance) {
+            this.chance = chance;
+            return this;
         }
     }
 }

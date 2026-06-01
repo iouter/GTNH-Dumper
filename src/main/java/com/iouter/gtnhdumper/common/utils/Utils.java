@@ -35,7 +35,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -127,7 +127,7 @@ public class Utils {
     }
 
     public static Map<String, String[]> getOreDict() {
-        Map<String, String[]> map= new HashMap<>();
+        Map<String, String[]> map= new LinkedHashMap<>();
         try {
             Class<?> oreDictClass = Class.forName("net.minecraftforge.oredict.OreDictionary");
 

@@ -13,7 +13,7 @@ public class RecipeItem {
 
     public String key;
     public Long amount;
-    public Integer chance;
+    public Object chance;
     public String nbt;
     public List<String> tooltip;
 

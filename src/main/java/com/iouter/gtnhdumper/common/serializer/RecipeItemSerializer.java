@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.iouter.gtnhdumper.GTNHDumper;
 import com.iouter.gtnhdumper.common.recipe.base.RecipeItem;
 
 import java.lang.reflect.Type;
@@ -29,7 +30,7 @@ public class RecipeItemSerializer implements JsonSerializer<RecipeItem> {
                 obj.addProperty("amount", src.amount);
         }
         if (src.chance != null) {
-            obj.addProperty("chance", src.chance);
+            obj.add("chance", GTNHDumper.GSON.toJsonTree(src.chance));
         }
         if (src.nbt != null) {
             obj.addProperty("nbt", src.nbt);

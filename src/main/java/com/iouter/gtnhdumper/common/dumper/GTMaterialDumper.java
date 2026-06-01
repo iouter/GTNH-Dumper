@@ -30,7 +30,6 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -192,7 +191,7 @@ public class GTMaterialDumper extends WikiDumper {
                     String[] currents = (String[]) obj;
                     if (Arrays.stream(currents).noneMatch(str -> str.equals(fluidStackName))) {
                         orePrefixesMap.put(nameFluid, Stream.concat(Arrays.stream(currents), Stream.of(fluidStackName)).toArray(String[]::new));
-                    };
+                    }
                 }
             }
 
@@ -312,7 +311,7 @@ public class GTMaterialDumper extends WikiDumper {
     }
 
     private static Map<String, Object> getMaterialMap(String defaultLocalName, Map<String, Map<String, Object>> totalMap) {
-        return totalMap.get(defaultLocalName) != null ? totalMap.get(defaultLocalName) : new HashMap<>();
+        return totalMap.get(defaultLocalName) != null ? totalMap.get(defaultLocalName) : new LinkedHashMap<>();
     }
 
     private static void dumpGTMaterial(Materials m, Map<String, Map<String, Object>> totalMap) {
@@ -482,7 +481,7 @@ public class GTMaterialDumper extends WikiDumper {
 
     @Override
     public Iterable<Object[]> dumpObject(int mode) {
-        Map<String, Map<String, Object>> totalMap = new HashMap<>();
+        Map<String, Map<String, Object>> totalMap = new LinkedHashMap<>();
         //bartworks
         for (Werkstoff m : Werkstoff.werkstoffHashSet) {
             if (m != null) {

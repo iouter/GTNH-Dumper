@@ -11,6 +11,9 @@ import java.lang.reflect.Type;
 public class AspectSerializer implements JsonSerializer<Aspect> {
     @Override
     public JsonElement serialize(Aspect src, Type typeOfSrc, JsonSerializationContext context) {
+        if (src == null) {
+            return null;
+        }
         return new JsonPrimitive(src.getName());
     }
 }

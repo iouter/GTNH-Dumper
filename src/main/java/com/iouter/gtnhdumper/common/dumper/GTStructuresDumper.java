@@ -12,7 +12,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class GTStructuresDumper extends DataDumper {
@@ -71,8 +71,8 @@ public class GTStructuresDumper extends DataDumper {
 
     private static class GTStructure{
         private final int meta;
-        private final Map<String, String> shapes = new HashMap<>();
-        private final Map<Character, Object> elements = new HashMap<>();
+        private final Map<String, String> shapes = new LinkedHashMap<>();
+        private final Map<Character, Object> elements = new LinkedHashMap<>();
 
         public GTStructure(IMetaTileEntity te, StructureDefinition<?> structureDefinition) {
             meta = te.getBaseMetaTileEntity().getMetaTileID();

@@ -41,8 +41,8 @@ import net.minecraft.util.StatCollector;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -143,10 +143,10 @@ public class QuestDumper extends WikiDumper {
     }
 
     private Map<String, Set<UUID>> getPreRequisites(QuestInstance quest) {
-        Map<String, Set<UUID>> map = new HashMap<>();
-        Set<UUID> normal = new HashSet<>();
-        Set<UUID> implicit = new HashSet<>();
-        Set<UUID> hidden = new HashSet<>();
+        Map<String, Set<UUID>> map = new LinkedHashMap<>();
+        Set<UUID> normal = new LinkedHashSet<>();
+        Set<UUID> implicit = new LinkedHashSet<>();
+        Set<UUID> hidden = new LinkedHashSet<>();
         for (UUID requisite : quest.getRequirements()) {
             IQuest.RequirementType type = quest.getRequirementType(requisite);
             switch (type) {
@@ -180,7 +180,7 @@ public class QuestDumper extends WikiDumper {
     }
 
     private Map<String, Object> getTask(ITask task) {
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new LinkedHashMap<>();
         if (task instanceof TaskXP) {
             TaskXP xp = (TaskXP) task;
             map.put("type", "xp");
@@ -322,7 +322,7 @@ public class QuestDumper extends WikiDumper {
     }
 
     private Map<String, Object> getReward(IReward reward) {
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new LinkedHashMap<>();
         if (reward instanceof RewardChoice) {
             RewardChoice choice = (RewardChoice) reward;
             map.put("type", "choice");
