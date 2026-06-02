@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 public class GasSiphonHandlerRecipe extends BaseHandlerRecipe {
+
     public GasSiphonHandlerRecipe(IRecipeHandler handler) {
         super(handler);
     }
@@ -20,13 +21,13 @@ public class GasSiphonHandlerRecipe extends BaseHandlerRecipe {
     public List<?> getRecipes(IRecipeHandler baseHandler) {
         List<GasSiphonRecipe> recipes = new ArrayList<>();
         for (Map.Entry<String, Map<Integer, FluidStack>> entry : GasSiphonRecipes.RECIPES.entrySet()) {
-            for (Map.Entry<Integer, FluidStack> innerEntry : entry.getValue().entrySet()) {
-                recipes.add(new GasSiphonRecipe().
-                    setFluid(innerEntry.getValue()).
-                    setPlanet(entry.getKey()).
-                    setDepth(innerEntry.getKey()).
-                    setOutputAmount(innerEntry.getValue().amount)
-                );
+            for (Map.Entry<Integer, FluidStack> innerEntry : entry.getValue()
+                .entrySet()) {
+                recipes.add(
+                    new GasSiphonRecipe().setFluid(innerEntry.getValue())
+                        .setPlanet(entry.getKey())
+                        .setDepth(innerEntry.getKey())
+                        .setOutputAmount(innerEntry.getValue().amount));
             }
         }
         return recipes;
@@ -34,7 +35,8 @@ public class GasSiphonHandlerRecipe extends BaseHandlerRecipe {
 
     @Setter
     @Accessors(chain = true)
-    private static class GasSiphonRecipe{
+    private static class GasSiphonRecipe {
+
         private FluidStack fluid;
         private String planet;
         private int depth;

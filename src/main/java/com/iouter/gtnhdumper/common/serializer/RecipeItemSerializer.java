@@ -11,6 +11,7 @@ import com.iouter.gtnhdumper.common.recipe.base.RecipeItem;
 import java.lang.reflect.Type;
 
 public class RecipeItemSerializer implements JsonSerializer<RecipeItem> {
+
     @Override
     public JsonElement serialize(RecipeItem src, Type typeOfSrc, JsonSerializationContext context) {
         boolean hasOnlyKey = src.amount == null && src.chance == null && src.nbt == null && src.tooltip == null;
@@ -24,10 +25,8 @@ public class RecipeItemSerializer implements JsonSerializer<RecipeItem> {
             obj.addProperty("key", src.key);
         }
         if (src.amount != null) {
-            if (src.amount == 0)
-                obj.addProperty("nc", true);
-            else
-                obj.addProperty("amount", src.amount);
+            if (src.amount == 0) obj.addProperty("nc", true);
+            else obj.addProperty("amount", src.amount);
         }
         if (src.chance != null) {
             obj.add("chance", GTNHDumper.GSON.toJsonTree(src.chance));

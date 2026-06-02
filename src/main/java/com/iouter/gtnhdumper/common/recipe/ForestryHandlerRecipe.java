@@ -26,38 +26,39 @@ public class ForestryHandlerRecipe extends BaseHandlerRecipe {
     @Override
     public List<?> getRecipes(IRecipeHandler handler) {
         List<ForestryRecipe> recipes = new ArrayList<>();
-        if (handler instanceof BaseBreedingRecipeHandler) {
-            BaseBreedingRecipeHandler breeding = (BaseBreedingRecipeHandler) handler;
+        if (handler instanceof BaseBreedingRecipeHandler breeding) {
             try {
                 breeding.loadCraftingRecipes(breeding.getRecipeIdent(), (Object) null);
             } catch (Exception ignored) {
 
             }
-            breeding.arecipes.stream().filter(BaseBreedingRecipeHandler.CachedBreedingRecipe.class::isInstance)
-                .map(BaseBreedingRecipeHandler.CachedBreedingRecipe.class::cast).forEachOrdered(recipe ->
-                    recipes.add(new ForestryRecipe()
-                        .setInputItems(RecipeUtil.getRecipeItemList(recipe.getIngredients()))
-                        .setOutputItems(RecipeUtil.getRecipeItemList(recipe.getResult()))
-                        .setChance(recipe.chance * 100)
-                        .setRequirements(recipe.requirements)
-                    )
-                );
-        } else if (handler instanceof BaseProduceRecipeHandler) {
-            BaseProduceRecipeHandler produce = (BaseProduceRecipeHandler) handler;
+            breeding.arecipes.stream()
+                .filter(BaseBreedingRecipeHandler.CachedBreedingRecipe.class::isInstance)
+                .map(BaseBreedingRecipeHandler.CachedBreedingRecipe.class::cast)
+                .forEachOrdered(
+                    recipe -> recipes.add(
+                        new ForestryRecipe().setInputItems(RecipeUtil.getRecipeItemList(recipe.getIngredients()))
+                            .setOutputItems(RecipeUtil.getRecipeItemList(recipe.getResult()))
+                            .setChance(recipe.chance * 100)
+                            .setRequirements(recipe.requirements)));
+        } else if (handler instanceof BaseProduceRecipeHandler produce) {
             for (IAlleleSpecies species : produce.getAllSpecies()) {
                 ForestryRecipe recipe = new ForestryRecipe();
                 ItemStack inputStack = GeneticsUtils.stackFromSpecies(species, GeneticsUtils.RecipePosition.Producer);
                 recipe.setInputItems(new RecipeItem(inputStack));
-                for (Map.Entry<ItemStack, Float> product : net.bdew.neiaddons.Utils.mergeStacks(GeneticsUtils.getProduceFromSpecies(species))
+                for (Map.Entry<ItemStack, Float> product : net.bdew.neiaddons.Utils
+                    .mergeStacks(GeneticsUtils.getProduceFromSpecies(species))
                     .entrySet()) {
-                    recipe.setOutputItems(new RecipeItem(product.getKey()).withChance((int) (product.getValue() * 10000)));
+                    recipe.setOutputItems(
+                        new RecipeItem(product.getKey()).withChance((int) (product.getValue() * 10000)));
                 }
                 String jubilance = null;
                 if (species instanceof IAlleleBeeSpeciesCustom) {
                     IJubilanceProvider provider = ((IAlleleBeeSpeciesCustom) species).getJubilanceProvider();
                     if (provider != null) jubilance = provider.getDescription();
                 }
-                for (Map.Entry<ItemStack, Float> product : net.bdew.neiaddons.Utils.mergeStacks(GeneticsUtils.getSpecialtyFromSpecies(species))
+                for (Map.Entry<ItemStack, Float> product : net.bdew.neiaddons.Utils
+                    .mergeStacks(GeneticsUtils.getSpecialtyFromSpecies(species))
                     .entrySet()) {
                     RecipeItem item = new RecipeItem(product.getKey()).withChance((int) (product.getValue() * 10000));
                     if (jubilance != null) {
@@ -73,6 +74,7 @@ public class ForestryHandlerRecipe extends BaseHandlerRecipe {
     }
 
     public static class ForestryRecipe {
+
         private ArrayList<Object> inputItems;
         private ArrayList<Object> outputItems;
         private ArrayList<Object> otherItems;

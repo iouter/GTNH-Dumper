@@ -20,6 +20,7 @@ import com.iouter.gtnhdumper.common.dumper.TC4ResearchDumper;
 import com.iouter.gtnhdumper.common.dumper.TICMaterialDumper;
 
 public class NEIConfig implements IConfigureNEI {
+
     @Override
     public void loadConfig() {
         API.addOption(new AdvItemPanelDumper());

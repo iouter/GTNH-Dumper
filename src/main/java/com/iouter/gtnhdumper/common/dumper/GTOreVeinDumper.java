@@ -15,20 +15,8 @@ public class GTOreVeinDumper extends WikiDumper {
 
     @Override
     public String[] header() {
-        return new String[] {
-            "key",
-            "localizedName",
-            "primary",
-            "secondary",
-            "between",
-            "sporadic",
-            "size",
-            "density",
-            "weight",
-            "minY",
-            "maxY",
-            "dims"
-        };
+        return new String[] { "key", "localizedName", "primary", "secondary", "between", "sporadic", "size", "density",
+            "weight", "minY", "maxY", "dims" };
     }
 
     @Override
@@ -44,22 +32,14 @@ public class GTOreVeinDumper extends WikiDumper {
     @Override
     public Iterable<Object[]> dumpObject(int mode) {
         LinkedList<Object[]> list = new LinkedList<>();
-        for (GT5OreLayerHelper.OreLayerWrapper vein : GT5OreLayerHelper.getOreVeinsByName().values()) {
+        for (GT5OreLayerHelper.OreLayerWrapper vein : GT5OreLayerHelper.getOreVeinsByName()
+            .values()) {
             String[] heightRange = vein.worldGenHeightRange.split("-");
-            list.add(new Object[]{
-                vein.veinName,
-                vein.localizedName,
-                vein.mPrimaryVeinMaterial.getInternalName(),
-                vein.mSecondaryMaterial.getInternalName(),
-                vein.mBetweenMaterial.getInternalName(),
-                vein.mSporadicMaterial.getInternalName(),
-                vein.size,
-                vein.density,
-                vein.randomWeight,
-                heightRange[0],
-                heightRange[1],
-                vein.abbrDimNames
-            });
+            list.add(
+                new Object[] { vein.veinName, vein.localizedName, vein.mPrimaryVeinMaterial.getInternalName(),
+                    vein.mSecondaryMaterial.getInternalName(), vein.mBetweenMaterial.getInternalName(),
+                    vein.mSporadicMaterial.getInternalName(), vein.size, vein.density, vein.randomWeight,
+                    heightRange[0], heightRange[1], vein.abbrDimNames });
         }
 
         return list;
@@ -68,6 +48,7 @@ public class GTOreVeinDumper extends WikiDumper {
     @Override
     public ChatComponentTranslation dumpMessage(File file) {
         return new ChatComponentTranslation(
-            "nei.options.tools.dump.gtnhdumper.gtorevein.dumped", "dumps/" + file.getName());
+            "nei.options.tools.dump.gtnhdumper.gtorevein.dumped",
+            "dumps/" + file.getName());
     }
 }

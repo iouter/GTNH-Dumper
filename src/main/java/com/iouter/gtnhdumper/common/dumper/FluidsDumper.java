@@ -34,7 +34,8 @@ public class FluidsDumper extends WikiDumper {
     private static final String GT_DISPLAY_KEY = "gtDisplayKey";
     private static final String TOOLTIPS = "tooltips";
 
-    private static final String[] HEADER = new String[]{KEY, ORIGINAL_NAME, TRANSLATED_NAME, LUMINOSITY, DENSITY, TEMPERATURE, VISCOSITY, IS_GASEOUS, CAN_BE_PLACED};
+    private static final String[] HEADER = new String[] { KEY, ORIGINAL_NAME, TRANSLATED_NAME, LUMINOSITY, DENSITY,
+        TEMPERATURE, VISCOSITY, IS_GASEOUS, CAN_BE_PLACED };
 
     public FluidsDumper() {
         super("tools.dump.gtnhdumper.fluid");
@@ -43,8 +44,9 @@ public class FluidsDumper extends WikiDumper {
     public static String getFluidName(Fluid aFluid, boolean aLocalized) {
         if (aFluid == null) return E;
         String rName = aLocalized ? aFluid.getLocalizedName(new FluidStack(aFluid, 0)) : aFluid.getUnlocalizedName();
-        if (rName.contains("fluid.") || rName.contains("tile."))
-            return WordUtils.capitalizeFully(rName.replaceAll("fluid.", E).replaceAll("tile.", E));
+        if (rName.contains("fluid.") || rName.contains("tile.")) return WordUtils.capitalizeFully(
+            rName.replaceAll("fluid.", E)
+                .replaceAll("tile.", E));
         return rName;
     }
 
@@ -61,7 +63,8 @@ public class FluidsDumper extends WikiDumper {
     @Override
     public String[] header() {
         if (!CommonProxy.isGTLoaded) return HEADER;
-        return Stream.concat(Arrays.stream(HEADER), Arrays.stream(new String[]{GT_DISPLAY_KEY, TOOLTIPS})).toArray(String[]::new);
+        return Stream.concat(Arrays.stream(HEADER), Arrays.stream(new String[] { GT_DISPLAY_KEY, TOOLTIPS }))
+            .toArray(String[]::new);
     }
 
     @Override
@@ -80,36 +83,18 @@ public class FluidsDumper extends WikiDumper {
             boolean isGaseous = fluid.isGaseous();
             boolean canBePlaced = fluid.canBePlacedInWorld();
             if (!CommonProxy.isGTLoaded) {
-                list.add(new Object[]{
-                    "fluid." + fluidKey,
-                    originalName,
-                    translatedName,
-                    luminosity,
-                    density,
-                    temperature,
-                    viscosity,
-                    isGaseous,
-                    canBePlaced
-                });
+                list.add(
+                    new Object[] { "fluid." + fluidKey, originalName, translatedName, luminosity, density, temperature,
+                        viscosity, isGaseous, canBePlaced });
                 continue;
             }
             int id = fluid.getID();
             ItemStack gtDisplay = new ItemStack(ItemList.Display_Fluid.getItem(), 1, id);
             String gtDisplayKey = Utils.getItemKey(gtDisplay);
             String tooltips = Utils.getTooltip(gtDisplay);
-            list.add(new Object[]{
-                "fluid." + fluidKey,
-                originalName,
-                translatedName,
-                luminosity,
-                density,
-                temperature,
-                viscosity,
-                isGaseous,
-                canBePlaced,
-                gtDisplayKey,
-                tooltips
-            });
+            list.add(
+                new Object[] { "fluid." + fluidKey, originalName, translatedName, luminosity, density, temperature,
+                    viscosity, isGaseous, canBePlaced, gtDisplayKey, tooltips });
         }
         return list;
     }
@@ -117,6 +102,7 @@ public class FluidsDumper extends WikiDumper {
     @Override
     public ChatComponentTranslation dumpMessage(File file) {
         return new ChatComponentTranslation(
-            "nei.options.tools.dump.gtnhdumper.gtmaterial.fluid", "dumps/" + file.getName());
+            "nei.options.tools.dump.gtnhdumper.gtmaterial.fluid",
+            "dumps/" + file.getName());
     }
 }

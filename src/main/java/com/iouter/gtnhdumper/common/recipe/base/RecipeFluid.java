@@ -4,11 +4,11 @@ import com.iouter.gtnhdumper.common.utils.Utils;
 import net.minecraftforge.fluids.FluidStack;
 
 public class RecipeFluid {
+
     private final String key;
     private Long amount;
     private Integer chance;
     public String nbt;
-
 
     public RecipeFluid(String key, long amount) {
         this.key = key;
@@ -20,7 +20,10 @@ public class RecipeFluid {
     }
 
     public RecipeFluid(FluidStack stack) {
-        this("fluid." + stack.getFluid().getName(), (long) stack.amount);
+        this(
+            "fluid." + stack.getFluid()
+                .getName(),
+            (long) stack.amount);
     }
 
     public RecipeFluid withChance(int chance) {
@@ -34,8 +37,7 @@ public class RecipeFluid {
     }
 
     public RecipeFluid withNBT(FluidStack stack) {
-        if (stack == null)
-            return this;
+        if (stack == null) return this;
         String nbt = Utils.getFluidNBT(stack);
         if (nbt != null) {
             return withNBT(nbt);

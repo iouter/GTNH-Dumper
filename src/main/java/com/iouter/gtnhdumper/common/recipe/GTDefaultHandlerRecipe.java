@@ -33,31 +33,28 @@ import java.util.Map;
 
 public class GTDefaultHandlerRecipe extends BaseHandlerRecipe {
 
-    public GTDefaultHandlerRecipe (GTNEIDefaultHandler handler) {
+    public GTDefaultHandlerRecipe(GTNEIDefaultHandler handler) {
         super(handler);
     }
 
     @Override
     public void addJsonObject(JsonObject json, IRecipeHandler baseHandler) {
-        if (!(baseHandler instanceof GTNEIDefaultHandler)) {
+        if (!(baseHandler instanceof GTNEIDefaultHandler handler)) {
             return;
         }
-        GTNEIDefaultHandler handler = (GTNEIDefaultHandler) baseHandler;
         RecipeMap<?> recipeMap = handler.getRecipeMap();
 
         json.addProperty("progressBar", Utils.getAfterLastChar(getProgressBar(getUIProperties(handler)), '/'));
 
         int amperage = recipeMap.getAmperage();
-        if (amperage > 1)
-            json.addProperty("amperage", amperage);
+        if (amperage > 1) json.addProperty("amperage", amperage);
     }
 
     @Override
     public List<?> getRecipes(IRecipeHandler baseHandler) {
-        if (!(baseHandler instanceof GTNEIDefaultHandler)) {
+        if (!(baseHandler instanceof GTNEIDefaultHandler handler)) {
             return null;
         }
-        GTNEIDefaultHandler handler = (GTNEIDefaultHandler) baseHandler;
         List<GTDumpedRecipe> recipes = new ArrayList<>();
         RecipeCategory category = getRecipeCategory(handler);
         RecipeMap<?> recipeMap = handler.getRecipeMap();
@@ -70,8 +67,8 @@ public class GTDefaultHandlerRecipe extends BaseHandlerRecipe {
                 Field recipeHashMapField = clazz.getDeclaredField("recipeHashMap");
                 recipeHashMapField.setAccessible(true);
                 @SuppressWarnings("unchecked")
-                HashMap<String, EyeOfHarmonyRecipe> recipeHashMap =
-                    (HashMap<String, EyeOfHarmonyRecipe>) recipeHashMapField.get(storage);
+                HashMap<String, EyeOfHarmonyRecipe> recipeHashMap = (HashMap<String, EyeOfHarmonyRecipe>) recipeHashMapField
+                    .get(storage);
                 for (EyeOfHarmonyRecipe recipe : recipeHashMap.values()) {
                     ItemStack planetItem = recipe.getRecipeTriggerItem()
                         .copy();
@@ -90,24 +87,27 @@ public class GTDefaultHandlerRecipe extends BaseHandlerRecipe {
                     for (FluidStackLong fluidStackLong : recipe.getOutputFluids()) {
                         outputFluids.add(new RecipeFluid(fluidStackLong.fluidStack).withAmount(fluidStackLong.amount));
                     }
-                    recipes.add(new GTDumpedRecipe(
-                        inputItems,
-                        inputFluids,
-                        outputItems,
-                        outputFluids,
-                        null,
-                        0,
-                        recipe.getRecipeTimeInTicks(),
-                        0,
-                        null
-                    ));
+                    recipes.add(
+                        new GTDumpedRecipe(
+                            inputItems,
+                            inputFluids,
+                            outputItems,
+                            outputFluids,
+                            null,
+                            0,
+                            recipe.getRecipeTimeInTicks(),
+                            0,
+                            null));
                 }
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 GTNHDumper.LOG.error(e);
             }
             return null;
         }
-        gtRecipes.stream().filter(gtRecipe -> gtRecipe.getRecipeCategory() == category).map(Transformer::transformGTRecipe).forEach(recipes::add);
+        gtRecipes.stream()
+            .filter(gtRecipe -> gtRecipe.getRecipeCategory() == category)
+            .map(Transformer::transformGTRecipe)
+            .forEach(recipes::add);
         return recipes;
     }
 
@@ -123,11 +123,9 @@ public class GTDefaultHandlerRecipe extends BaseHandlerRecipe {
     }
 
     public static String getProgressBar(BasicUIProperties ui) {
-        if (ui == null)
-            return null;
+        if (ui == null) return null;
         final FallbackableUITexture texture = ui.progressBarTexture;
-        if (texture == null)
-            return null;
+        if (texture == null) return null;
         return texture.get().location.toString();
     }
 
@@ -174,11 +172,9 @@ public class GTDefaultHandlerRecipe extends BaseHandlerRecipe {
         private Integer specialValue;
         private final Map<String, Object> metadata;
 
-        public GTDumpedRecipe(ArrayList<Object> inputItems,
-                              ArrayList<RecipeFluid> inputFluids,
-                              ArrayList<Object> outputItems,
-                              ArrayList<RecipeFluid> outputFluids,
-                              ArrayList<Object> otherItems, int eut, long duration, int specialValue, Map<String, Object> metadata) {
+        public GTDumpedRecipe(ArrayList<Object> inputItems, ArrayList<RecipeFluid> inputFluids,
+            ArrayList<Object> outputItems, ArrayList<RecipeFluid> outputFluids, ArrayList<Object> otherItems, int eut,
+            long duration, int specialValue, Map<String, Object> metadata) {
             this.inputItems = inputItems;
             this.inputFluids = inputFluids;
             this.outputItems = outputItems;
@@ -187,9 +183,7 @@ public class GTDefaultHandlerRecipe extends BaseHandlerRecipe {
             this.eut = eut;
             this.duration = duration;
             this.metadata = metadata;
-            if (specialValue != 0)
-                this.specialValue = specialValue;
+            if (specialValue != 0) this.specialValue = specialValue;
         }
     }
 }
-

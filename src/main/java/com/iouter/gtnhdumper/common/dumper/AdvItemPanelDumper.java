@@ -58,21 +58,8 @@ public class AdvItemPanelDumper extends WikiDumper {
 
     @Override
     public String[] header() {
-        return new String[] {
-            "shortKey",
-            "key",
-            "nbt",
-            "originalName",
-            "translatedName",
-            "tooltips",
-            "tooltipsShift",
-            "tooltipsCtrl",
-            "tooltipsShiftAndCtrl",
-            "mod",
-            "icon",
-            "frameCount",
-            "aspect"
-        };
+        return new String[] { "shortKey", "key", "nbt", "originalName", "translatedName", "tooltips", "tooltipsShift",
+            "tooltipsCtrl", "tooltipsShiftAndCtrl", "mod", "icon", "frameCount", "aspect" };
     }
 
     @Override
@@ -82,8 +69,7 @@ public class AdvItemPanelDumper extends WikiDumper {
         List<ItemStack> itemStacks = new ArrayList<>();
 
         for (Object temp : GameData.getItemRegistry()) {
-            if (!(temp instanceof Item)) continue;
-            Item item = (Item) temp;
+            if (!(temp instanceof Item item)) continue;
             List<ItemStack> sub = new ArrayList<>();
             item.getSubItems(item, CreativeTabs.tabAllSearch, sub);
             itemStacks.addAll(sub);
@@ -95,18 +81,18 @@ public class AdvItemPanelDumper extends WikiDumper {
         Map<ItemStack, String> originalNameMap = getOriginalNameMap(itemStacks);
 
         for (ItemStack stack : itemStacks) {
-            if (stack == null)
-                continue;
+            if (stack == null) continue;
             GameRegistry.UniqueIdentifier uid;
             try {
                 uid = GameRegistry.findUniqueIdentifierFor(stack.getItem());
             } catch (Exception e) {
                 continue;
             }
-            if (uid == null)
-                continue;
+            if (uid == null) continue;
             String modid = uid.modId;
-            ModContainer mod = Loader.instance().getIndexedModList().get(modid);
+            ModContainer mod = Loader.instance()
+                .getIndexedModList()
+                .get(modid);
 
             ItemIconDumper.prepareRenderItem(stack, RenderItem.getInstance());
 
@@ -115,7 +101,7 @@ public class AdvItemPanelDumper extends WikiDumper {
             String modName = mod != null ? mod.getName() : modid;
 
             String tooltip = Utils.getTooltip(stack);
-            String[] tooltips = new String[]{null, null, null};
+            String[] tooltips = new String[] { null, null, null };
             KeySimulator.withKeyPressed(() -> {
                 String tooltipShift = Utils.getTooltip(stack);
                 if (!tooltip.equals(tooltipShift)) {
@@ -142,12 +128,14 @@ public class AdvItemPanelDumper extends WikiDumper {
                 if (tooltipCtrl == null) {
                     tooltipCtrl = tooltip;
                 }
-                if (!tooltipShiftAndCtrl.equals(tooltipShift) && !tooltipShiftAndCtrl.equals(tooltipCtrl) && !tooltipShiftAndCtrl.equals(tooltip)) {
+                if (!tooltipShiftAndCtrl.equals(tooltipShift) && !tooltipShiftAndCtrl.equals(tooltipCtrl)
+                    && !tooltipShiftAndCtrl.equals(tooltip)) {
                     tooltips[TOOLTIP_LSHIFT_AND_LCONTROL] = tooltipShiftAndCtrl;
                 }
             }, Keyboard.KEY_LSHIFT, Keyboard.KEY_LCONTROL);
 
-            final String translatedName = EnumChatFormatting.getTextWithoutFormattingCodes(GuiContainerManager.itemDisplayNameShort(stack));
+            final String translatedName = EnumChatFormatting
+                .getTextWithoutFormattingCodes(GuiContainerManager.itemDisplayNameShort(stack));
             final String imageName = ItemIconDumper.getIconFileName(stack);
             final String vaildFileName = Utils.replaceIllegalChars(translatedName);
             if (itemNameSet.add(vaildFileName)) {
@@ -160,24 +148,17 @@ public class AdvItemPanelDumper extends WikiDumper {
                 redirectMap.put("File:" + vaildFileName + " " + i + ".png", "File:" + imageName);
             }
 
-            list.add(new Object[] {
-                Utils.getItemStackShortKey(stack),
-                Utils.getItemKey(stack),
-                nbt,
-                originalNameMap.get(stack),
-                translatedName,
-                tooltip,
-                tooltips[TOOLTIP_LSHIFT],
-                tooltips[TOOLTIP_LCONTROL],
-                tooltips[TOOLTIP_LSHIFT_AND_LCONTROL],
-                modName,
-                imageName,
-                ItemIconDumper.getItemFrameCount(stack),
-                CommonProxy.isTCLoaded ? GetObjectTags.getObjectTags(stack) : null
-            });
+            list.add(
+                new Object[] { Utils.getItemStackShortKey(stack), Utils.getItemKey(stack), nbt,
+                    originalNameMap.get(stack), translatedName, tooltip, tooltips[TOOLTIP_LSHIFT],
+                    tooltips[TOOLTIP_LCONTROL], tooltips[TOOLTIP_LSHIFT_AND_LCONTROL], modName, imageName,
+                    ItemIconDumper.getItemFrameCount(stack),
+                    CommonProxy.isTCLoaded ? GetObjectTags.getObjectTags(stack) : null });
         }
 
-        try (CSVPrinter printer = new CSVPrinter(Files.newBufferedWriter(Paths.get("dumps/image_redirect.csv")), CSVFormat.DEFAULT)) {
+        try (CSVPrinter printer = new CSVPrinter(
+            Files.newBufferedWriter(Paths.get("dumps/image_redirect.csv")),
+            CSVFormat.DEFAULT)) {
             for (Map.Entry<String, String> e : redirectMap.entrySet()) {
                 printer.printRecord(e.getKey(), e.getValue());
             }
@@ -191,10 +172,11 @@ public class AdvItemPanelDumper extends WikiDumper {
     @Override
     public ChatComponentTranslation dumpMessage(File file) {
         return new ChatComponentTranslation(
-                "nei.options.tools.dump.gtnhdumper.advitempanel.dumped", "dumps/" + file.getName());
+            "nei.options.tools.dump.gtnhdumper.advitempanel.dumped",
+            "dumps/" + file.getName());
     }
 
-    private static Map<ItemStack, String> getOriginalNameMap(List<ItemStack> itemStacks){
+    private static Map<ItemStack, String> getOriginalNameMap(List<ItemStack> itemStacks) {
         Minecraft minecraft = Minecraft.getMinecraft();
         LanguageManager languageManager = minecraft.getLanguageManager();
         Language currentLanguage = languageManager.getCurrentLanguage();

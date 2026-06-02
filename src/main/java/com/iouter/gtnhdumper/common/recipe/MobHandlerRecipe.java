@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Set;
 
 public class MobHandlerRecipe extends BaseHandlerRecipe {
+
     private static final Class<?> mobCachedRecipeClass;
     private static final Field mobField;
     private static final Field mobnameField;
@@ -92,7 +93,9 @@ public class MobHandlerRecipe extends BaseHandlerRecipe {
             if (getSpawnList(cachedRecipe).isEmpty()) {
                 spawnList = null;
             } else {
-                spawnList = getSpawnList(cachedRecipe).stream().map(SpawnInfo::getInfo).toArray(String[]::new);
+                spawnList = getSpawnList(cachedRecipe).stream()
+                    .map(SpawnInfo::getInfo)
+                    .toArray(String[]::new);
             }
             List<Object> normal = new ArrayList<>();
             List<Object> rare = new ArrayList<>();
@@ -100,25 +103,24 @@ public class MobHandlerRecipe extends BaseHandlerRecipe {
             List<Object> infernal = new ArrayList<>();
             List<PositionedStack> drops = getMOutputs(cachedRecipe);
             for (PositionedStack positionedStack : drops) {
-                if (!(positionedStack instanceof MobHandler.MobPositionedStack)) {
+                if (!(positionedStack instanceof MobHandler.MobPositionedStack mobStack)) {
                     continue;
                 }
-                MobHandler.MobPositionedStack mobStack = (MobHandler.MobPositionedStack) positionedStack;
                 Object mobs = toMobItem(mobStack);
                 switch (mobStack.type) {
-                    case Normal:{
+                    case Normal: {
                         normal.add(mobs);
                         break;
                     }
-                    case Rare:{
+                    case Rare: {
                         rare.add(mobs);
                         break;
                     }
-                    case Additional:{
+                    case Additional: {
                         additional.add(mobs);
                         break;
                     }
-                    case Infernal:{
+                    case Infernal: {
                         infernal.add(mobs);
                         break;
                     }
@@ -136,23 +138,24 @@ public class MobHandlerRecipe extends BaseHandlerRecipe {
             if (infernal.isEmpty()) {
                 infernal = null;
             }
-            recipes.add(new MobRecipe()
-                .setEntityName(getMobname(cachedRecipe))
-                .setLocalizedName(getLocalizedName(cachedRecipe))
-                .setMod(getMod(cachedRecipe))
-                .setMaxHealth(getMaxHealth(cachedRecipe))
-                .setInfernalType(getInfernaltype(cachedRecipe))
-                .setSpawnList(spawnList)
-                .setBoss(!getIsBoss(cachedRecipe).isEmpty())
-                .setPeacefulAllowed(isPeacefulAllowed(cachedRecipe))
-                .setUsableInVial(isUsableInVial(cachedRecipe))
-                .setAdditionalInformation(getAdditionalInformation(cachedRecipe).isEmpty() ? null : getAdditionalInformation(cachedRecipe))
-                .setInputItems(getMInput(cachedRecipe))
-                .setNormalDrops(normal)
-                .setRareDrops(rare)
-                .setAdditionalDrops(additional)
-                .setInfernalDrops(infernal)
-            );
+            recipes.add(
+                new MobRecipe().setEntityName(getMobname(cachedRecipe))
+                    .setLocalizedName(getLocalizedName(cachedRecipe))
+                    .setMod(getMod(cachedRecipe))
+                    .setMaxHealth(getMaxHealth(cachedRecipe))
+                    .setInfernalType(getInfernaltype(cachedRecipe))
+                    .setSpawnList(spawnList)
+                    .setBoss(!getIsBoss(cachedRecipe).isEmpty())
+                    .setPeacefulAllowed(isPeacefulAllowed(cachedRecipe))
+                    .setUsableInVial(isUsableInVial(cachedRecipe))
+                    .setAdditionalInformation(
+                        getAdditionalInformation(cachedRecipe).isEmpty() ? null
+                            : getAdditionalInformation(cachedRecipe))
+                    .setInputItems(getMInput(cachedRecipe))
+                    .setNormalDrops(normal)
+                    .setRareDrops(rare)
+                    .setAdditionalDrops(additional)
+                    .setInfernalDrops(infernal));
         }
         return recipes;
     }
@@ -292,11 +295,9 @@ public class MobHandlerRecipe extends BaseHandlerRecipe {
 
     private static Object toMobItem(MobHandler.MobPositionedStack mobStack) {
         Object obj = RecipeUtil.getRecipeItems(mobStack);
-        if (obj instanceof RecipeItem) {
-            RecipeItem item = (RecipeItem) obj;
+        if (obj instanceof RecipeItem item) {
             return transferToMobItem(item, mobStack);
-        } else if (obj instanceof RecipeItem[]) {
-            RecipeItem[] recipeItems = (RecipeItem[]) obj;
+        } else if (obj instanceof RecipeItem[]recipeItems) {
             return Arrays.stream(recipeItems)
                 .map(recipeItem -> transferToMobItem(recipeItem, mobStack))
                 .toArray(MobItem[]::new);
@@ -308,7 +309,10 @@ public class MobHandlerRecipe extends BaseHandlerRecipe {
     public static List<Object> compressToRanges(List<Integer> arr) {
         if (arr == null || arr.isEmpty()) return null;
 
-        Integer[] sorted = arr.stream().distinct().sorted().toArray(Integer[]::new);
+        Integer[] sorted = arr.stream()
+            .distinct()
+            .sorted()
+            .toArray(Integer[]::new);
         List<Object> result = new ArrayList<>();
         int start = sorted[0];
         int end = sorted[0];
@@ -330,13 +334,14 @@ public class MobHandlerRecipe extends BaseHandlerRecipe {
         if (start == end) {
             list.add(start);
         } else {
-            list.add(new int[]{start, end});
+            list.add(new int[] { start, end });
         }
     }
 
     @Setter
     @Accessors(chain = true)
     private static class MobRecipe {
+
         private String entityName;
         private String localizedName;
         private String mod;
@@ -356,6 +361,7 @@ public class MobHandlerRecipe extends BaseHandlerRecipe {
 
     @Setter
     public static class MobItem extends RecipeItem {
+
         private boolean enchantable;
         private boolean randomdamage;
         private List<Object> damages;

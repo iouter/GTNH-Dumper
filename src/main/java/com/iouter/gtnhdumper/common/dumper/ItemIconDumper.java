@@ -41,15 +41,16 @@ public class ItemIconDumper {
     private static final Object2IntOpenHashMap<ItemStack> frameCountMap = new Object2IntOpenHashMap<>();
     private static final Map<Integer, FBOHelper> fbos = new HashMap<>();
 
-    private ItemIconDumper() {
-    }
+    private ItemIconDumper() {}
 
     public static String getIconFileName(ItemStack stack) {
         return getIconFileName(stack, false);
     }
 
     public static String getIconFileName(ItemStack stack, boolean isDynamic) {
-        return "icon_" + Utils.replaceHuijiIllegalChars(Utils.getItemStackShortKey(stack)) + (isDynamic ? "_dynamic" : "") + ".png";
+        return "icon_" + Utils.replaceHuijiIllegalChars(Utils.getItemStackShortKey(stack))
+            + (isDynamic ? "_dynamic" : "")
+            + ".png";
     }
 
     public static void testHashNBT() {
@@ -58,8 +59,7 @@ public class ItemIconDumper {
         List<ItemStack> itemStacks = new ArrayList<>();
 
         for (Object temp : GameData.getItemRegistry()) {
-            if (!(temp instanceof Item)) continue;
-            Item item = (Item) temp;
+            if (!(temp instanceof Item item)) continue;
             List<ItemStack> sub = new ArrayList<>();
             item.getSubItems(item, CreativeTabs.tabAllSearch, sub);
             itemStacks.addAll(sub);
@@ -72,7 +72,7 @@ public class ItemIconDumper {
             String temp = hashMap.get(nbt);
             if (temp == null) {
                 hashMap.put(nbt, hashNBT);
-            } else if (!hashNBT.equals(temp)){
+            } else if (!hashNBT.equals(temp)) {
                 collisionCount++;
                 GTNHDumper.error("冲突发生在" + nbt + "，对应编码为：" + hashNBT);
             }
@@ -83,12 +83,12 @@ public class ItemIconDumper {
     }
 
     private static boolean isValidRender(ItemStack stack) {
-        if (CommonProxy.isGTLoaded && stack.getItem() instanceof ItemVolumetricFlask) {
-            ItemVolumetricFlask flask = (ItemVolumetricFlask) stack.getItem();
+        if (CommonProxy.isGTLoaded && stack.getItem() instanceof ItemVolumetricFlask flask) {
             if (flask != null) {
                 FluidStack fs = flask.getFluid(stack);
                 if (fs != null) {
-                    return fs.getFluid().getIcon(fs) == null;
+                    return fs.getFluid()
+                        .getIcon(fs) == null;
                 }
             }
         }
@@ -98,7 +98,8 @@ public class ItemIconDumper {
     public static void prepareRenderItem(ItemStack itemStack, RenderItem itemRenderer) {
         IIcon iIcon = itemStack.getIconIndex();
         if (iIcon == null) {
-            iIcon = Objects.requireNonNull(itemStack.getItem()).getIconFromDamageForRenderPass(itemStack.getItemDamage(), 0);
+            iIcon = Objects.requireNonNull(itemStack.getItem())
+                .getIconFromDamageForRenderPass(itemStack.getItemDamage(), 0);
         }
 
         int size;
@@ -128,11 +129,14 @@ public class ItemIconDumper {
      * Created by Jerrell Fang on 2/23/2015.
      *
      * @author Meow J
-     * <p>
-     * Borrowed from <a href="https://github.com/Snownee/Item-Render-Dark/blob/master/src/main/java/itemrender/rendering/Renderer.java">Item-Render-Rebirth</a>
+     *         <p>
+     *         Borrowed from <a href=
+     *         "https://github.com/Snownee/Item-Render-Dark/blob/master/src/main/java/itemrender/rendering/Renderer.java">Item-Render-Rebirth</a>
      */
-    public static BufferedImage renderItem(ItemStack itemStack, FBOHelper fbo, RenderItem itemRenderer, float scale, DynamicTexture dynamicTexture) {
-        Minecraft minecraft = FMLClientHandler.instance().getClient();
+    public static BufferedImage renderItem(ItemStack itemStack, FBOHelper fbo, RenderItem itemRenderer, float scale,
+        DynamicTexture dynamicTexture) {
+        Minecraft minecraft = FMLClientHandler.instance()
+            .getClient();
         fbo.begin();
         GLStateManager.glMatrixMode(GL11.GL_PROJECTION);
         GLStateManager.glPushMatrix();
@@ -145,13 +149,7 @@ public class ItemIconDumper {
         GLStateManager.enableLighting();
         GLStateManager.glTranslated(8 * (1 - scale), 8 * (1 - scale), 0);
         GLStateManager.glScaled(scale, scale, scale);
-        itemRenderer.renderItemAndEffectIntoGUI(
-            minecraft.fontRenderer,
-            minecraft.renderEngine,
-            itemStack,
-            0,
-            0
-        );
+        itemRenderer.renderItemAndEffectIntoGUI(minecraft.fontRenderer, minecraft.renderEngine, itemStack, 0, 0);
         if (dynamicTexture != null) {
             dynamicTexture.updateAnimation();
         }
@@ -162,7 +160,8 @@ public class ItemIconDumper {
         fbo.end();
         if (itemStack.getItem() instanceof ItemBlock) {
             Block block = ((ItemBlock) itemStack.getItem()).field_150939_a;
-            if (CommonProxy.isGTLoaded && (block instanceof GTBlockOre || block instanceof BWMetaGeneratedOres || block instanceof BlockBaseOre)) {
+            if (CommonProxy.isGTLoaded && (block instanceof GTBlockOre || block instanceof BWMetaGeneratedOres
+                || block instanceof BlockBaseOre)) {
                 return makeNonTransparentOpaque(fbo.saveToImage());
             }
         }
@@ -184,16 +183,20 @@ public class ItemIconDumper {
         fbo.restoreTexture();
     }
 
-    public static void renderDynamicItem(ItemStack itemStack, FBOHelper fbo, RenderItem itemRenderer, DynamicTexture dynamicTexture){
+    public static void renderDynamicItem(ItemStack itemStack, FBOHelper fbo, RenderItem itemRenderer,
+        DynamicTexture dynamicTexture) {
         int frameCount = dynamicTexture.lcm;
         BufferedImage[] images = new BufferedImage[frameCount];
         for (int i = 0; i < frameCount; i++) {
             images[dynamicTexture.getIndex()] = renderItem(itemStack, fbo, itemRenderer, 1f, dynamicTexture);
         }
         BufferedImage image;
-        if (Arrays.stream(images).anyMatch(Objects::isNull)) {
+        if (Arrays.stream(images)
+            .anyMatch(Objects::isNull)) {
             GTNHDumper.LOG.warn("{}'s frames has null frame", itemStack.getDisplayName());
-            images = Arrays.stream(images).filter(Objects::nonNull).toArray(BufferedImage[]::new);
+            images = Arrays.stream(images)
+                .filter(Objects::nonNull)
+                .toArray(BufferedImage[]::new);
         }
         image = concatenateImages(images);
         frameCountMap.put(itemStack, image.getWidth() / image.getHeight());
@@ -218,8 +221,13 @@ public class ItemIconDumper {
         }
 
         // 1. 计算目标图像尺寸
-        int totalWidth = Arrays.stream(images).mapToInt(BufferedImage::getWidth).sum();
-        int maxHeight = Arrays.stream(images).mapToInt(BufferedImage::getHeight).max().orElse(0);
+        int totalWidth = Arrays.stream(images)
+            .mapToInt(BufferedImage::getWidth)
+            .sum();
+        int maxHeight = Arrays.stream(images)
+            .mapToInt(BufferedImage::getHeight)
+            .max()
+            .orElse(0);
 
         // 2. 创建带透明通道的目标图像 (ARGB)
         BufferedImage result = new BufferedImage(totalWidth, maxHeight, BufferedImage.TYPE_INT_ARGB);
@@ -232,7 +240,7 @@ public class ItemIconDumper {
         // 3. 逐个绘制图像
         int currentX = 0;
         for (BufferedImage img : images) {
-            int y = (maxHeight - img.getHeight()) / 2;  // 垂直居中对齐
+            int y = (maxHeight - img.getHeight()) / 2; // 垂直居中对齐
             g2d.drawImage(img, currentX, y, null);
             currentX += img.getWidth();
         }

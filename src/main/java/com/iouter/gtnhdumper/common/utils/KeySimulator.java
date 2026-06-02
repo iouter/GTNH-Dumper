@@ -18,7 +18,7 @@ public final class KeySimulator {
     // 兼容模式
     private enum Mode {
         UNKNOWN,
-        LWJGL2,    // 原版 1.7.10 (使用 keyDownBuffer)
+        LWJGL2, // 原版 1.7.10 (使用 keyDownBuffer)
         LWJGL3_SDL // lwjgl3ify (使用 sdlKeyPressedArray)
     }
 
@@ -29,8 +29,7 @@ public final class KeySimulator {
     // LWJGL2 字段
     private static Field keyDownBufferField;
 
-    private KeySimulator() {
-    }
+    private KeySimulator() {}
 
     /**
      * 初始化 - 检测运行时环境
@@ -70,7 +69,9 @@ public final class KeySimulator {
      */
     public static void withKeyPressed(Runnable action, int... keys) {
         if (action == null || keys == null || keys.length == 0) {
-            action.run();
+            if (action != null) {
+                action.run();
+            }
             return;
         }
 
@@ -170,8 +171,7 @@ public final class KeySimulator {
 
         withKeyPressed(() -> {
             boolean shiftState = org.lwjgl.input.Keyboard.isKeyDown(org.lwjgl.input.Keyboard.KEY_LSHIFT);
-            GTNHDumper.LOG.info("[KeySimulator] TEST RESULT: Left Shift is {}",
-                shiftState ? "PRESSED" : "RELEASED");
+            GTNHDumper.LOG.info("[KeySimulator] TEST RESULT: Left Shift is {}", shiftState ? "PRESSED" : "RELEASED");
         }, org.lwjgl.input.Keyboard.KEY_LSHIFT);
 
         GTNHDumper.LOG.info("[KeySimulator] Dual-mode diagnostic completed");

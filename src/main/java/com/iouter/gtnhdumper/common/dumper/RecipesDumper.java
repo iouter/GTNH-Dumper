@@ -43,12 +43,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RecipesDumper extends DataDumper {
+
     public RecipesDumper() {
         super("tools.dump.gtnhdumper.recipe");
     }
 
     private static BaseHandlerRecipe dumpRecipes(IRecipeHandler recipeHandler) {
-        final String clazz = Utils.getAfterLastDot(recipeHandler.getHandlerId()).replace(".", "_");
+        final String clazz = Utils.getAfterLastDot(recipeHandler.getHandlerId())
+            .replace(".", "_");
         if (CommonProxy.isGTLoaded) {
             if (recipeHandler instanceof GasSiphonRecipeHandler) {
                 return new GasSiphonHandlerRecipe(recipeHandler);
@@ -61,11 +63,10 @@ public class RecipesDumper extends DataDumper {
             }
         }
         if (CommonProxy.isTCLoaded) {
-            if (recipeHandler instanceof AspectCombinationHandler ||
-                recipeHandler instanceof ShapedArcaneRecipeHandler ||
-                recipeHandler instanceof ShapelessArcaneRecipeHandler ||
-                recipeHandler instanceof AlchemyRecipeHandler ||
-                recipeHandler instanceof InfusionRecipeHandler) {
+            if (recipeHandler instanceof AspectCombinationHandler || recipeHandler instanceof ShapedArcaneRecipeHandler
+                || recipeHandler instanceof ShapelessArcaneRecipeHandler
+                || recipeHandler instanceof AlchemyRecipeHandler
+                || recipeHandler instanceof InfusionRecipeHandler) {
                 return new TCHandlerRecipe(recipeHandler);
             }
         }
@@ -76,7 +77,8 @@ public class RecipesDumper extends DataDumper {
         }
         if (CommonProxy.isFRLoaded) {
             if (CommonProxy.isNEIAddonLoaded) {
-                if (recipeHandler instanceof BaseBreedingRecipeHandler || recipeHandler instanceof BaseProduceRecipeHandler) {
+                if (recipeHandler instanceof BaseBreedingRecipeHandler
+                    || recipeHandler instanceof BaseProduceRecipeHandler) {
                     return new ForestryHandlerRecipe(recipeHandler);
                 }
             }
@@ -97,7 +99,7 @@ public class RecipesDumper extends DataDumper {
 
     @Override
     public String[] header() {
-        return new String[]{"Recipe json"};
+        return new String[] { "Recipe json" };
     }
 
     @Override
@@ -105,12 +107,10 @@ public class RecipesDumper extends DataDumper {
         List<String[]> recipesList = new ArrayList<>();
         for (IRecipeHandler handler : GuiUsageRecipe.usagehandlers) {
             final String name = handler.getRecipeName();
-            recipesList.add(new String[]{handler.getRecipeName()});
+            recipesList.add(new String[] { handler.getRecipeName() });
             final String handlerName = handler.getHandlerId();
-            final String handlerId = Objects.firstNonNull(
-                handler instanceof TemplateRecipeHandler ? handler.getOverlayIdentifier()
-                    : null,
-                "null");
+            final String handlerId = Objects
+                .firstNonNull(handler instanceof TemplateRecipeHandler ? handler.getOverlayIdentifier() : null, "null");
             HandlerInfo info = GuiRecipeTab.getHandlerInfo(handlerName, handlerId);
             String modID = info != null ? info.getModId() : "Unknown";
             String id = Utils.getAfterLastDot(handlerId);
@@ -140,7 +140,8 @@ public class RecipesDumper extends DataDumper {
     @Override
     public ChatComponentTranslation dumpMessage(File file) {
         return new ChatComponentTranslation(
-            "nei.options.tools.dump.gtnhdumper.recipes.dumped", "dumps/" + file.getName());
+            "nei.options.tools.dump.gtnhdumper.recipes.dumped",
+            "dumps/" + file.getName());
     }
 
     @Override

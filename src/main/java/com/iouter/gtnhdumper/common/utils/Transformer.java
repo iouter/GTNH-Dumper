@@ -17,6 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Transformer {
+
     private Transformer() {}
 
     public static GTDefaultHandlerRecipe.GTDumpedRecipe transformGTRecipe(GTRecipe src) {
@@ -31,31 +32,28 @@ public class Transformer {
         ArrayList<Object> outputItems = getOutputItems(src);
         ArrayList<RecipeFluid> outputFluids = getOutputFluids(src);
         ArrayList<Object> otherItems = new ArrayList<>();
-        if (src.mSpecialItems instanceof ItemStack) {
-            ItemStack temp = (ItemStack) src.mSpecialItems;
+        if (src.mSpecialItems instanceof ItemStack temp) {
             otherItems.add(new RecipeItem(temp));
         }
-        if (otherItems.isEmpty())
-            otherItems = null;
+        if (otherItems.isEmpty()) otherItems = null;
         IRecipeMetadataStorage metadataStorage = src.getMetadataStorage();
         Map<String, Object> metadata = new LinkedHashMap<>();
         try {
             Class<?> clazz = RecipeMetadataKey.class;
             Field idField = clazz.getDeclaredField("identifier");
             idField.setAccessible(true);
-            for (Map.Entry<RecipeMetadataKey<?>, Object> meta: metadataStorage.getEntries()) {
+            for (Map.Entry<RecipeMetadataKey<?>, Object> meta : metadataStorage.getEntries()) {
                 try {
                     Object value = meta.getValue();
-                    String key = idField.get(meta.getKey()).toString();
+                    String key = idField.get(meta.getKey())
+                        .toString();
                     metadata.put(key, value);
-                } catch (Exception ignored) {
-                }
+                } catch (Exception ignored) {}
             }
         } catch (Exception e) {
             metadata = null;
         }
-        if (metadata != null && metadata.isEmpty())
-            metadata = null;
+        if (metadata != null && metadata.isEmpty()) metadata = null;
         return new GTDefaultHandlerRecipe.GTDumpedRecipe(
             inputItems,
             inputFluids,
@@ -65,33 +63,30 @@ public class Transformer {
             src.mEUt,
             src.mDuration,
             src.mSpecialValue,
-            metadata
-        );
+            metadata);
     }
 
     public static ArrayList<Object> getInputItems(GTRecipe gtRecipe) {
         ArrayList<Object> inputItems = new ArrayList<>();
         for (int i = 0; i < gtRecipe.mInputs.length; i++) {
             int chance = gtRecipe.getInputChance(i);
-            if (gtRecipe instanceof GTRecipe.GTRecipe_WithAlt) {
-                GTRecipe.GTRecipe_WithAlt gtRecipeWithAlt = (GTRecipe.GTRecipe_WithAlt) gtRecipe;
+            if (gtRecipe instanceof GTRecipe.GTRecipe_WithAlt gtRecipeWithAlt) {
                 Object stackObj = gtRecipeWithAlt.getAltRepresentativeInput(i);
-                if (stackObj instanceof ItemStack) {
-                    ItemStack stackAlt = (ItemStack) stackObj;
+                if (stackObj instanceof ItemStack stackAlt) {
                     inputItems.add(new RecipeItem(stackAlt).withChance(chance));
-                } else if (stackObj instanceof ItemStack[]) {
-                    ItemStack[] stacks = (ItemStack[]) stackObj;
+                } else if (stackObj instanceof ItemStack[]stacks) {
                     inputItems.add(RecipeUtil.getRecipeItems(stacks, chance));
                 }
             } else {
                 ItemStack stack = gtRecipe.mInputs[i];
-                if (stack == null)
-                    continue;
-                inputItems.add(RecipeUtil.getRecipeItems(NEIServerUtils.extractRecipeItems(GTOreDictUnificator.getNonUnifiedStacks(stack)), chance));
+                if (stack == null) continue;
+                inputItems.add(
+                    RecipeUtil.getRecipeItems(
+                        NEIServerUtils.extractRecipeItems(GTOreDictUnificator.getNonUnifiedStacks(stack)),
+                        chance));
             }
         }
-        if (inputItems.isEmpty())
-            return null;
+        if (inputItems.isEmpty()) return null;
         return inputItems;
     }
 
@@ -100,8 +95,7 @@ public class Transformer {
         for (int i = 0; i < gtRecipe.mOutputs.length; i++) {
             outputItems.add(new RecipeItem(gtRecipe.mOutputs[i]).withChance(gtRecipe.getOutputChance(i)));
         }
-        if (outputItems.isEmpty())
-            return null;
+        if (outputItems.isEmpty()) return null;
         return outputItems;
     }
 
@@ -109,10 +103,11 @@ public class Transformer {
         ArrayList<RecipeFluid> inputFluids = new ArrayList<>();
         for (int i = 0; i < gtRecipe.mFluidInputs.length; i++) {
             final FluidStack stack = gtRecipe.mFluidInputs[i];
-            inputFluids.add(new RecipeFluid(stack).withNBT(stack).withChance(gtRecipe.getFluidInputChance(i)));
+            inputFluids.add(
+                new RecipeFluid(stack).withNBT(stack)
+                    .withChance(gtRecipe.getFluidInputChance(i)));
         }
-        if (inputFluids.isEmpty())
-            return null;
+        if (inputFluids.isEmpty()) return null;
         return inputFluids;
     }
 
@@ -120,10 +115,11 @@ public class Transformer {
         ArrayList<RecipeFluid> outputFluids = new ArrayList<>();
         for (int i = 0; i < gtRecipe.mFluidOutputs.length; i++) {
             final FluidStack stack = gtRecipe.mFluidOutputs[i];
-            outputFluids.add(new RecipeFluid(stack).withNBT(stack).withChance(gtRecipe.getFluidOutputChance(i)));
+            outputFluids.add(
+                new RecipeFluid(stack).withNBT(stack)
+                    .withChance(gtRecipe.getFluidOutputChance(i)));
         }
-        if (outputFluids.isEmpty())
-            return null;
+        if (outputFluids.isEmpty()) return null;
         return outputFluids;
     }
 }

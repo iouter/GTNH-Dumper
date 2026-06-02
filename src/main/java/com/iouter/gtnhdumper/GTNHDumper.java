@@ -17,6 +17,7 @@ import org.apache.logging.log4j.Logger;
 
 @Mod(modid = Tags.MODID, version = Tags.VERSION, name = Tags.MODNAME, acceptedMinecraftVersions = "[1.7.10]")
 public class GTNHDumper {
+
     public static final Gson GSON = Utils.getGsonInstance();
 
     public static Logger LOG = LogManager.getLogger(Tags.MODID);

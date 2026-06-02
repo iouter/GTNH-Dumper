@@ -45,6 +45,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Utils {
+
     public static final Minecraft minecraft = Minecraft.getMinecraft();
     private static final char[] BASE62 = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
     private static final int OUTPUT_LENGTH = 15;
@@ -53,46 +54,37 @@ public class Utils {
     public static String getItemKeyWithNBT(ItemStack stack) {
         final String nbt = getItemNBT(stack);
         final String key = getItemKey(stack);
-        if (nbt != null)
-            return key + nbt;
+        if (nbt != null) return key + nbt;
         return key;
     }
 
     public static String getItemKey(ItemStack stack) {
-        if (stack == null)
-            return "null";
+        if (stack == null) return "null";
         final String name = Item.itemRegistry.getNameForObject(stack.getItem());
         final int meta = InventoryUtils.actualDamage(stack);
-        if (meta != 0)
-            return name + ":" + meta;
+        if (meta != 0) return name + ":" + meta;
         return name;
     }
 
     public static String getItemNBT(ItemStack stack) {
-        if (stack == null)
-            return null;
+        if (stack == null) return null;
         NBTTagCompound nbt = stack.stackTagCompound;
-        if (nbt == null)
-            return null;
+        if (nbt == null) return null;
         return nbt.toString();
     }
 
     public static String getFluidNBT(FluidStack stack) {
-        if (stack == null)
-            return null;
+        if (stack == null) return null;
         NBTTagCompound nbt = stack.tag;
-        if (nbt == null)
-            return null;
+        if (nbt == null) return null;
         return nbt.toString();
     }
 
     public static ArrayList<ItemStack[]> getItemStacks(List<PositionedStack> positionedStacks) {
         ArrayList<ItemStack[]> stacks = new ArrayList<>();
-        if (positionedStacks == null)
-            return stacks;
+        if (positionedStacks == null) return stacks;
         for (PositionedStack positionedStack : positionedStacks) {
-            if (positionedStack.items == null)
-                continue;
+            if (positionedStack.items == null) continue;
             ItemStack[] items = positionedStack.items;
             stacks.add(items);
         }
@@ -101,8 +93,7 @@ public class Utils {
 
     public static ArrayList<ItemStack[]> getItemStacks(PositionedStack positionedStacks) {
         ArrayList<ItemStack[]> list = new ArrayList<>();
-        if (positionedStacks == null || positionedStacks.items == null)
-            return list;
+        if (positionedStacks == null || positionedStacks.items == null) return list;
         list.add(positionedStacks.items);
         return list;
     }
@@ -110,8 +101,7 @@ public class Utils {
     public static ArrayList<Object> getRecipeItems(ArrayList<ItemStack[]> itemStacks) {
         ArrayList<Object> list = new ArrayList<>();
         for (ItemStack[] stack : itemStacks) {
-            if (stack == null)
-                continue;
+            if (stack == null) continue;
             Object recipeItem = RecipeUtil.getRecipeItems(stack);
             list.add(recipeItem);
         }
@@ -127,7 +117,7 @@ public class Utils {
     }
 
     public static Map<String, String[]> getOreDict() {
-        Map<String, String[]> map= new LinkedHashMap<>();
+        Map<String, String[]> map = new LinkedHashMap<>();
         try {
             Class<?> oreDictClass = Class.forName("net.minecraftforge.oredict.OreDictionary");
 
@@ -142,13 +132,15 @@ public class Utils {
             List<ArrayList<ItemStack>> idToStack = (List<ArrayList<ItemStack>>) idToStackField.get(null);
 
             for (int i = 0; i < idToName.size(); i++) {
-                if (i >= idToStack.size())
-                    continue;
+                if (i >= idToStack.size()) continue;
                 String name = idToName.get(i);
-                ArrayList<ItemStack> items= idToStack.get(i);
-                if (name == null || items == null || items.isEmpty())
-                    continue;
-                map.put(name, items.stream().map(Utils::getItemKey).toArray(String[]::new));
+                ArrayList<ItemStack> items = idToStack.get(i);
+                if (name == null || items == null || items.isEmpty()) continue;
+                map.put(
+                    name,
+                    items.stream()
+                        .map(Utils::getItemKey)
+                        .toArray(String[]::new));
             }
         } catch (Exception e) {
             GTNHDumper.LOG.error(e);
@@ -164,20 +156,14 @@ public class Utils {
             .map(Utils::getItemKey)
             .toArray(String[]::new);
         Map<String, Long> stackFreq = Arrays.stream(stackKeys)
-            .collect(Collectors.groupingBy(
-                Function.identity(),
-                Collectors.counting()
-            ));
+            .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
         for (Map.Entry<String, String[]> entry : map.entrySet()) {
             String[] dictArray = entry.getValue();
             if (dictArray == null || dictArray.length != stackKeys.length) {
                 continue;
             }
             Map<String, Long> dictFreq = Arrays.stream(dictArray)
-                .collect(Collectors.groupingBy(
-                    Function.identity(),
-                    Collectors.counting()
-                ));
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 
             if (stackFreq.equals(dictFreq)) {
                 return entry.getKey();
@@ -192,29 +178,21 @@ public class Utils {
 
     public static int getCraftingSerial(int x, int y) {
         int serialY = getCraftingSerialY(y);
-        switch (x) {
-            case 25:
-                return 1 + serialY;
-            case 43:
-                return 2 + serialY;
-            case 61:
-                return 3 + serialY;
-            default:
-                return -1;
-        }
+        return switch (x) {
+            case 25 -> 1 + serialY;
+            case 43 -> 2 + serialY;
+            case 61 -> 3 + serialY;
+            default -> -1;
+        };
     }
 
     private static int getCraftingSerialY(int y) {
-        switch (y) {
-            case 6:
-                return 0;
-            case 24:
-                return 3;
-            case 42:
-                return 6;
-            default:
-                return -1;
-        }
+        return switch (y) {
+            case 6 -> 0;
+            case 24 -> 3;
+            case 42 -> 6;
+            default -> -1;
+        };
     }
 
     public static String getAfterLastChar(String input, char c) {
@@ -246,7 +224,8 @@ public class Utils {
         if (a == null) {
             return b == null;
         }
-        final boolean nameEqual = Item.itemRegistry.getNameForObject(a.getItem()).equals(Item.itemRegistry.getNameForObject(b.getItem()));
+        final boolean nameEqual = Item.itemRegistry.getNameForObject(a.getItem())
+            .equals(Item.itemRegistry.getNameForObject(b.getItem()));
         final boolean metaEqual = InventoryUtils.actualDamage(a) == InventoryUtils.actualDamage(b);
         final boolean sizeEqual = a.stackSize == b.stackSize;
         final boolean nbtEqual = Objects.equals(a.stackTagCompound, b.stackTagCompound);
@@ -297,8 +276,7 @@ public class Utils {
     }
 
     public static Gson getGsonInstance() {
-        GsonBuilder gsonBuilder = new GsonBuilder()
-            .setPrettyPrinting()
+        GsonBuilder gsonBuilder = new GsonBuilder().setPrettyPrinting()
             .serializeSpecialFloatingPointValues()
             .registerTypeAdapter(Double.class, new SafeDoubleSerializer())
             .registerTypeAdapter(Double.TYPE, new SafeDoubleSerializer())
@@ -324,7 +302,8 @@ public class Utils {
         buffer.putLong(uuid.getLeastSignificantBits());
         byte[] bytes = buffer.array();
 
-        String base64 = Base64.getEncoder().encodeToString(bytes);
+        String base64 = Base64.getEncoder()
+            .encodeToString(bytes);
         return base64.replaceAll("=", "");
     }
 

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public class RecipeItem {
+
     public static final Map<String, String[]> oreDictMap = Utils.getOreDict();
 
     public String key;
@@ -56,8 +57,7 @@ public class RecipeItem {
     }
 
     public RecipeItem withNBT(ItemStack stack) {
-        if (stack == null)
-            return this;
+        if (stack == null) return this;
         String nbt = Utils.getItemNBT(stack);
         if (nbt != null) {
             return withNBT(nbt);

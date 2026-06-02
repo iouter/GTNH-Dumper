@@ -16,23 +16,21 @@ import java.util.List;
 import static com.iouter.gtnhdumper.GTNHDumper.GSON;
 
 public abstract class BaseHandlerRecipe {
+
     private final JsonObject json = new JsonObject();
 
     public BaseHandlerRecipe(IRecipeHandler handler) {
         json.addProperty("name", handler.getRecipeName());
         JsonArray catalysts = new JsonArray();
 
-        RecipeCatalysts.getRecipeCatalysts(handler).forEach(
-            p -> catalysts.add(GSON.toJsonTree(RecipeUtil.getRecipeItems(p)))
-        );
+        RecipeCatalysts.getRecipeCatalysts(handler)
+            .forEach(p -> catalysts.add(GSON.toJsonTree(RecipeUtil.getRecipeItems(p))));
 
         json.add("catalysts", catalysts);
 
         final String handlerName = handler.getHandlerId();
-        final String handlerId = Objects.firstNonNull(
-            handler instanceof TemplateRecipeHandler ? handler.getOverlayIdentifier()
-                : null,
-            "null");
+        final String handlerId = Objects
+            .firstNonNull(handler instanceof TemplateRecipeHandler ? handler.getOverlayIdentifier() : null, "null");
 
         json.addProperty("identifier", handlerId);
         json.addProperty("source", handlerName);

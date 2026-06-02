@@ -19,13 +19,17 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class DynamicTexture {
 
-    private static final Field frameCounterField = ReflectionHelper.findField(TextureAtlasSprite.class, "frameCounter", "field_110973_g");
-    private static final Field tickCounterField = ReflectionHelper.findField(TextureAtlasSprite.class, "tickCounter", "field_110983_h");
-    private static final Field animationMetadataField = ReflectionHelper.findField(TextureAtlasSprite.class, "animationMetadata", "field_110982_k");
+    private static final Field frameCounterField = ReflectionHelper
+        .findField(TextureAtlasSprite.class, "frameCounter", "field_110973_g");
+    private static final Field tickCounterField = ReflectionHelper
+        .findField(TextureAtlasSprite.class, "tickCounter", "field_110983_h");
+    private static final Field animationMetadataField = ReflectionHelper
+        .findField(TextureAtlasSprite.class, "animationMetadata", "field_110982_k");
 
     public final Set<TextureAtlasSprite> textures = new HashSet<>();
     public final Object2IntOpenHashMap<TextureAtlasSprite> textureSizeMap = new Object2IntOpenHashMap<>();
@@ -52,14 +56,16 @@ public class DynamicTexture {
                 framesArray[i] = animation.getFrameTimeSingle(i);
             }
             framesArrayMap.put(texture, framesArray);
-            int sum = Arrays.stream(framesArray).sum();
+            int sum = Arrays.stream(framesArray)
+                .sum();
             framesCountMap.put(texture, sum);
         }
         if (!this.textures.isEmpty()) {
             BigInteger bigIntegerLCM = BigInteger.ONE;
             for (int sum : framesCountMap.values()) {
                 BigInteger bSum = BigInteger.valueOf(sum);
-                bigIntegerLCM = bigIntegerLCM.divide(bigIntegerLCM.gcd(bSum)).multiply(bSum);
+                bigIntegerLCM = bigIntegerLCM.divide(bigIntegerLCM.gcd(bSum))
+                    .multiply(bSum);
             }
             lcm = bigIntegerLCM.intValue();
         }
@@ -84,14 +90,15 @@ public class DynamicTexture {
     public int getIndex() {
         if (textures.isEmpty()) return 0;
         if (textures.size() == 1) {
-            TextureAtlasSprite tex = textures.iterator().next();
+            TextureAtlasSprite tex = textures.iterator()
+                .next();
             return getTextureIndex(tex);
         }
 
         long curMod = -1, curRem = -1;
         for (TextureAtlasSprite tex : textures) {
-            long period = framesCountMap.getInt(tex);   // 周期长度
-            long remainder = getTextureIndex(tex);      // 当前余数
+            long period = framesCountMap.getInt(tex); // 周期长度
+            long remainder = getTextureIndex(tex); // 当前余数
             if (curMod == -1) {
                 curMod = period;
                 curRem = remainder % curMod;
@@ -123,7 +130,8 @@ public class DynamicTexture {
             }
 
         } else {
-            int passes= stack.getItem().getRenderPasses(stack.getItemDamage());
+            int passes = Objects.requireNonNull(stack.getItem())
+                .getRenderPasses(stack.getItemDamage());
             if (passes == 1) {
                 IIcon icon = stack.getIconIndex();
                 if (icon instanceof TextureAtlasSprite) {
@@ -131,7 +139,8 @@ public class DynamicTexture {
                 }
             } else {
                 for (int i = 0; i < passes; i++) {
-                    IIcon icon = stack.getItem().getIconFromDamageForRenderPass(stack.getItemDamage(), i);
+                    IIcon icon = stack.getItem()
+                        .getIconFromDamageForRenderPass(stack.getItemDamage(), i);
                     if (icon instanceof TextureAtlasSprite) {
                         textures.add((TextureAtlasSprite) icon);
                     }
@@ -182,14 +191,14 @@ public class DynamicTexture {
         long newMod = m * n1; // = lcm(m, n)
         long newRem = (a + m * t0) % newMod;
         if (newRem < 0) newRem += newMod;
-        return new long[]{newMod, newRem};
+        return new long[] { newMod, newRem };
     }
 
     private long[] egcd(long a, long b) {
-        if (b == 0) return new long[]{a, 1, 0};
+        if (b == 0) return new long[] { a, 1, 0 };
         long[] vals = egcd(b, a % b);
         long g = vals[0], x1 = vals[1], y1 = vals[2];
-        return new long[]{g, y1, x1 - (a / b) * y1};
+        return new long[] { g, y1, x1 - (a / b) * y1 };
     }
 
     private long modInv(long a, long m) {

@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 public class OreDictionaryDumper extends WikiDumper {
+
     public OreDictionaryDumper() {
         super("tools.dump.gtnhdumper.oreDictionary");
     }
@@ -25,7 +26,7 @@ public class OreDictionaryDumper extends WikiDumper {
 
     @Override
     public String[] header() {
-        return new String[]{"oreDict", "items"};
+        return new String[] { "oreDict", "items" };
     }
 
     @Override
@@ -33,10 +34,7 @@ public class OreDictionaryDumper extends WikiDumper {
         LinkedList<Object[]> list = new LinkedList<>();
         Map<String, String[]> map = Utils.getOreDict();
         for (String key : map.keySet()) {
-            list.add(new Object[]{
-                key,
-                map.get(key)
-            });
+            list.add(new Object[] { key, map.get(key) });
         }
         return list;
     }
@@ -44,6 +42,7 @@ public class OreDictionaryDumper extends WikiDumper {
     @Override
     public ChatComponentTranslation dumpMessage(File file) {
         return new ChatComponentTranslation(
-            "nei.options.tools.dump.gtnhdumper.oreDictionary.dumped", "dumps/" + file.getName());
+            "nei.options.tools.dump.gtnhdumper.oreDictionary.dumped",
+            "dumps/" + file.getName());
     }
 }

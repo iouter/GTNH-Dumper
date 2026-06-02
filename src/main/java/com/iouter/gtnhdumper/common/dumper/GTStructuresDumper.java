@@ -5,6 +5,7 @@ import com.gtnewhorizon.structurelib.alignment.constructable.IConstructable;
 import com.gtnewhorizon.structurelib.structure.IStructureElement;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.iouter.gtnhdumper.GTNHDumper;
+import com.iouter.gtnhdumper.common.utils.StructureDecoder;
 import gregtech.api.GregTechAPI;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 
@@ -16,9 +17,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class GTStructuresDumper extends DataDumper {
-    private static final char SEP_COL_INNER = '퀀';   // 퀀 ：同一列内行之间的分隔符
-    private static final char SEP_CELL_MERGE = '퀁';  // 퀁 ：单元格内连接符，将前后文本用 "~" 连接
-    private static final char SEP_COL_END   = '퀂';   // 퀂 ：列结束符
 
     public GTStructuresDumper() {
         super("tools.dump.gtnhdumper.gtstructure");
@@ -40,14 +38,15 @@ public class GTStructuresDumper extends DataDumper {
     }
 
     private void dumpStructures() {
-        Arrays.stream(GregTechAPI.METATILEENTITIES).filter(te -> te instanceof IConstructable).forEach(
-            te -> {
+        Arrays.stream(GregTechAPI.METATILEENTITIES)
+            .filter(te -> te instanceof IConstructable)
+            .forEach(te -> {
                 IConstructable constructable = (IConstructable) te;
-                if (!(constructable.getStructureDefinition() instanceof StructureDefinition<?>)) {
+                if (!(constructable.getStructureDefinition() instanceof StructureDefinition<?>structureDefinition)) {
                     return;
                 }
-                StructureDefinition<?> structureDefinition = (StructureDefinition<?>) constructable.getStructureDefinition();
-                final String simpleName = te.getClass().getSimpleName();
+                final String simpleName = te.getClass()
+                    .getSimpleName();
                 final String name = "dumps/structures/" + simpleName + ".json";
                 File file = new File(name);
                 File parentDir = file.getParentFile();
@@ -65,26 +64,23 @@ public class GTStructuresDumper extends DataDumper {
                     file.deleteOnExit();
                     GTNHDumper.LOG.error(e);
                 }
-            }
-        );
+            });
     }
 
-    private static class GTStructure{
+    private static class GTStructure {
+
         private final int meta;
-        private final Map<String, String> shapes = new LinkedHashMap<>();
+        private Map<String, String[][]> shapes;
         private final Map<Character, Object> elements = new LinkedHashMap<>();
 
         public GTStructure(IMetaTileEntity te, StructureDefinition<?> structureDefinition) {
-            meta = te.getBaseMetaTileEntity().getMetaTileID();
-            for (Map.Entry<String, String> entry : structureDefinition.getShapes().entrySet()) {
-                shapes.put(entry.getKey(), entry.getValue());
-            }
-            for (Map.Entry<Character, ? extends IStructureElement<?>> entry : structureDefinition.getElements().entrySet()) {
-                Character c = entry.getKey();
-                if (c.equals(SEP_CELL_MERGE) || c.equals(SEP_COL_END) || c.equals(SEP_COL_INNER)) {
-                    continue;
-                }
-                elements.put(c, entry.getValue());
+            meta = te.getBaseMetaTileEntity()
+                .getMetaTileID();
+            shapes = StructureDecoder.decodeShapes(structureDefinition);
+            for (Map.Entry<Character, ? extends IStructureElement<?>> entry : structureDefinition.getElements()
+                .entrySet()) {
+                Character ch = entry.getKey();
+                elements.put(ch, entry.getValue());
             }
         }
     }

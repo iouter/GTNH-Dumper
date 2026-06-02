@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ShapedCraftingHandlerRecipe extends BaseHandlerRecipe {
+
     public ShapedCraftingHandlerRecipe(IRecipeHandler handler) {
         super(handler);
     }
@@ -20,23 +21,21 @@ public class ShapedCraftingHandlerRecipe extends BaseHandlerRecipe {
     @Override
     public List<?> getRecipes(IRecipeHandler handler) {
         List<BaseRecipe> recipes = new ArrayList<>();
-        if (!(handler instanceof TemplateRecipeHandler)) {
+        if (!(handler instanceof TemplateRecipeHandler recipeHandler)) {
             return null;
         }
-        TemplateRecipeHandler recipeHandler = (TemplateRecipeHandler) handler;
         recipeHandler.loadCraftingRecipes(recipeHandler.getOverlayIdentifier(), (Object) null);
         for (TemplateRecipeHandler.CachedRecipe recipe : recipeHandler.arecipes) {
             Object[] inputItems = new Object[9];
             for (PositionedStack p : recipe.getIngredients()) {
                 int serial = Utils.getCraftingSerial(p) - 1;
-                if (serial == -1)
-                    continue;
+                if (serial == -1) continue;
                 inputItems[serial] = RecipeUtil.getRecipeItems(p.items);
             }
             ArrayList<Object> otherItems = Utils.getRecipeItems(recipe.getOtherStacks());
-            if (otherItems.isEmpty())
-                otherItems = null;
-            BaseRecipe baseRecipe = new BaseRecipe(new ArrayList<>(Arrays.asList(inputItems)),
+            if (otherItems.isEmpty()) otherItems = null;
+            BaseRecipe baseRecipe = new BaseRecipe(
+                new ArrayList<>(Arrays.asList(inputItems)),
                 null,
                 Utils.getRecipeItems(recipe.getResult()),
                 null,

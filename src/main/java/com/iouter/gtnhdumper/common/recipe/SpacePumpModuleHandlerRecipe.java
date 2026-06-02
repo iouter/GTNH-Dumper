@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 public class SpacePumpModuleHandlerRecipe extends BaseHandlerRecipe {
+
     public SpacePumpModuleHandlerRecipe(IRecipeHandler handler) {
         super(handler);
     }
@@ -22,11 +23,14 @@ public class SpacePumpModuleHandlerRecipe extends BaseHandlerRecipe {
         List<SpacePumpModuleRecipe> recipes = new ArrayList<>();
         for (Map.Entry<Pair<Integer, Integer>, FluidStack> entry : SpacePumpingRecipes.RECIPES.entrySet()) {
             recipes.add(
-                new SpacePumpModuleRecipe().setFluid(entry.getValue()).
-                    setPlanetType(entry.getKey().getLeft()).
-                    setGasType(entry.getKey().getRight()).
-                    setAmount(entry.getValue().amount)
-            );
+                new SpacePumpModuleRecipe().setFluid(entry.getValue())
+                    .setPlanetType(
+                        entry.getKey()
+                            .getLeft())
+                    .setGasType(
+                        entry.getKey()
+                            .getRight())
+                    .setAmount(entry.getValue().amount));
         }
         return recipes;
     }
@@ -34,6 +38,7 @@ public class SpacePumpModuleHandlerRecipe extends BaseHandlerRecipe {
     @Setter
     @Accessors(chain = true)
     private static class SpacePumpModuleRecipe {
+
         private FluidStack fluid;
         private int planetType;
         private int gasType;

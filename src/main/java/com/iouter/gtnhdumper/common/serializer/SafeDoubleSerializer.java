@@ -9,6 +9,7 @@ import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
 
 public class SafeDoubleSerializer implements JsonSerializer<Double> {
+
     @Override
     public JsonElement serialize(Double src, Type typeOfSrc, JsonSerializationContext context) {
         if (src == null) {

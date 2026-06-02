@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import static com.iouter.gtnhdumper.common.recipe.base.RecipeItem.oreDictMap;
 
 public class RecipeUtil {
+
     private RecipeUtil() {}
 
     public static Object getRecipeItems(ItemStack[] stacks) {
@@ -22,30 +23,36 @@ public class RecipeUtil {
         if (stacks == null || stacks.length == 0) {
             return null;
         }
-        stacks = Arrays.stream(stacks).filter(Objects::nonNull).toArray(ItemStack[]::new);
+        stacks = Arrays.stream(stacks)
+            .filter(Objects::nonNull)
+            .toArray(ItemStack[]::new);
         if (stacks.length == 1) {
             return new RecipeItem(stacks[0]).withChance(chance);
         }
         final ItemStack stack0 = stacks[0];
         final int amount = stack0.stackSize;
         final String nbt = Utils.getItemNBT(stack0);
-        final boolean isDataEqual = Arrays.stream(stacks).allMatch(stack -> {
-            final boolean isAmountEqual = amount == stack.stackSize;
-            if (!isAmountEqual) {
-                return false;
-            }
-            if (nbt == null) {
-                return Utils.getItemNBT(stack) == null;
-            }
-            return nbt.equals(Utils.getItemNBT(stack));
-        });
+        final boolean isDataEqual = Arrays.stream(stacks)
+            .allMatch(stack -> {
+                final boolean isAmountEqual = amount == stack.stackSize;
+                if (!isAmountEqual) {
+                    return false;
+                }
+                if (nbt == null) {
+                    return Utils.getItemNBT(stack) == null;
+                }
+                return nbt.equals(Utils.getItemNBT(stack));
+            });
         if (isDataEqual) {
             final String oD = Utils.getOreDictByItems(stacks, oreDictMap);
             if (oD != null) {
-                return new RecipeItem("#" + oD, amount).withNBT(nbt).withChance(chance);
+                return new RecipeItem("#" + oD, amount).withNBT(nbt)
+                    .withChance(chance);
             }
         }
-        return Arrays.stream(stacks).map(o -> new RecipeItem(o).withChance(chance)).toArray(RecipeItem[]::new);
+        return Arrays.stream(stacks)
+            .map(o -> new RecipeItem(o).withChance(chance))
+            .toArray(RecipeItem[]::new);
     }
 
     public static Object getRecipeItems(PositionedStack stacks) {
@@ -53,7 +60,9 @@ public class RecipeUtil {
     }
 
     public static ArrayList<Object> getRecipeItemList(ArrayList<PositionedStack> stacks) {
-        return stacks.stream().map(RecipeUtil::getRecipeItems).collect(Collectors.toCollection(ArrayList::new));
+        return stacks.stream()
+            .map(RecipeUtil::getRecipeItems)
+            .collect(Collectors.toCollection(ArrayList::new));
     }
 
     public static ArrayList<Object> getRecipeItemList(PositionedStack stacks) {

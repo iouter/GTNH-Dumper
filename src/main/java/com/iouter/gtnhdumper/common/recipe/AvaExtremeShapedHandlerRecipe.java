@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class AvaExtremeShapedHandlerRecipe extends BaseHandlerRecipe {
+
     public AvaExtremeShapedHandlerRecipe(IRecipeHandler handler) {
         super(handler);
     }
@@ -21,23 +22,21 @@ public class AvaExtremeShapedHandlerRecipe extends BaseHandlerRecipe {
     @Override
     public List<?> getRecipes(IRecipeHandler handler) {
         List<BaseRecipe> recipes = new ArrayList<>();
-        if (!(handler instanceof ExtremeShapedRecipeHandler)) {
+        if (!(handler instanceof ExtremeShapedRecipeHandler recipeHandler)) {
             return null;
         }
-        TemplateRecipeHandler recipeHandler = (TemplateRecipeHandler) handler;
         recipeHandler.loadCraftingRecipes(recipeHandler.getOverlayIdentifier(), (Object) null);
         for (TemplateRecipeHandler.CachedRecipe recipe : recipeHandler.arecipes) {
             Object[] inputItems = new Object[81];
             for (PositionedStack p : recipe.getIngredients()) {
                 int serial = getRecipeSerial(p.relx, p.rely);
-                if (serial == -1)
-                    continue;
+                if (serial == -1) continue;
                 inputItems[serial] = RecipeUtil.getRecipeItems(p.items);
             }
             ArrayList<Object> otherItems = Utils.getRecipeItems(recipe.getOtherStacks());
-            if (otherItems.isEmpty())
-                otherItems = null;
-            BaseRecipe baseRecipe = new BaseRecipe(new ArrayList<>(Arrays.asList(inputItems)),
+            if (otherItems.isEmpty()) otherItems = null;
+            BaseRecipe baseRecipe = new BaseRecipe(
+                new ArrayList<>(Arrays.asList(inputItems)),
                 null,
                 Utils.getRecipeItems(recipe.getResult()),
                 null,

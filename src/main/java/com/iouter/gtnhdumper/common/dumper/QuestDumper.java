@@ -49,6 +49,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public class QuestDumper extends WikiDumper {
+
     public QuestDumper() {
         super("tools.dump.gtnhdumper.quest");
     }
@@ -65,26 +66,9 @@ public class QuestDumper extends WikiDumper {
 
     @Override
     public String[] header() {
-        return new String[] {
-            "uuid",
-            "title",
-            "description",
-            "icon",
-            "logic_quest",
-            "logic_task",
-            "repeat_time",
-            "repeat_rel",
-            "locked_progress",
-            "auto_claim",
-            "silent",
-            "main",
-            "global_share",
-            "simultaneous",
-            "visibility",
-            "pre_requisites",
-            "tasks",
-            "rewards"
-        };
+        return new String[] { "uuid", "title", "description", "icon", "logic_quest", "logic_task", "repeat_time",
+            "repeat_rel", "locked_progress", "auto_claim", "silent", "main", "global_share", "simultaneous",
+            "visibility", "pre_requisites", "tasks", "rewards" };
     }
 
     @Override
@@ -92,11 +76,10 @@ public class QuestDumper extends WikiDumper {
         List<Object[]> list = new ArrayList<>();
         for (UUID uuid : QuestDatabase.INSTANCE.keySet()) {
             IQuest temp = QuestDatabase.INSTANCE.get(uuid);
-            if (!(temp instanceof QuestInstance)) {
+            if (!(temp instanceof QuestInstance quest)) {
                 continue;
             }
             String key = "betterquesting.quest." + Utils.uuidToBase64(uuid) + ".";
-            QuestInstance quest = (QuestInstance) temp;
 
             RecipeItem icon = toRecipeItem(quest.getProperty(NativeProps.ICON));
 
@@ -118,26 +101,22 @@ public class QuestDumper extends WikiDumper {
                     taskList.add(rewardMap);
                 }
             }
-            list.add(new Object[] {
-                uuid,
-                StatCollector.translateToLocal(key + "name"),
-                StatCollector.translateToLocal(key + "desc"),
-                icon,
-                quest.getProperty(NativeProps.LOGIC_QUEST).name().toLowerCase(),
-                quest.getProperty(NativeProps.LOGIC_TASK).name().toLowerCase(),
-                quest.getProperty(NativeProps.REPEAT_TIME),
-                quest.getProperty(NativeProps.REPEAT_REL),
-                quest.getProperty(NativeProps.LOCKED_PROGRESS),
-                quest.getProperty(NativeProps.AUTO_CLAIM),
-                quest.getProperty(NativeProps.SILENT),
-                quest.getProperty(NativeProps.MAIN),
-                quest.getProperty(NativeProps.GLOBAL_SHARE),
-                quest.getProperty(NativeProps.SIMULTANEOUS),
-                quest.getProperty(NativeProps.VISIBILITY).name().toLowerCase(),
-                getPreRequisites(quest),
-                taskList,
-                rewardList
-            });
+            list.add(
+                new Object[] { uuid, StatCollector.translateToLocal(key + "name"),
+                    StatCollector.translateToLocal(key + "desc"), icon, quest.getProperty(NativeProps.LOGIC_QUEST)
+                        .name()
+                        .toLowerCase(),
+                    quest.getProperty(NativeProps.LOGIC_TASK)
+                        .name()
+                        .toLowerCase(),
+                    quest.getProperty(NativeProps.REPEAT_TIME), quest.getProperty(NativeProps.REPEAT_REL),
+                    quest.getProperty(NativeProps.LOCKED_PROGRESS), quest.getProperty(NativeProps.AUTO_CLAIM),
+                    quest.getProperty(NativeProps.SILENT), quest.getProperty(NativeProps.MAIN),
+                    quest.getProperty(NativeProps.GLOBAL_SHARE), quest.getProperty(NativeProps.SIMULTANEOUS),
+                    quest.getProperty(NativeProps.VISIBILITY)
+                        .name()
+                        .toLowerCase(),
+                    getPreRequisites(quest), taskList, rewardList });
         }
         return list;
     }
@@ -150,15 +129,15 @@ public class QuestDumper extends WikiDumper {
         for (UUID requisite : quest.getRequirements()) {
             IQuest.RequirementType type = quest.getRequirementType(requisite);
             switch (type) {
-                case NORMAL:{
+                case NORMAL: {
                     normal.add(requisite);
                     break;
                 }
-                case IMPLICIT:{
+                case IMPLICIT: {
                     implicit.add(requisite);
                     break;
                 }
-                case HIDDEN:{
+                case HIDDEN: {
                     hidden.add(requisite);
                     break;
                 }
@@ -181,38 +160,41 @@ public class QuestDumper extends WikiDumper {
 
     private Map<String, Object> getTask(ITask task) {
         Map<String, Object> map = new LinkedHashMap<>();
-        if (task instanceof TaskXP) {
-            TaskXP xp = (TaskXP) task;
+        if (task instanceof TaskXP xp) {
             map.put("type", "xp");
             map.put("amount", xp.amount);
             map.put("levels", xp.levels);
             map.put("consume", xp.consume);
-        } else if (task instanceof TaskBlockBreak) {
-            TaskBlockBreak blockBreak = (TaskBlockBreak) task;
+        } else if (task instanceof TaskBlockBreak blockBreak) {
             map.put("type", "block_break");
-            map.put("blocks", blockBreak.blockTypes.stream().map(QuestDumper::toRecipeItem).toArray(RecipeItem[]::new));
+            map.put(
+                "blocks",
+                blockBreak.blockTypes.stream()
+                    .map(QuestDumper::toRecipeItem)
+                    .toArray(RecipeItem[]::new));
         } else if (task instanceof TaskCheckbox) {
             map.put("type", "check_box");
-        } else if (task instanceof TaskCrafting) {
-            TaskCrafting crafting = (TaskCrafting) task;
+        } else if (task instanceof TaskCrafting crafting) {
             map.put("type", "crafting");
-            map.put("required_items", crafting.requiredItems.stream().map(QuestDumper::toRecipeItem).toArray(RecipeItem[]::new));
+            map.put(
+                "required_items",
+                crafting.requiredItems.stream()
+                    .map(QuestDumper::toRecipeItem)
+                    .toArray(RecipeItem[]::new));
             map.put("partial_match", crafting.partialMatch);
             map.put("ignore_nbt", crafting.ignoreNBT);
             map.put("allow_anvil", crafting.allowAnvil);
             map.put("allow_smelt", crafting.allowSmelt);
             map.put("allow_craft", crafting.allowCraft);
             map.put("allow_crafted_from_statistics", crafting.allowCraftedFromStatistics);
-        } else if (task instanceof TaskFluid) {
-            TaskFluid fluid = (TaskFluid) task;
+        } else if (task instanceof TaskFluid fluid) {
             map.put("type", "fluid");
             map.put("required_fluids", fluid.requiredFluids);
             map.put("ignore_nbt", fluid.ignoreNbt);
             map.put("consume", fluid.consume);
             map.put("group_detect", fluid.groupDetect);
             map.put("auto_consume", fluid.autoConsume);
-        } else if (task instanceof TaskHunt) {
-            TaskHunt hunt = (TaskHunt) task;
+        } else if (task instanceof TaskHunt hunt) {
             map.put("type", "hunt");
             map.put("id_name", hunt.idName);
             if (!hunt.damageType.isEmpty()) {
@@ -221,8 +203,7 @@ public class QuestDumper extends WikiDumper {
             map.put("required", hunt.required);
             map.put("ignore_nbt", hunt.ignoreNBT);
             map.put("subtypes", hunt.subtypes);
-        } else if (task instanceof TaskInteractEntity) {
-            TaskInteractEntity interactEntity = (TaskInteractEntity) task;
+        } else if (task instanceof TaskInteractEntity interactEntity) {
             map.put("type", "interact_entity");
             if (interactEntity.targetItem != null) {
                 map.put("target_item", toRecipeItem(interactEntity.targetItem));
@@ -230,7 +211,8 @@ public class QuestDumper extends WikiDumper {
             map.put("ignore_item_nbt", interactEntity.ignoreItemNBT);
             map.put("partial_item_match", interactEntity.partialItemMatch);
             map.put("entity_id", interactEntity.entityID);
-            if (!interactEntity.entityTags.func_150296_c().isEmpty()) {
+            if (!interactEntity.entityTags.func_150296_c()
+                .isEmpty()) {
                 map.put("entity_tags", interactEntity.entityTags);
             }
             map.put("entity_subtypes", interactEntity.entitySubtypes);
@@ -238,8 +220,7 @@ public class QuestDumper extends WikiDumper {
             map.put("on_interact", interactEntity.onInteract);
             map.put("on_hit", interactEntity.onHit);
             map.put("required", interactEntity.required);
-        } else if (task instanceof TaskInteractItem) {
-            TaskInteractItem interactItem = (TaskInteractItem) task;
+        } else if (task instanceof TaskInteractItem interactItem) {
             map.put("type", "interact_item");
             if (interactItem.targetItem != null) {
                 map.put("target_item", toRecipeItem(interactItem.targetItem));
@@ -252,8 +233,7 @@ public class QuestDumper extends WikiDumper {
             map.put("on_interact", interactItem.onInteract);
             map.put("on_hit", interactItem.onHit);
             map.put("required", interactItem.required);
-        } else if (task instanceof TaskLocation) {
-            TaskLocation location = (TaskLocation) task;
+        } else if (task instanceof TaskLocation location) {
             map.put("type", "location");
             map.put("name", location.name);
             if (!location.structure.isEmpty()) {
@@ -273,37 +253,42 @@ public class QuestDumper extends WikiDumper {
             map.put("hide_info", location.hideInfo);
             map.put("invert", location.invert);
             map.put("taxi_cab", location.taxiCab);
-        } else if (task instanceof TaskMeeting) {
-            TaskMeeting meeting = (TaskMeeting) task;
+        } else if (task instanceof TaskMeeting meeting) {
             map.put("type", "meeting");
             map.put("id_name", meeting.idName);
             map.put("range", meeting.range);
             map.put("amount", meeting.amount);
             map.put("ignore_nbt", meeting.ignoreNBT);
             map.put("subtypes", meeting.subtypes);
-            if (!meeting.targetTags.func_150296_c().isEmpty()) {
+            if (!meeting.targetTags.func_150296_c()
+                .isEmpty()) {
                 map.put("target_tags", meeting.targetTags);
             }
-        } else if (task instanceof TaskOptionalRetrieval) {
-            TaskOptionalRetrieval optionalRetrieval = (TaskOptionalRetrieval) task;
+        } else if (task instanceof TaskOptionalRetrieval optionalRetrieval) {
             map.put("type", "optional_retrieval");
-            map.put("required_items", optionalRetrieval.requiredItems.stream().map(QuestDumper::toRecipeItem).toArray(RecipeItem[]::new));
+            map.put(
+                "required_items",
+                optionalRetrieval.requiredItems.stream()
+                    .map(QuestDumper::toRecipeItem)
+                    .toArray(RecipeItem[]::new));
             map.put("partial_match", optionalRetrieval.partialMatch);
             map.put("ignore_nbt", optionalRetrieval.ignoreNBT);
             map.put("consume", optionalRetrieval.consume);
             map.put("group_detect", optionalRetrieval.groupDetect);
             map.put("auto_consume", optionalRetrieval.autoConsume);
-        } else if (task instanceof TaskRetrieval) {
-            TaskRetrieval retrieval = (TaskRetrieval) task;
+        } else if (task instanceof TaskRetrieval retrieval) {
             map.put("type", "retrieval");
-            map.put("required_items", retrieval.requiredItems.stream().map(QuestDumper::toRecipeItem).toArray(RecipeItem[]::new));
+            map.put(
+                "required_items",
+                retrieval.requiredItems.stream()
+                    .map(QuestDumper::toRecipeItem)
+                    .toArray(RecipeItem[]::new));
             map.put("partial_match", retrieval.partialMatch);
             map.put("ignore_nbt", retrieval.ignoreNBT);
             map.put("consume", retrieval.consume);
             map.put("group_detect", retrieval.groupDetect);
             map.put("auto_consume", retrieval.autoConsume);
-        } else if (task instanceof TaskScoreboard) {
-            TaskScoreboard scoreboard = (TaskScoreboard) task;
+        } else if (task instanceof TaskScoreboard scoreboard) {
             map.put("type", "scoreboard");
             map.put("score_name", scoreboard.scoreName);
             map.put("score_disp", scoreboard.scoreDisp);
@@ -313,7 +298,10 @@ public class QuestDumper extends WikiDumper {
             if (!scoreboard.suffix.isEmpty()) {
                 map.put("suffix", scoreboard.suffix);
             }
-            map.put("operation", scoreboard.operation.name().toLowerCase());
+            map.put(
+                "operation",
+                scoreboard.operation.name()
+                    .toLowerCase());
         }
         if (map.isEmpty()) {
             return null;
@@ -323,35 +311,37 @@ public class QuestDumper extends WikiDumper {
 
     private Map<String, Object> getReward(IReward reward) {
         Map<String, Object> map = new LinkedHashMap<>();
-        if (reward instanceof RewardChoice) {
-            RewardChoice choice = (RewardChoice) reward;
+        if (reward instanceof RewardChoice choice) {
             map.put("type", "choice");
-            map.put("choices", choice.choices.stream().map(QuestDumper::toRecipeItem).toArray(RecipeItem[]::new));
-        } else if (reward instanceof RewardCommand) {
-            RewardCommand command = (RewardCommand) reward;
+            map.put(
+                "choices",
+                choice.choices.stream()
+                    .map(QuestDumper::toRecipeItem)
+                    .toArray(RecipeItem[]::new));
+        } else if (reward instanceof RewardCommand command) {
             map.put("type", "command");
             map.put("command", command.command);
             map.put("hide_cmd", command.hideCmd);
             map.put("via_player", command.viaPlayer);
-        } else if (reward instanceof RewardItem) {
-            RewardItem item = (RewardItem) reward;
+        } else if (reward instanceof RewardItem item) {
             map.put("type", "item");
-            map.put("items", item.items.stream().map(QuestDumper::toRecipeItem).toArray(RecipeItem[]::new));
-        } else if (reward instanceof RewardQuestCompletion) {
-            RewardQuestCompletion questCompletion = (RewardQuestCompletion) reward;
+            map.put(
+                "items",
+                item.items.stream()
+                    .map(QuestDumper::toRecipeItem)
+                    .toArray(RecipeItem[]::new));
+        } else if (reward instanceof RewardQuestCompletion questCompletion) {
             map.put("type", "quest_completion");
             if (questCompletion.questNum != null) {
                 map.put("quest_num", questCompletion.questNum);
             }
-        } else if (reward instanceof RewardScoreboard) {
-            RewardScoreboard scoreboard = (RewardScoreboard) reward;
+        } else if (reward instanceof RewardScoreboard scoreboard) {
             map.put("type", "scoreboard");
             map.put("score", scoreboard.score);
             map.put("score_type", scoreboard.type);
             map.put("relative", scoreboard.relative);
             map.put("value", scoreboard.value);
-        } else if (reward instanceof RewardXP) {
-            RewardXP xp = (RewardXP) reward;
+        } else if (reward instanceof RewardXP xp) {
             map.put("type", "xp");
             map.put("amount", xp.amount);
             map.put("levels", xp.levels);
@@ -388,6 +378,7 @@ public class QuestDumper extends WikiDumper {
     @Override
     public ChatComponentTranslation dumpMessage(File file) {
         return new ChatComponentTranslation(
-            "nei.options.tools.dump.gtnhdumper.quest.dumped", "dumps/" + file.getName());
+            "nei.options.tools.dump.gtnhdumper.quest.dumped",
+            "dumps/" + file.getName());
     }
 }

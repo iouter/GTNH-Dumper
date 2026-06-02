@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GeneralHandlerRecipe extends BaseHandlerRecipe {
+
     public GeneralHandlerRecipe(IRecipeHandler handler) {
         super(handler);
     }
@@ -17,10 +18,9 @@ public class GeneralHandlerRecipe extends BaseHandlerRecipe {
     @Override
     public List<?> getRecipes(IRecipeHandler handler) {
         List<BaseRecipe> recipes = new ArrayList<>();
-        if (!(handler instanceof TemplateRecipeHandler)) {
+        if (!(handler instanceof TemplateRecipeHandler recipeHandler)) {
             return null;
         }
-        TemplateRecipeHandler recipeHandler = (TemplateRecipeHandler) handler;
         try {
             recipeHandler.loadCraftingRecipes(recipeHandler.getOverlayIdentifier(), (Object) null);
         } catch (Exception ignored) {
@@ -30,12 +30,12 @@ public class GeneralHandlerRecipe extends BaseHandlerRecipe {
             ArrayList<Object> otherItems;
             try {
                 otherItems = Utils.getRecipeItems(recipe.getOtherStacks());
-                if (otherItems.isEmpty())
-                    otherItems = null;
+                if (otherItems.isEmpty()) otherItems = null;
             } catch (Exception e) {
                 otherItems = null;
             }
-            BaseRecipe baseRecipe = new BaseRecipe(Utils.getRecipeItems(recipe.getIngredients()),
+            BaseRecipe baseRecipe = new BaseRecipe(
+                Utils.getRecipeItems(recipe.getIngredients()),
                 null,
                 Utils.getRecipeItems(recipe.getResult()),
                 null,

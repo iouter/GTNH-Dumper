@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class QuestLineDumper extends WikiDumper {
+
     public QuestLineDumper() {
         super("tools.dump.gtnhdumper.questline");
     }
@@ -31,14 +32,7 @@ public class QuestLineDumper extends WikiDumper {
 
     @Override
     public String[] header() {
-        return new String[] {
-            "uuid",
-            "icon",
-            "visibility",
-            "title",
-            "description",
-            "quests"
-        };
+        return new String[] { "uuid", "icon", "visibility", "title", "description", "quests" };
     }
 
     @Override
@@ -47,19 +41,14 @@ public class QuestLineDumper extends WikiDumper {
 
         for (UUID uuid : QuestLineDatabase.INSTANCE.keySet()) {
             IQuestLine iQuestLine = QuestLineDatabase.INSTANCE.get(uuid);
-            if (!(iQuestLine instanceof QuestLine)) {
+            if (!(iQuestLine instanceof QuestLine questLine)) {
                 continue;
             }
-            QuestLine questLine = (QuestLine) iQuestLine;
             String key = "betterquesting.questline." + Utils.uuidToBase64(uuid) + ".";
-            list.add(new Object[]{
-                uuid,
-                QuestDumper.toRecipeItem(questLine.getProperty(NativeProps.ICON)),
-                questLine.getProperty(NativeProps.VISIBILITY),
-                StatCollector.translateToLocal(key + "name"),
-                StatCollector.translateToLocal(key + "desc"),
-                questLine.keySet()
-            });
+            list.add(
+                new Object[] { uuid, QuestDumper.toRecipeItem(questLine.getProperty(NativeProps.ICON)),
+                    questLine.getProperty(NativeProps.VISIBILITY), StatCollector.translateToLocal(key + "name"),
+                    StatCollector.translateToLocal(key + "desc"), questLine.keySet() });
         }
 
         return list;
@@ -68,6 +57,7 @@ public class QuestLineDumper extends WikiDumper {
     @Override
     public ChatComponentTranslation dumpMessage(File file) {
         return new ChatComponentTranslation(
-            "nei.options.tools.dump.gtnhdumper.questline.dumped", "dumps/" + file.getName());
+            "nei.options.tools.dump.gtnhdumper.questline.dumped",
+            "dumps/" + file.getName());
     }
 }

@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class TC4ResearchDumper extends WikiDumper {
+
     public TC4ResearchDumper() {
         super("tools.dump.gtnhdumper.tc4research");
     }
@@ -38,29 +39,9 @@ public class TC4ResearchDumper extends WikiDumper {
 
     @Override
     public String[] header() {
-        return new String[] {
-            "Name",
-            "Key",
-            "Category",
-            "Complexity",
-            "Warp",
-            "Parents",
-            "ParentsHidden",
-            "ItemTriggers",
-            "EntityTriggers",
-            "AspectTriggers",
-            "KillerTriggers",
-            "Siblings",
-            "IsSpecial",
-            "IsSecondary",
-            "IsRound",
-            "IsStub",
-            "IsVirtual",
-            "IsConcealed",
-            "IsHidden",
-            "IsLost",
-            "IsAutoUnlock"
-        };
+        return new String[] { "Name", "Key", "Category", "Complexity", "Warp", "Parents", "ParentsHidden",
+            "ItemTriggers", "EntityTriggers", "AspectTriggers", "KillerTriggers", "Siblings", "IsSpecial",
+            "IsSecondary", "IsRound", "IsStub", "IsVirtual", "IsConcealed", "IsHidden", "IsLost", "IsAutoUnlock" };
     }
 
     @Override
@@ -68,29 +49,13 @@ public class TC4ResearchDumper extends WikiDumper {
         LinkedList<Object[]> list = new LinkedList<>();
         for (ResearchCategoryList r : ResearchCategories.researchCategories.values()) {
             for (ResearchItem m : r.research.values()) {
-                list.add(new Object[] {
-                    m.getName(),
-                    m.key,
-                    ResearchCategories.getCategoryName(m.category),
-                    m.getComplexity(),
-                    ThaumcraftApi.getWarp(m.key),
-                    m.parents,
-                    m.parentsHidden,
-                    getItemStacksName(m.getItemTriggers()),
-                    getEnTitiesName(m.getEntityTriggers()),
-                    getAspectsName(m.getAspectTriggers()),
-                    getKillerTrigger(m),
-                    m.siblings,
-                    m.isSpecial(),
-                    m.isSecondary(),
-                    m.isRound(),
-                    m.isStub(),
-                    m.isVirtual(),
-                    m.isConcealed(),
-                    m.isHidden(),
-                    m.isLost(),
-                    m.isAutoUnlock()
-                });
+                list.add(
+                    new Object[] { m.getName(), m.key, ResearchCategories.getCategoryName(m.category),
+                        m.getComplexity(), ThaumcraftApi.getWarp(m.key), m.parents, m.parentsHidden,
+                        getItemStacksName(m.getItemTriggers()), getEnTitiesName(m.getEntityTriggers()),
+                        getAspectsName(m.getAspectTriggers()), getKillerTrigger(m), m.siblings, m.isSpecial(),
+                        m.isSecondary(), m.isRound(), m.isStub(), m.isVirtual(), m.isConcealed(), m.isHidden(),
+                        m.isLost(), m.isAutoUnlock() });
             }
         }
         return list;
@@ -99,14 +64,17 @@ public class TC4ResearchDumper extends WikiDumper {
     @Override
     public ChatComponentTranslation dumpMessage(File file) {
         return new ChatComponentTranslation(
-                "nei.options.tools.dump.gtnhdumper.tc4research.dumped", "dumps/" + file.getName());
+            "nei.options.tools.dump.gtnhdumper.tc4research.dumped",
+            "dumps/" + file.getName());
     }
 
     public static List<String> getResearchsName(String[] list) {
         if (list == null) return null;
         List<String> nameList = new ArrayList<>();
         for (String str : list) {
-            nameList.add(ResearchCategories.getResearch(str).getName());
+            nameList.add(
+                ResearchCategories.getResearch(str)
+                    .getName());
         }
         return nameList;
     }
@@ -150,9 +118,10 @@ public class TC4ResearchDumper extends WikiDumper {
     }
 
     public static <T, E> Set<T> getKeysByValue(Map<T, E> map, E value) {
-        return map.entrySet().stream()
-                .filter(entry -> Objects.equals(entry.getValue(), value))
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toSet());
+        return map.entrySet()
+            .stream()
+            .filter(entry -> Objects.equals(entry.getValue(), value))
+            .map(Map.Entry::getKey)
+            .collect(Collectors.toSet());
     }
 }

@@ -23,7 +23,6 @@ public class CommonProxy {
     public static boolean isBQLoaded = Loader.isModLoaded("betterquesting");
     public static boolean isMobsInfoLoaded = Loader.isModLoaded("mobsinfo");
 
-
     // preInit "Run before anything else. Read your config, create blocks, items,
     // etc, and register them with the GameRegistry."
     public void preInit(FMLPreInitializationEvent event) {

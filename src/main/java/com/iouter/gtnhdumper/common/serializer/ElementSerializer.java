@@ -10,6 +10,7 @@ import gregtech.api.enums.Element;
 import java.lang.reflect.Type;
 
 public class ElementSerializer implements JsonSerializer<Element> {
+
     @Override
     public JsonElement serialize(Element src, Type typeOfSrc, JsonSerializationContext context) {
         if (src == null || src == Element._NULL) {
@@ -18,8 +19,7 @@ public class ElementSerializer implements JsonSerializer<Element> {
         JsonObject obj = new JsonObject();
 
         obj.addProperty("name", src.name());
-        if (src.mName != null)
-            obj.addProperty("fullName", src.mName);
+        if (src.mName != null) obj.addProperty("fullName", src.mName);
         obj.addProperty("protons", src.getProtons());
         obj.addProperty("neutrons", src.getNeutrons());
         obj.addProperty("mass", src.getMass());

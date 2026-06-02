@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.Objects;
 
 public class AspectListSerializer implements JsonSerializer<AspectList> {
+
     @Override
     public JsonElement serialize(AspectList src, Type typeOfSrc, JsonSerializationContext context) {
         if (src == null) {
@@ -19,7 +20,10 @@ public class AspectListSerializer implements JsonSerializer<AspectList> {
         }
         JsonObject obj = new JsonObject();
         LinkedHashMap<Aspect, Integer> aspects = src.aspects;
-        if (aspects == null || aspects.isEmpty() || aspects.keySet().stream().allMatch(Objects::isNull)) {
+        if (aspects == null || aspects.isEmpty()
+            || aspects.keySet()
+                .stream()
+                .allMatch(Objects::isNull)) {
             return null;
         }
         for (Aspect aspect : aspects.keySet()) {

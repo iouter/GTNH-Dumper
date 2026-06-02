@@ -15,6 +15,7 @@ import java.util.Objects;
 import static tconstruct.library.TConstructRegistry.toolMaterials;
 
 public class TICMaterialDumper extends WikiDumper {
+
     public TICMaterialDumper() {
         super("tools.dump.gtnhdumper.ticmaterial");
     }
@@ -31,22 +32,9 @@ public class TICMaterialDumper extends WikiDumper {
 
     @Override
     public String[] header() {
-        return new String[] {
-            "ID",
-            "Name",
-            "Localized Name",
-            "Base Durability",
-            "Handle Modifier",
-            "Full Durability",
-            "Mining Speed",
-            "Mining Level",
-            "Attack Damage",
-            "Ability",
-            "Draw Speed",
-            "Arrow Speed",
-            "Weight",
-            "Break Chance"
-        };
+        return new String[] { "ID", "Name", "Localized Name", "Base Durability", "Handle Modifier", "Full Durability",
+            "Mining Speed", "Mining Level", "Attack Damage", "Ability", "Draw Speed", "Arrow Speed", "Weight",
+            "Break Chance" };
     }
 
     @Override
@@ -69,29 +57,17 @@ public class TICMaterialDumper extends WikiDumper {
                 flightSpeedMax = bowMaterial.flightSpeedMax;
             }
             String ability = m.ability();
-            if (m.stonebound > 0 && ability != "") {
+            if (m.stonebound > 0 && !Objects.equals(ability, "")) {
                 ability += " " + toRomaNumber((int) Math.abs(m.stonebound));
             }
             if (m.reinforced() > 0) {
                 if (!Objects.equals(ability, "")) ability += ARRAY_SEPARATOR;
                 ability += getReinforcedString(m.reinforced());
             }
-            list.add(new Object[] {
-                index,
-                m.name(),
-                m.prefixName(),
-                m.durability(),
-                m.handleDurability(),
-                Math.round(m.durability() * m.handleDurability()),
-                m.toolSpeed() / 100F,
-                m.harvestLevel(),
-                m.attack(),
-                ability,
-                drawSpeed,
-                flightSpeedMax,
-                mass,
-                breakChance
-            });
+            list.add(
+                new Object[] { index, m.name(), m.prefixName(), m.durability(), m.handleDurability(),
+                    Math.round(m.durability() * m.handleDurability()), m.toolSpeed() / 100F, m.harvestLevel(),
+                    m.attack(), ability, drawSpeed, flightSpeedMax, mass, breakChance });
         }
         return list;
     }
@@ -99,7 +75,8 @@ public class TICMaterialDumper extends WikiDumper {
     @Override
     public ChatComponentTranslation dumpMessage(File file) {
         return new ChatComponentTranslation(
-                "nei.options.tools.dump.gtnhdumper.ticmaterial.dumped", "dumps/" + file.getName());
+            "nei.options.tools.dump.gtnhdumper.ticmaterial.dumped",
+            "dumps/" + file.getName());
     }
 
     public static String getReinforcedString(int reinforced) {
@@ -110,29 +87,18 @@ public class TICMaterialDumper extends WikiDumper {
     }
 
     public static String toRomaNumber(int num) {
-        switch (num) {
-            case 1:
-                return "I";
-            case 2:
-                return "II";
-            case 3:
-                return "III";
-            case 4:
-                return "IV";
-            case 5:
-                return "V";
-            case 6:
-                return "VI";
-            case 7:
-                return "VII";
-            case 8:
-                return "VIII";
-            case 9:
-                return "IX";
-            case 10:
-                return "X";
-            default:
-                return String.valueOf(num);
-        }
+        return switch (num) {
+            case 1 -> "I";
+            case 2 -> "II";
+            case 3 -> "III";
+            case 4 -> "IV";
+            case 5 -> "V";
+            case 6 -> "VI";
+            case 7 -> "VII";
+            case 8 -> "VIII";
+            case 9 -> "IX";
+            case 10 -> "X";
+            default -> String.valueOf(num);
+        };
     }
 }

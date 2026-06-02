@@ -10,15 +10,19 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.Map;
 
+@SuppressWarnings("rawtypes")
 public class NBTTagCompoundSerializer implements JsonSerializer<NBTTagCompound> {
-    private static final Field tagMapField = ReflectionHelper.findField(NBTTagCompound.class, "tagMap", "field_74784_a");
+
+    private static final Field tagMapField = ReflectionHelper
+        .findField(NBTTagCompound.class, "tagMap", "field_74784_a");
 
     @Override
     public JsonElement serialize(NBTTagCompound src, Type typeOfSrc, JsonSerializationContext context) {
         if (src == null) {
             return null;
         }
-        if (src.func_150296_c().isEmpty()) {
+        if (src.func_150296_c()
+            .isEmpty()) {
             return null;
         }
         Map map = getTagMap(src);

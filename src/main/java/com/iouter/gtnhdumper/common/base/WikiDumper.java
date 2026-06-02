@@ -12,7 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public abstract class WikiDumper extends DataDumper{
+public abstract class WikiDumper extends DataDumper {
 
     public static String ARRAY_SEPARATOR = ";;;";
 
@@ -20,7 +20,8 @@ public abstract class WikiDumper extends DataDumper{
         super(name);
     }
 
-    private static Map<String, Map<String, Object>> getMapJson(String[] header, Iterable<Object[]> contents, int keyIndex) {
+    private static Map<String, Map<String, Object>> getMapJson(String[] header, Iterable<Object[]> contents,
+        int keyIndex) {
         Map<String, Map<String, Object>> map = new LinkedHashMap<>();
         for (Object[] content : contents) {
             map.put(content[keyIndex].toString(), getJsonMap(header, content));
@@ -28,7 +29,8 @@ public abstract class WikiDumper extends DataDumper{
         return map;
     }
 
-    private static Map<String, List<Map<String, Object>>> getListJson(String[] header, Iterable<Object[]> contents, String keyStr) {
+    private static Map<String, List<Map<String, Object>>> getListJson(String[] header, Iterable<Object[]> contents,
+        String keyStr) {
         Map<String, List<Map<String, Object>>> map = new LinkedHashMap<>();
         List<Map<String, Object>> list = new LinkedList<>();
         for (Object[] content : contents) {
@@ -39,25 +41,22 @@ public abstract class WikiDumper extends DataDumper{
     }
 
     private static Map<String, Object> getJsonMap(String[] header, Object[] content) {
-        Map<String, Object> map= new LinkedHashMap<>(header.length);
+        Map<String, Object> map = new LinkedHashMap<>(header.length);
         for (int i = 0; i < header.length; i++) {
             Object temp = content[i];
-            if (temp instanceof String)
-                map.put(header[i], conventString((String) temp));
-            else
-                map.put(header[i], temp);
+            if (temp instanceof String) map.put(header[i], conventString((String) temp));
+            else map.put(header[i], temp);
         }
         return map;
     }
 
     private static Object conventString(String str) {
-        if (str == null)
-            return null;
+        if (str == null) return null;
         str = str.trim();
-        if (str.isEmpty() || str.equals("null"))
-            return null;
-        if (str.contains(ARRAY_SEPARATOR))
-            return Arrays.stream(str.split(ARRAY_SEPARATOR)).map(WikiDumper::conventString).toArray(Object[]::new);
+        if (str.isEmpty() || str.equals("null")) return null;
+        if (str.contains(ARRAY_SEPARATOR)) return Arrays.stream(str.split(ARRAY_SEPARATOR))
+            .map(WikiDumper::conventString)
+            .toArray(Object[]::new);
         try {
             return Long.parseLong(str);
         } catch (NumberFormatException ignored) {}
@@ -109,10 +108,13 @@ public abstract class WikiDumper extends DataDumper{
         int mode = getMode();
         if (mode == 0) {
             dumpObject = getListJson(header(), dumpObject(0), getKeyStr());
-        } else if (mode == 1){
+        } else if (mode == 1) {
             dumpObject = getMapJson(header(), dumpObject(1), getKeyIndex());
         } else {
-            dumpObject = getJsonMap(header(), dumpObject(2).iterator().next());
+            dumpObject = getJsonMap(
+                header(),
+                dumpObject(2).iterator()
+                    .next());
         }
         try (FileWriter writer = new FileWriter(file)) {
             GTNHDumper.GSON.toJson(dumpObject, writer);

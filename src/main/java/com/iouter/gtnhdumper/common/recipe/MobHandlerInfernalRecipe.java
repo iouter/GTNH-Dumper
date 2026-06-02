@@ -36,7 +36,8 @@ public class MobHandlerInfernalRecipe extends BaseHandlerRecipe {
     static {
         try {
             infernalRecipeClass = Class.forName("com.kuba6000.mobsinfo.nei.MobHandlerInfernal$InfernalRecipe");
-            infernalPositionedStackClass = Class.forName("com.kuba6000.mobsinfo.nei.MobHandlerInfernal$InfernalPositionedStack");
+            infernalPositionedStackClass = Class
+                .forName("com.kuba6000.mobsinfo.nei.MobHandlerInfernal$InfernalPositionedStack");
 
             eliteChanceField = infernalRecipeClass.getDeclaredField("eliteChance");
             ultraChanceField = infernalRecipeClass.getDeclaredField("ultraChance");
@@ -146,16 +147,24 @@ public class MobHandlerInfernalRecipe extends BaseHandlerRecipe {
             double eliteChance = getEliteChance(cachedRecipe);
             double ultraChance = getUltraChance(cachedRecipe);
             double infernoChance = getInfernoChance(cachedRecipe);
-            recipes.add(new MobInfernalRecipe().
-                setEliteChance(eliteChance).
-                setEliteItems(getElite(cachedRecipe).stream().map(MobHandlerInfernalRecipe::toMobItem).toArray(Object[]::new)).
-                setUltraChance(eliteChance * ultraChance).
-                setUltraChanceAlways(ultraChance).
-                setUltraItems(getUltra(cachedRecipe).stream().map(MobHandlerInfernalRecipe::toMobItem).toArray(Object[]::new)).
-                setInfernoChance(eliteChance * ultraChance * infernoChance).
-                setInfernoChanceAlways(ultraChance * infernoChance).
-                setInfernoItems(getInferno(cachedRecipe).stream().map(MobHandlerInfernalRecipe::toMobItem).toArray(Object[]::new))
-            );
+            recipes.add(
+                new MobInfernalRecipe().setEliteChance(eliteChance)
+                    .setEliteItems(
+                        getElite(cachedRecipe).stream()
+                            .map(MobHandlerInfernalRecipe::toMobItem)
+                            .toArray(Object[]::new))
+                    .setUltraChance(eliteChance * ultraChance)
+                    .setUltraChanceAlways(ultraChance)
+                    .setUltraItems(
+                        getUltra(cachedRecipe).stream()
+                            .map(MobHandlerInfernalRecipe::toMobItem)
+                            .toArray(Object[]::new))
+                    .setInfernoChance(eliteChance * ultraChance * infernoChance)
+                    .setInfernoChanceAlways(ultraChance * infernoChance)
+                    .setInfernoItems(
+                        getInferno(cachedRecipe).stream()
+                            .map(MobHandlerInfernalRecipe::toMobItem)
+                            .toArray(Object[]::new)));
         }
         return recipes;
     }
@@ -172,12 +181,11 @@ public class MobHandlerInfernalRecipe extends BaseHandlerRecipe {
 
     private static Object toMobItem(PositionedStack mobStack) {
         Object obj = RecipeUtil.getRecipeItems(mobStack);
-        boolean enchantable = Objects.requireNonNull(mobStack.items[0].getItem()).getItemEnchantability() > 0;
-        if (obj instanceof RecipeItem) {
-            RecipeItem item = (RecipeItem) obj;
+        boolean enchantable = Objects.requireNonNull(mobStack.items[0].getItem())
+            .getItemEnchantability() > 0;
+        if (obj instanceof RecipeItem item) {
             return transferToMobItem(item, mobStack, enchantable);
-        } else if (obj instanceof RecipeItem[]) {
-            RecipeItem[] recipeItems = (RecipeItem[]) obj;
+        } else if (obj instanceof RecipeItem[]recipeItems) {
             return Arrays.stream(recipeItems)
                 .map(recipeItem -> transferToMobItem(recipeItem, mobStack, enchantable))
                 .toArray(MobInfernalItem[]::new);
@@ -188,7 +196,8 @@ public class MobHandlerInfernalRecipe extends BaseHandlerRecipe {
 
     @Setter
     @Accessors(chain = true)
-    private static class MobInfernalRecipe{
+    private static class MobInfernalRecipe {
+
         private double eliteChance;
         private double eliteChanceAlways = 1;
         private Object[] eliteItems;
@@ -203,6 +212,7 @@ public class MobHandlerInfernalRecipe extends BaseHandlerRecipe {
     @Setter
     @Accessors(chain = true)
     private static class MobInfernalItem extends RecipeItem {
+
         private double chanceAlways;
         private boolean enchantable;
 

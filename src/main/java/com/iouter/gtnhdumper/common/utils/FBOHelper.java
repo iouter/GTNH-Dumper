@@ -23,11 +23,14 @@ import java.nio.IntBuffer;
  * This project is Open Source and distributed under The <a href="http://opensource.org/licenses/MIT">MIT</a> License
  * <p>
  * You should have received a copy of the MIT License along with
- * this project.   If not, see <http://opensource.org/licenses/MIT>.
+ * this project. If not, see <http://opensource.org/licenses/MIT>.
  * <p>
- * Borrowed from <a href="https://github.com/Snownee/Item-Render-Dark/blob/master/src/main/java/itemrender/rendering/FBOHelper.java  ">Item-Render-Rebirth</a>
+ * Borrowed from
+ * <a href="https://github.com/Snownee/Item-Render-Dark/blob/master/src/main/java/itemrender/rendering/FBOHelper.java
+ * ">Item-Render-Rebirth</a>
  */
 public final class FBOHelper {
+
     private int renderTextureSize = 128;
     private int framebufferID = -1;
     private int depthbufferID = -1;
@@ -182,7 +185,16 @@ public final class FBOHelper {
         GLStateManager.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
         GLStateManager.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
         GLStateManager.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
-        GLStateManager.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, renderTextureSize, renderTextureSize, 0, GL12.GL_BGRA, GL11.GL_UNSIGNED_BYTE, (java.nio.ByteBuffer) null);
+        GLStateManager.glTexImage2D(
+            GL11.GL_TEXTURE_2D,
+            0,
+            GL11.GL_RGBA,
+            renderTextureSize,
+            renderTextureSize,
+            0,
+            GL12.GL_BGRA,
+            GL11.GL_UNSIGNED_BYTE,
+            (java.nio.ByteBuffer) null);
 
         // Restore old texture
         GLStateManager.glBindTexture(GL11.GL_TEXTURE_2D, currentTexture);
@@ -190,13 +202,26 @@ public final class FBOHelper {
         // Create depth buffer
         depthbufferID = EXTFramebufferObject.glGenRenderbuffersEXT();
         EXTFramebufferObject.glBindRenderbufferEXT(EXTFramebufferObject.GL_RENDERBUFFER_EXT, depthbufferID);
-        EXTFramebufferObject.glRenderbufferStorageEXT(EXTFramebufferObject.GL_RENDERBUFFER_EXT, GL11.GL_DEPTH_COMPONENT, renderTextureSize, renderTextureSize);
+        EXTFramebufferObject.glRenderbufferStorageEXT(
+            EXTFramebufferObject.GL_RENDERBUFFER_EXT,
+            GL11.GL_DEPTH_COMPONENT,
+            renderTextureSize,
+            renderTextureSize);
 
         // Bind depth buffer to the framebuffer
-        EXTFramebufferObject.glFramebufferRenderbufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, EXTFramebufferObject.GL_DEPTH_ATTACHMENT_EXT, EXTFramebufferObject.GL_RENDERBUFFER_EXT, depthbufferID);
+        EXTFramebufferObject.glFramebufferRenderbufferEXT(
+            EXTFramebufferObject.GL_FRAMEBUFFER_EXT,
+            EXTFramebufferObject.GL_DEPTH_ATTACHMENT_EXT,
+            EXTFramebufferObject.GL_RENDERBUFFER_EXT,
+            depthbufferID);
 
         // Bind our texture to the framebuffer
-        EXTFramebufferObject.glFramebufferTexture2DEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, EXTFramebufferObject.GL_COLOR_ATTACHMENT0_EXT, GL11.GL_TEXTURE_2D, textureID, 0);
+        EXTFramebufferObject.glFramebufferTexture2DEXT(
+            EXTFramebufferObject.GL_FRAMEBUFFER_EXT,
+            EXTFramebufferObject.GL_COLOR_ATTACHMENT0_EXT,
+            GL11.GL_TEXTURE_2D,
+            textureID,
+            0);
 
         // Revert to default framebuffer
         EXTFramebufferObject.glBindFramebufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, currentFramebuffer);
