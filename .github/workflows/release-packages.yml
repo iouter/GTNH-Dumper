@@ -4,9 +4,7 @@
 name: Release latest starter and migration packages
 
 on:
-  push:
-    branches: [ master, main ]
-    tags: [ '*' ]
+  workflow_dispatch:
 
 jobs:
   zip-and-release-packages:
