@@ -234,6 +234,15 @@ public class Utils {
         return nameEqual && metaEqual && sizeEqual && nbtEqual;
     }
 
+    public static boolean isItemEqual(ItemStack a, ItemStack b) {
+        if (a == null) {
+            return b == null;
+        }
+        final boolean nameEqual = a.getItem() == b.getItem();
+        final boolean metaEqual = InventoryUtils.actualDamage(a) == InventoryUtils.actualDamage(b);
+        return nameEqual && metaEqual;
+    }
+
     public static boolean isStacksContain(ItemStack s, ItemStack[] stacks) {
         for (ItemStack stack : stacks) {
             if (isItemStackEqual(s, stack)) {

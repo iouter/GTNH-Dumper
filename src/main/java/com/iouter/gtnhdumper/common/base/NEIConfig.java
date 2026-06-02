@@ -34,7 +34,9 @@ public class NEIConfig implements IConfigureNEI {
             API.addOption(new GTSmallOreVeinDumper());
             API.addOption(new GTUndergroundFluidDumper());
             API.addOption(new GTNHDimensionDumper());
-            API.addOption(new GTStructuresDumper());
+            if (CommonProxy.isBR6343Loaded) {
+                API.addOption(new GTStructuresDumper());
+            }
         }
         if (CommonProxy.isTiCLoaded) API.addOption(new TICMaterialDumper());
         if (CommonProxy.isTCLoaded) API.addOption(new TC4ResearchDumper());

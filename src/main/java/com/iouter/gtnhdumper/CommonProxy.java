@@ -23,6 +23,7 @@ public class CommonProxy {
     public static boolean isNEIAddonLoaded = Loader.isModLoaded("NEIAddons");
     public static boolean isBQLoaded = Loader.isModLoaded("betterquesting");
     public static boolean isMobsInfoLoaded = Loader.isModLoaded("mobsinfo");
+    public static boolean isBR6343Loaded = Loader.isModLoaded("blockrenderer6343");
 
     // preInit "Run before anything else. Read your config, create blocks, items,
     // etc, and register them with the GameRegistry."

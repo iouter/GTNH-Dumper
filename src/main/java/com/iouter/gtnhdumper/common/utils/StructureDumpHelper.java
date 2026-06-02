@@ -1,26 +1,61 @@
 package com.iouter.gtnhdumper.common.utils;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.minecraft.item.ItemStack;
+
 import org.jetbrains.annotations.NotNull;
 
+import com.gtnewhorizon.gtnhlib.blockpos.BlockPos;
 import com.gtnewhorizon.structurelib.structure.IStructureElement;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizon.structurelib.util.Vec3Impl;
 
-public class StructureDecoder {
+import blockrenderer6343.api.utils.CreativeItemSource;
+import blockrenderer6343.client.utils.BRUtil;
+import blockrenderer6343.client.world.DummyWorld;
+import blockrenderer6343.integration.nei.StructureHacks;
+import cpw.mods.fml.relauncher.ReflectionHelper;
+import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
+import gregtech.api.util.GTStructureUtility;
+import gregtech.api.util.HatchElementBuilder;
 
+public class StructureDumpHelper {
+
+    // Copied from BlockRender6343
     private static final Field occupiedSpacesField;
+    private static final MethodHandle DOT_GETTER, HINT_FALLBACK;
+    private static final String HATCH_ELEMENT;
 
     static {
+        HatchElementBuilder<?> builder = GTStructureUtility.buildHatchAdder()
+            .adder((a, b, c) -> true)
+            .casingIndex(1)
+            .hint(1);
+        IStructureElement<?> hatchEle = builder.hatchItemFilter((a, b) -> c -> true)
+            .build();
+        HATCH_ELEMENT = hatchEle.getClass()
+            .getName();
+
         try {
             occupiedSpacesField = StructureDefinition.class.getDeclaredField("occupiedSpaces");
             occupiedSpacesField.setAccessible(true);
+            MethodHandles.Lookup lookup = MethodHandles.lookup();
+            MethodHandle hatchBuilder = lookup
+                .unreflectGetter(ReflectionHelper.findField(hatchEle.getClass(), "this$0"));
+            MethodHandle hint = lookup.unreflectGetter(ReflectionHelper.findField(HatchElementBuilder.class, "mHint"));
+            DOT_GETTER = MethodHandles.filterReturnValue(hatchBuilder, hint);
+            HINT_FALLBACK = lookup
+                .unreflect(ReflectionHelper.findMethod(hatchEle.getClass(), null, new String[] { "getHint" }));
         } catch (Exception e) {
             throw new RuntimeException("无法通过反射获取 occupiedSpaces 字段，请检查 StructureDefinition 源码是否变更", e);
         }
@@ -127,5 +162,61 @@ public class StructureDecoder {
             }
         }
         return grid;
+    }
+
+    // Copied from BlockRender6343
+    public static int getDotForElement(IMetaTileEntity te, IStructureElement<IMetaTileEntity> element) {
+        IStructureElement<?> match = StructureHacks.getFirstMatchingElement(HATCH_ELEMENT, te, element);
+        if (match == null) return -1;
+
+        try {
+            return (int) DOT_GETTER.invokeWithArguments(match);
+        } catch (Throwable e) {
+            return -1;
+        }
+    }
+
+    public static Object scanCandidates(Object multi, IStructureElement<Object> element, ItemStack buildStack,
+        BlockPos block) {
+        if (element == null) return Collections.emptyList();
+        IStructureElement.BlocksToPlace blocksToPlace = element.getBlocksToPlace(
+            multi,
+            DummyWorld.INSTANCE,
+            block.x,
+            block.y,
+            block.z,
+            buildStack,
+            BRUtil.AUTO_PLACE_ENVIRONMENT);
+        if (blocksToPlace == null) return Collections.emptyList();
+
+        Set<ItemStack> rawCandidates = CreativeItemSource.instance
+            .takeEverythingMatches(blocksToPlace.getPredicate(), false, 0)
+            .keySet();
+        if (rawCandidates.size() > 1000) {
+            return rawCandidates;
+        }
+        List<List<ItemStack>> stackedCandidates = new ArrayList<>();
+        for (ItemStack rawCandidate : rawCandidates) {
+            boolean added = false;
+            for (List<ItemStack> stackedCandidate : stackedCandidates) {
+                List<String> firstCandidateTooltip = stackedCandidate.get(0)
+                    .getTooltip(BRUtil.FAKE_PLAYER, false);
+                List<String> rawCandidateTooltip = rawCandidate.getTooltip(BRUtil.FAKE_PLAYER, false);
+                if (firstCandidateTooltip.size() > 1 && rawCandidateTooltip.size() > 1
+                    && firstCandidateTooltip.get(1)
+                        .equals(rawCandidateTooltip.get(1))) {
+                    stackedCandidate.add(rawCandidate);
+                    added = true;
+                    break;
+                }
+            }
+            if (!added) {
+                List<ItemStack> newStackedCandidate = new ArrayList<>();
+                newStackedCandidate.add(rawCandidate);
+                stackedCandidates.add(newStackedCandidate);
+            }
+        }
+
+        return stackedCandidates;
     }
 }

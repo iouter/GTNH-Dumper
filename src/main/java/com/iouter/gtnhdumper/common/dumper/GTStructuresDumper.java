@@ -3,16 +3,28 @@ package com.iouter.gtnhdumper.common.dumper;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+
+import com.google.gson.JsonObject;
+import com.gtnewhorizon.gtnhlib.blockpos.BlockPos;
 import com.gtnewhorizon.structurelib.alignment.constructable.IConstructable;
 import com.gtnewhorizon.structurelib.structure.IStructureElement;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.iouter.gtnhdumper.GTNHDumper;
-import com.iouter.gtnhdumper.common.utils.StructureDecoder;
+import com.iouter.gtnhdumper.common.utils.StructureDumpHelper;
+import com.iouter.gtnhdumper.common.utils.StructureHacks;
+import com.iouter.gtnhdumper.common.utils.Utils;
 
+import blockrenderer6343.client.utils.ConstructableData;
 import codechicken.nei.config.DataDumper;
 import gregtech.api.GregTechAPI;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
@@ -55,7 +67,7 @@ public class GTStructuresDumper extends DataDumper {
                     parentDir.mkdirs();
                 }
                 try (FileWriter writer = new FileWriter(file)) {
-                    GTNHDumper.GSON.toJson(new GTStructure(te, structureDefinition), writer);
+                    GTNHDumper.GSON.toJson(new GTStructure(te, structureDefinition, constructable), writer);
                     GTNHDumper.info("已写入：" + file.getAbsolutePath());
                 } catch (IOException e) {
                     file.deleteOnExit();
@@ -63,9 +75,14 @@ public class GTStructuresDumper extends DataDumper {
                 } catch (Exception e) {
                     GTNHDumper.info("导出" + simpleName + "时发生错误：" + e.getLocalizedMessage());
                     file.deleteOnExit();
-                    GTNHDumper.LOG.error(e);
+                    e.printStackTrace();
                 }
             });
+    }
+
+    @Override
+    public int modeCount() {
+        return 1;
     }
 
     private static class GTStructure {
@@ -74,14 +91,80 @@ public class GTStructuresDumper extends DataDumper {
         private Map<String, String[][]> shapes;
         private final Map<Character, Object> elements = new LinkedHashMap<>();
 
-        public GTStructure(IMetaTileEntity te, StructureDefinition<?> structureDefinition) {
+        public GTStructure(IMetaTileEntity te, StructureDefinition<?> structureDefinition,
+            IConstructable constructable) {
             meta = te.getBaseMetaTileEntity()
                 .getMetaTileID();
-            shapes = StructureDecoder.decodeShapes(structureDefinition);
+            shapes = StructureDumpHelper.decodeShapes(structureDefinition);
             for (Map.Entry<Character, ? extends IStructureElement<?>> entry : structureDefinition.getElements()
                 .entrySet()) {
                 Character ch = entry.getKey();
-                elements.put(ch, entry.getValue());
+                if (ch >= '퀀' && ch <= '\udfff') {
+                    continue;
+                }
+                if (ch.equals('-')) {
+                    continue;
+                }
+                JsonObject json = new JsonObject();
+                @SuppressWarnings("unchecked")
+                IStructureElement<IMetaTileEntity> element = (IStructureElement<IMetaTileEntity>) entry.getValue();
+                var blocks = StructureHacks
+                    .getStacksForElement(te, element, ConstructableData.getTierData(constructable));
+                ItemStack stackTarget = new ItemStack(Item.getItemById(1));
+                List<ItemStack> itemStacks;
+                if (blocks != null) {
+                    itemStacks = new ArrayList<>();
+                    blocks.forEach(s -> {
+                        if (s != null) {
+                            itemStacks.add(s);
+                        }
+                    });
+                    if (!itemStacks.isEmpty()) {
+                        stackTarget = itemStacks.get(0);
+                        json.add("blocks", GTNHDumper.GSON.toJsonTree(itemStacks));
+                    }
+                } else {
+                    itemStacks = null;
+                }
+                int dot = StructureDumpHelper.getDotForElement(te, element);
+                if (dot != -1) {
+                    json.addProperty("dot", dot);
+                }
+                @SuppressWarnings("unchecked")
+                IStructureElement<Object> elementObj = (IStructureElement<Object>) entry.getValue();
+                var obj = StructureDumpHelper.scanCandidates(te, elementObj, stackTarget, new BlockPos());
+                if (obj instanceof Set) {
+                    @SuppressWarnings("unchecked")
+                    Set<ItemStack> stackSet = (Set<ItemStack>) obj;
+                    json.add("hatch", GTNHDumper.GSON.toJsonTree(stackSet));
+                } else if (obj instanceof List) {
+                    @SuppressWarnings("unchecked")
+                    List<List<ItemStack>> hatchesList = (List<List<ItemStack>>) obj;
+                    if (itemStacks != null) {
+                        Set<List<ItemStack>> newHatchList = new LinkedHashSet<>();
+                        for (var hatches : hatchesList) {
+                            boolean isInvaild = false;
+                            for (var hatch : hatches) {
+                                if ((itemStacks.stream()
+                                    .anyMatch(stack -> Utils.isItemEqual(stack, hatch)))) {
+                                    isInvaild = true;
+                                    break;
+                                }
+                            }
+                            if (!isInvaild) {
+                                newHatchList.add(hatches);
+                            }
+                        }
+                        if (!(newHatchList.isEmpty())) {
+                            json.add("hatch", GTNHDumper.GSON.toJsonTree(newHatchList));
+                        }
+                    } else {
+                        if (!(hatchesList.isEmpty())) {
+                            json.add("hatch", GTNHDumper.GSON.toJsonTree(hatchesList));
+                        }
+                    }
+                }
+                if (!json.isEmpty()) elements.put(ch, json);
             }
         }
     }
