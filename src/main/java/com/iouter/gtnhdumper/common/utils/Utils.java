@@ -1,31 +1,5 @@
 package com.iouter.gtnhdumper.common.utils;
 
-import codechicken.lib.inventory.InventoryUtils;
-import codechicken.nei.PositionedStack;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.iouter.gtnhdumper.CommonProxy;
-import com.iouter.gtnhdumper.GTNHDumper;
-import com.iouter.gtnhdumper.common.recipe.base.RecipeItem;
-import com.iouter.gtnhdumper.common.serializer.AspectListSerializer;
-import com.iouter.gtnhdumper.common.serializer.AspectSerializer;
-import com.iouter.gtnhdumper.common.serializer.ElementSerializer;
-import com.iouter.gtnhdumper.common.serializer.FluidStackSerializer;
-import com.iouter.gtnhdumper.common.serializer.ItemStackSerializer;
-import com.iouter.gtnhdumper.common.serializer.MaterialsSerializer;
-import com.iouter.gtnhdumper.common.serializer.NBTTagCompoundSerializer;
-import com.iouter.gtnhdumper.common.serializer.RecipeItemSerializer;
-import com.iouter.gtnhdumper.common.serializer.SafeDoubleSerializer;
-import gregtech.api.enums.Element;
-import gregtech.api.enums.Materials;
-import net.minecraft.client.Minecraft;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.fluids.FluidStack;
-import thaumcraft.api.aspects.Aspect;
-import thaumcraft.api.aspects.AspectList;
-
 import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
@@ -43,6 +17,34 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fluids.FluidStack;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.iouter.gtnhdumper.CommonProxy;
+import com.iouter.gtnhdumper.GTNHDumper;
+import com.iouter.gtnhdumper.common.recipe.base.RecipeItem;
+import com.iouter.gtnhdumper.common.serializer.AspectListSerializer;
+import com.iouter.gtnhdumper.common.serializer.AspectSerializer;
+import com.iouter.gtnhdumper.common.serializer.ElementSerializer;
+import com.iouter.gtnhdumper.common.serializer.FluidStackSerializer;
+import com.iouter.gtnhdumper.common.serializer.ItemStackSerializer;
+import com.iouter.gtnhdumper.common.serializer.MaterialsSerializer;
+import com.iouter.gtnhdumper.common.serializer.NBTTagCompoundSerializer;
+import com.iouter.gtnhdumper.common.serializer.RecipeItemSerializer;
+import com.iouter.gtnhdumper.common.serializer.SafeDoubleSerializer;
+
+import codechicken.lib.inventory.InventoryUtils;
+import codechicken.nei.PositionedStack;
+import gregtech.api.enums.Element;
+import gregtech.api.enums.Materials;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
 
 public class Utils {
 

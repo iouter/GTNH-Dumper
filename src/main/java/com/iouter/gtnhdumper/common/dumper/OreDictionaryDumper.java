@@ -1,12 +1,13 @@
 package com.iouter.gtnhdumper.common.dumper;
 
-import com.iouter.gtnhdumper.common.base.WikiDumper;
-import com.iouter.gtnhdumper.common.utils.Utils;
-import net.minecraft.util.ChatComponentTranslation;
-
 import java.io.File;
 import java.util.LinkedList;
 import java.util.Map;
+
+import net.minecraft.util.ChatComponentTranslation;
+
+import com.iouter.gtnhdumper.common.base.WikiDumper;
+import com.iouter.gtnhdumper.common.utils.Utils;
 
 public class OreDictionaryDumper extends WikiDumper {
 

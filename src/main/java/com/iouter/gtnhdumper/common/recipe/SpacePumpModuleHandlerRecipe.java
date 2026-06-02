@@ -1,16 +1,19 @@
 package com.iouter.gtnhdumper.common.recipe;
 
-import codechicken.nei.recipe.IRecipeHandler;
-import com.iouter.gtnhdumper.common.recipe.base.BaseHandlerRecipe;
-import gtnhintergalactic.recipe.SpacePumpingRecipes;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-import net.minecraftforge.fluids.FluidStack;
-import org.apache.commons.lang3.tuple.Pair;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import net.minecraftforge.fluids.FluidStack;
+
+import org.apache.commons.lang3.tuple.Pair;
+
+import com.iouter.gtnhdumper.common.recipe.base.BaseHandlerRecipe;
+
+import codechicken.nei.recipe.IRecipeHandler;
+import gtnhintergalactic.recipe.SpacePumpingRecipes;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
 public class SpacePumpModuleHandlerRecipe extends BaseHandlerRecipe {
 

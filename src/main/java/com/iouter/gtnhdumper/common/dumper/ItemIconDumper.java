@@ -1,18 +1,15 @@
 package com.iouter.gtnhdumper.common.dumper;
 
-import bartworks.system.material.BWMetaGeneratedOres;
-import com.gtnewhorizons.angelica.glsm.GLStateManager;
-import com.iouter.gtnhdumper.CommonProxy;
-import com.iouter.gtnhdumper.GTNHDumper;
-import com.iouter.gtnhdumper.common.utils.DynamicTexture;
-import com.iouter.gtnhdumper.common.utils.FBOHelper;
-import com.iouter.gtnhdumper.common.utils.Utils;
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.registry.GameData;
-import gregtech.common.blocks.GTBlockOre;
-import gregtech.common.items.ItemVolumetricFlask;
-import gtPlusPlus.core.block.base.BlockBaseOre;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -24,17 +21,23 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.fluids.FluidStack;
+
 import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import com.gtnewhorizons.angelica.glsm.GLStateManager;
+import com.iouter.gtnhdumper.CommonProxy;
+import com.iouter.gtnhdumper.GTNHDumper;
+import com.iouter.gtnhdumper.common.utils.DynamicTexture;
+import com.iouter.gtnhdumper.common.utils.FBOHelper;
+import com.iouter.gtnhdumper.common.utils.Utils;
+
+import bartworks.system.material.BWMetaGeneratedOres;
+import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.common.registry.GameData;
+import gregtech.common.blocks.GTBlockOre;
+import gregtech.common.items.ItemVolumetricFlask;
+import gtPlusPlus.core.block.base.BlockBaseOre;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 public class ItemIconDumper {
 

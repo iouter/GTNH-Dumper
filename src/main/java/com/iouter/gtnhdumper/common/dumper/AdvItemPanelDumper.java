@@ -1,28 +1,5 @@
 package com.iouter.gtnhdumper.common.dumper;
 
-import codechicken.nei.guihook.GuiContainerManager;
-import codechicken.nei.shadow.org.apache.commons.csv.CSVFormat;
-import codechicken.nei.shadow.org.apache.commons.csv.CSVPrinter;
-import com.iouter.gtnhdumper.CommonProxy;
-import com.iouter.gtnhdumper.common.base.WikiDumper;
-import com.iouter.gtnhdumper.common.utils.KeySimulator;
-import com.iouter.gtnhdumper.common.utils.Utils;
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.ModContainer;
-import cpw.mods.fml.common.registry.GameData;
-import cpw.mods.fml.common.registry.GameRegistry;
-import net.glease.tc4tweak.modules.objectTag.GetObjectTags;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.client.resources.Language;
-import net.minecraft.client.resources.LanguageManager;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.EnumChatFormatting;
-import org.lwjgl.input.Keyboard;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -35,6 +12,32 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import net.glease.tc4tweak.modules.objectTag.GetObjectTags;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.resources.Language;
+import net.minecraft.client.resources.LanguageManager;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.EnumChatFormatting;
+
+import org.lwjgl.input.Keyboard;
+
+import com.iouter.gtnhdumper.CommonProxy;
+import com.iouter.gtnhdumper.common.base.WikiDumper;
+import com.iouter.gtnhdumper.common.utils.KeySimulator;
+import com.iouter.gtnhdumper.common.utils.Utils;
+
+import codechicken.nei.guihook.GuiContainerManager;
+import codechicken.nei.shadow.org.apache.commons.csv.CSVFormat;
+import codechicken.nei.shadow.org.apache.commons.csv.CSVPrinter;
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.ModContainer;
+import cpw.mods.fml.common.registry.GameData;
+import cpw.mods.fml.common.registry.GameRegistry;
 
 public class AdvItemPanelDumper extends WikiDumper {
 

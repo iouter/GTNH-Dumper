@@ -1,20 +1,22 @@
 package com.iouter.gtnhdumper.common.utils;
 
-import codechicken.nei.NEIServerUtils;
-import com.iouter.gtnhdumper.common.recipe.GTDefaultHandlerRecipe;
-import com.iouter.gtnhdumper.common.recipe.base.RecipeFluid;
-import com.iouter.gtnhdumper.common.recipe.base.RecipeItem;
-import gregtech.api.recipe.RecipeMetadataKey;
-import gregtech.api.recipe.metadata.IRecipeMetadataStorage;
-import gregtech.api.util.GTOreDictUnificator;
-import gregtech.api.util.GTRecipe;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.FluidStack;
+
+import com.iouter.gtnhdumper.common.recipe.GTDefaultHandlerRecipe;
+import com.iouter.gtnhdumper.common.recipe.base.RecipeFluid;
+import com.iouter.gtnhdumper.common.recipe.base.RecipeItem;
+
+import codechicken.nei.NEIServerUtils;
+import gregtech.api.recipe.RecipeMetadataKey;
+import gregtech.api.recipe.metadata.IRecipeMetadataStorage;
+import gregtech.api.util.GTOreDictUnificator;
+import gregtech.api.util.GTRecipe;
 
 public class Transformer {
 

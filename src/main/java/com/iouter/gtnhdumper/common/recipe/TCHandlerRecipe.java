@@ -1,7 +1,14 @@
 package com.iouter.gtnhdumper.common.recipe;
 
-import codechicken.nei.NEIServerUtils;
-import codechicken.nei.recipe.IRecipeHandler;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import net.glease.tc4tweak.api.infusionrecipe.EnhancedInfusionRecipe;
+import net.glease.tc4tweak.api.infusionrecipe.InfusionRecipeExt;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
+
 import com.gtnewhorizons.aspectrecipeindex.nei.AlchemyRecipeHandler;
 import com.gtnewhorizons.aspectrecipeindex.nei.AspectCombinationHandler;
 import com.gtnewhorizons.aspectrecipeindex.nei.InfusionRecipeHandler;
@@ -10,10 +17,9 @@ import com.gtnewhorizons.aspectrecipeindex.nei.arcaneworkbench.ShapelessArcaneRe
 import com.iouter.gtnhdumper.common.recipe.base.BaseHandlerRecipe;
 import com.iouter.gtnhdumper.common.recipe.base.RecipeItem;
 import com.iouter.gtnhdumper.common.utils.RecipeUtil;
-import net.glease.tc4tweak.api.infusionrecipe.EnhancedInfusionRecipe;
-import net.glease.tc4tweak.api.infusionrecipe.InfusionRecipeExt;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
+
+import codechicken.nei.NEIServerUtils;
+import codechicken.nei.recipe.IRecipeHandler;
 import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
@@ -21,10 +27,6 @@ import thaumcraft.api.crafting.CrucibleRecipe;
 import thaumcraft.api.crafting.InfusionRecipe;
 import thaumcraft.api.crafting.ShapedArcaneRecipe;
 import thaumcraft.api.crafting.ShapelessArcaneRecipe;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class TCHandlerRecipe extends BaseHandlerRecipe {
 

@@ -1,15 +1,17 @@
 package com.iouter.gtnhdumper.common.utils;
 
-import codechicken.nei.PositionedStack;
-import com.iouter.gtnhdumper.common.recipe.base.RecipeItem;
-import net.minecraft.item.ItemStack;
+import static com.iouter.gtnhdumper.common.recipe.base.RecipeItem.oreDictMap;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.iouter.gtnhdumper.common.recipe.base.RecipeItem.oreDictMap;
+import net.minecraft.item.ItemStack;
+
+import com.iouter.gtnhdumper.common.recipe.base.RecipeItem;
+
+import codechicken.nei.PositionedStack;
 
 public class RecipeUtil {
 

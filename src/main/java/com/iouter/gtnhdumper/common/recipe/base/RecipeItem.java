@@ -1,12 +1,13 @@
 package com.iouter.gtnhdumper.common.recipe.base;
 
-import com.iouter.gtnhdumper.common.utils.Utils;
-import net.minecraft.item.ItemStack;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import net.minecraft.item.ItemStack;
+
+import com.iouter.gtnhdumper.common.utils.Utils;
 
 public class RecipeItem {
 

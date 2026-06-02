@@ -1,20 +1,21 @@
 package com.iouter.gtnhdumper.common.dumper;
 
-import codechicken.nei.config.DataDumper;
-import com.gtnewhorizon.structurelib.alignment.constructable.IConstructable;
-import com.gtnewhorizon.structurelib.structure.IStructureElement;
-import com.gtnewhorizon.structurelib.structure.StructureDefinition;
-import com.iouter.gtnhdumper.GTNHDumper;
-import com.iouter.gtnhdumper.common.utils.StructureDecoder;
-import gregtech.api.GregTechAPI;
-import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import com.gtnewhorizon.structurelib.alignment.constructable.IConstructable;
+import com.gtnewhorizon.structurelib.structure.IStructureElement;
+import com.gtnewhorizon.structurelib.structure.StructureDefinition;
+import com.iouter.gtnhdumper.GTNHDumper;
+import com.iouter.gtnhdumper.common.utils.StructureDecoder;
+
+import codechicken.nei.config.DataDumper;
+import gregtech.api.GregTechAPI;
+import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 
 public class GTStructuresDumper extends DataDumper {
 

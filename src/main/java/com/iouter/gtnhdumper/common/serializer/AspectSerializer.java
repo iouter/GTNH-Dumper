@@ -1,12 +1,13 @@
 package com.iouter.gtnhdumper.common.serializer;
 
+import java.lang.reflect.Type;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import thaumcraft.api.aspects.Aspect;
 
-import java.lang.reflect.Type;
+import thaumcraft.api.aspects.Aspect;
 
 public class AspectSerializer implements JsonSerializer<Aspect> {
 

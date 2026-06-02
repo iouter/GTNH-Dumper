@@ -1,18 +1,20 @@
 package com.iouter.gtnhdumper.common.dumper;
 
-import com.iouter.gtnhdumper.common.base.WikiDumper;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.StatCollector;
-import tconstruct.library.TConstructRegistry;
-import tconstruct.library.tools.ArrowMaterial;
-import tconstruct.library.tools.BowMaterial;
-import tconstruct.library.tools.ToolMaterial;
+import static tconstruct.library.TConstructRegistry.toolMaterials;
 
 import java.io.File;
 import java.util.LinkedList;
 import java.util.Objects;
 
-import static tconstruct.library.TConstructRegistry.toolMaterials;
+import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.StatCollector;
+
+import com.iouter.gtnhdumper.common.base.WikiDumper;
+
+import tconstruct.library.TConstructRegistry;
+import tconstruct.library.tools.ArrowMaterial;
+import tconstruct.library.tools.BowMaterial;
+import tconstruct.library.tools.ToolMaterial;
 
 public class TICMaterialDumper extends WikiDumper {
 

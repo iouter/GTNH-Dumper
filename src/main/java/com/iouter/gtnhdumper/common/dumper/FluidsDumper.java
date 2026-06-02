@@ -1,15 +1,6 @@
 package com.iouter.gtnhdumper.common.dumper;
 
-import com.iouter.gtnhdumper.CommonProxy;
-import com.iouter.gtnhdumper.common.base.WikiDumper;
-import com.iouter.gtnhdumper.common.utils.Utils;
-import gregtech.api.enums.ItemList;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
-import org.apache.commons.lang3.text.WordUtils;
+import static gregtech.api.enums.GTValues.E;
 
 import java.io.File;
 import java.util.Arrays;
@@ -17,7 +8,19 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static gregtech.api.enums.GTValues.E;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChatComponentTranslation;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
+
+import org.apache.commons.lang3.text.WordUtils;
+
+import com.iouter.gtnhdumper.CommonProxy;
+import com.iouter.gtnhdumper.common.base.WikiDumper;
+import com.iouter.gtnhdumper.common.utils.Utils;
+
+import gregtech.api.enums.ItemList;
 
 public class FluidsDumper extends WikiDumper {
 

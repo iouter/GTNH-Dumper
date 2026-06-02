@@ -1,11 +1,13 @@
 package com.iouter.gtnhdumper.common.dumper;
 
-import com.iouter.gtnhdumper.common.base.WikiDumper;
-import gtneioreplugin.util.GT5OreSmallHelper;
-import net.minecraft.util.ChatComponentTranslation;
-
 import java.io.File;
 import java.util.LinkedList;
+
+import net.minecraft.util.ChatComponentTranslation;
+
+import com.iouter.gtnhdumper.common.base.WikiDumper;
+
+import gtneioreplugin.util.GT5OreSmallHelper;
 
 public class GTSmallOreVeinDumper extends WikiDumper {
 

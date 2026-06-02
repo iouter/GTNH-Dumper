@@ -1,8 +1,15 @@
 package com.iouter.gtnhdumper.common.utils;
 
-import com.gtnewhorizons.angelica.glsm.GLStateManager;
-import com.iouter.gtnhdumper.GTNHDumper;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.nio.IntBuffer;
+
+import javax.imageio.ImageIO;
+
 import net.minecraft.client.renderer.GLAllocation;
+
 import org.apache.commons.codec.binary.Base64;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.EXTFramebufferObject;
@@ -10,12 +17,8 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.util.glu.GLU;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.nio.IntBuffer;
+import com.gtnewhorizons.angelica.glsm.GLStateManager;
+import com.iouter.gtnhdumper.GTNHDumper;
 
 /**
  * Copyright (c) 2015 Jerrell Fang

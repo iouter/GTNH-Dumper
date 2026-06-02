@@ -1,7 +1,8 @@
 package com.iouter.gtnhdumper.common.recipe.base;
 
-import com.iouter.gtnhdumper.common.utils.Utils;
 import net.minecraftforge.fluids.FluidStack;
+
+import com.iouter.gtnhdumper.common.utils.Utils;
 
 public class RecipeFluid {
 

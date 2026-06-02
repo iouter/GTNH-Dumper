@@ -1,6 +1,14 @@
 package com.iouter.gtnhdumper.common.recipe;
 
-import codechicken.nei.recipe.IRecipeHandler;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import net.minecraft.item.ItemStack;
+
 import com.google.gson.JsonObject;
 import com.gtnewhorizons.modularui.api.drawable.FallbackableUITexture;
 import com.iouter.gtnhdumper.GTNHDumper;
@@ -9,6 +17,8 @@ import com.iouter.gtnhdumper.common.recipe.base.RecipeFluid;
 import com.iouter.gtnhdumper.common.recipe.base.RecipeItem;
 import com.iouter.gtnhdumper.common.utils.Transformer;
 import com.iouter.gtnhdumper.common.utils.Utils;
+
+import codechicken.nei.recipe.IRecipeHandler;
 import gregtech.api.enums.Materials;
 import gregtech.api.recipe.BasicUIProperties;
 import gregtech.api.recipe.RecipeCategory;
@@ -16,20 +26,12 @@ import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.RecipeMapBackend;
 import gregtech.api.util.GTRecipe;
 import gregtech.nei.GTNEIDefaultHandler;
-import net.minecraft.item.ItemStack;
 import tectech.TecTech;
 import tectech.recipe.EyeOfHarmonyFrontend;
 import tectech.recipe.EyeOfHarmonyRecipe;
 import tectech.recipe.EyeOfHarmonyRecipeStorage;
 import tectech.util.FluidStackLong;
 import tectech.util.ItemStackLong;
-
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class GTDefaultHandlerRecipe extends BaseHandlerRecipe {
 

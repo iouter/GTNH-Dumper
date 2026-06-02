@@ -1,14 +1,16 @@
 package com.iouter.gtnhdumper.common.serializer;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-import cpw.mods.fml.relauncher.ReflectionHelper;
-import net.minecraft.nbt.NBTTagCompound;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.Map;
+
+import net.minecraft.nbt.NBTTagCompound;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+
+import cpw.mods.fml.relauncher.ReflectionHelper;
 
 @SuppressWarnings("rawtypes")
 public class NBTTagCompoundSerializer implements JsonSerializer<NBTTagCompound> {

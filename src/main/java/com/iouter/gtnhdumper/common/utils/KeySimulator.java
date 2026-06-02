@@ -1,13 +1,14 @@
 package com.iouter.gtnhdumper.common.utils;
 
-import com.iouter.gtnhdumper.GTNHDumper;
-import org.lwjglx.input.KeyCodes;
-import org.lwjglx.input.Keyboard;
-
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.lwjglx.input.KeyCodes;
+import org.lwjglx.input.Keyboard;
+
+import com.iouter.gtnhdumper.GTNHDumper;
 
 /**
  * 双模式按键模拟器 - 同时兼容 LWJGL2 (原版 1.7.10) 和 LWJGL3 (lwjgl3ify)

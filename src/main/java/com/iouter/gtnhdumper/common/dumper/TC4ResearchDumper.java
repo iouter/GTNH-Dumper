@@ -1,17 +1,5 @@
 package com.iouter.gtnhdumper.common.dumper;
 
-import com.iouter.gtnhdumper.CommonProxy;
-import com.iouter.gtnhdumper.common.base.WikiDumper;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.StatCollector;
-import thaumcraft.api.ThaumcraftApi;
-import thaumcraft.api.aspects.Aspect;
-import thaumcraft.api.research.ResearchCategories;
-import thaumcraft.api.research.ResearchCategoryList;
-import thaumcraft.api.research.ResearchItem;
-import tuhljin.automagy.config.ModResearchItems;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -20,6 +8,20 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.StatCollector;
+
+import com.iouter.gtnhdumper.CommonProxy;
+import com.iouter.gtnhdumper.common.base.WikiDumper;
+
+import thaumcraft.api.ThaumcraftApi;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.research.ResearchCategories;
+import thaumcraft.api.research.ResearchCategoryList;
+import thaumcraft.api.research.ResearchItem;
+import tuhljin.automagy.config.ModResearchItems;
 
 public class TC4ResearchDumper extends WikiDumper {
 

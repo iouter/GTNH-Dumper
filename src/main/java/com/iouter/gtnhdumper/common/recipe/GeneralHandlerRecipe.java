@@ -1,13 +1,14 @@
 package com.iouter.gtnhdumper.common.recipe;
 
-import codechicken.nei.recipe.IRecipeHandler;
-import codechicken.nei.recipe.TemplateRecipeHandler;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.iouter.gtnhdumper.common.recipe.base.BaseHandlerRecipe;
 import com.iouter.gtnhdumper.common.recipe.base.BaseRecipe;
 import com.iouter.gtnhdumper.common.utils.Utils;
 
-import java.util.ArrayList;
-import java.util.List;
+import codechicken.nei.recipe.IRecipeHandler;
+import codechicken.nei.recipe.TemplateRecipeHandler;
 
 public class GeneralHandlerRecipe extends BaseHandlerRecipe {
 

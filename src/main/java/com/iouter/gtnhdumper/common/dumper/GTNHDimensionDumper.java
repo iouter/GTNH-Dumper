@@ -1,16 +1,18 @@
 package com.iouter.gtnhdumper.common.dumper;
 
-import com.iouter.gtnhdumper.common.base.WikiDumper;
-import gtneioreplugin.util.DimensionHelper;
+import java.io.File;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.Language;
 import net.minecraft.client.resources.LanguageManager;
 import net.minecraft.util.ChatComponentTranslation;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import com.iouter.gtnhdumper.common.base.WikiDumper;
+
+import gtneioreplugin.util.DimensionHelper;
 
 public class GTNHDimensionDumper extends WikiDumper {
 

@@ -1,8 +1,5 @@
 package com.iouter.gtnhdumper.common.base;
 
-import codechicken.nei.config.DataDumper;
-import com.iouter.gtnhdumper.GTNHDumper;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -11,6 +8,10 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import com.iouter.gtnhdumper.GTNHDumper;
+
+import codechicken.nei.config.DataDumper;
 
 public abstract class WikiDumper extends DataDumper {
 

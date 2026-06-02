@@ -1,11 +1,15 @@
 package com.iouter.gtnhdumper.common.dumper;
 
-import codechicken.nei.config.DataDumper;
-import codechicken.nei.recipe.GuiRecipeTab;
-import codechicken.nei.recipe.GuiUsageRecipe;
-import codechicken.nei.recipe.HandlerInfo;
-import codechicken.nei.recipe.IRecipeHandler;
-import codechicken.nei.recipe.TemplateRecipeHandler;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import net.bdew.neiaddons.forestry.BaseBreedingRecipeHandler;
+import net.bdew.neiaddons.forestry.BaseProduceRecipeHandler;
+import net.minecraft.util.ChatComponentTranslation;
+
 import com.google.common.base.Objects;
 import com.gtnewhorizons.aspectrecipeindex.nei.AlchemyRecipeHandler;
 import com.gtnewhorizons.aspectrecipeindex.nei.AspectCombinationHandler;
@@ -28,19 +32,17 @@ import com.iouter.gtnhdumper.common.recipe.base.BaseHandlerRecipe;
 import com.iouter.gtnhdumper.common.utils.Utils;
 import com.kuba6000.mobsinfo.nei.MobHandler;
 import com.kuba6000.mobsinfo.nei.MobHandlerInfernal;
+
+import codechicken.nei.config.DataDumper;
+import codechicken.nei.recipe.GuiRecipeTab;
+import codechicken.nei.recipe.GuiUsageRecipe;
+import codechicken.nei.recipe.HandlerInfo;
+import codechicken.nei.recipe.IRecipeHandler;
+import codechicken.nei.recipe.TemplateRecipeHandler;
 import fox.spiteful.avaritia.compat.nei.ExtremeShapedRecipeHandler;
 import gregtech.nei.GTNEIDefaultHandler;
 import gtnhintergalactic.nei.GasSiphonRecipeHandler;
 import gtnhintergalactic.nei.SpacePumpModuleRecipeHandler;
-import net.bdew.neiaddons.forestry.BaseBreedingRecipeHandler;
-import net.bdew.neiaddons.forestry.BaseProduceRecipeHandler;
-import net.minecraft.util.ChatComponentTranslation;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class RecipesDumper extends DataDumper {
 

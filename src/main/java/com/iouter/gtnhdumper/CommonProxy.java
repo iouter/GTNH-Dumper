@@ -1,6 +1,7 @@
 package com.iouter.gtnhdumper;
 
 import com.iouter.gtnhdumper.common.utils.KeySimulator;
+
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;

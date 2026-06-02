@@ -1,7 +1,5 @@
 package com.iouter.gtnhdumper.common.base;
 
-import codechicken.nei.api.API;
-import codechicken.nei.api.IConfigureNEI;
 import com.iouter.gtnhdumper.CommonProxy;
 import com.iouter.gtnhdumper.GTNHDumper;
 import com.iouter.gtnhdumper.common.dumper.AdvItemPanelDumper;
@@ -18,6 +16,9 @@ import com.iouter.gtnhdumper.common.dumper.QuestLineDumper;
 import com.iouter.gtnhdumper.common.dumper.RecipesDumper;
 import com.iouter.gtnhdumper.common.dumper.TC4ResearchDumper;
 import com.iouter.gtnhdumper.common.dumper.TICMaterialDumper;
+
+import codechicken.nei.api.API;
+import codechicken.nei.api.IConfigureNEI;
 
 public class NEIConfig implements IConfigureNEI {
 

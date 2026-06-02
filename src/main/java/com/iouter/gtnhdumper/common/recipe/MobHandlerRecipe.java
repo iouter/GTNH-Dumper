@@ -1,24 +1,26 @@
 package com.iouter.gtnhdumper.common.recipe;
 
-import codechicken.nei.PositionedStack;
-import codechicken.nei.recipe.IRecipeHandler;
-import codechicken.nei.recipe.TemplateRecipeHandler.CachedRecipe;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.item.ItemStack;
+
 import com.iouter.gtnhdumper.GTNHDumper;
 import com.iouter.gtnhdumper.common.recipe.base.BaseHandlerRecipe;
 import com.iouter.gtnhdumper.common.recipe.base.RecipeItem;
 import com.iouter.gtnhdumper.common.utils.RecipeUtil;
 import com.kuba6000.mobsinfo.api.SpawnInfo;
 import com.kuba6000.mobsinfo.nei.MobHandler;
+
+import codechicken.nei.PositionedStack;
+import codechicken.nei.recipe.IRecipeHandler;
+import codechicken.nei.recipe.TemplateRecipeHandler.CachedRecipe;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.item.ItemStack;
-
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
 
 public class MobHandlerRecipe extends BaseHandlerRecipe {
 

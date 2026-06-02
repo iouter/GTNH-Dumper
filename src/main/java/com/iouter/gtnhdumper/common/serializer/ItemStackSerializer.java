@@ -1,12 +1,13 @@
 package com.iouter.gtnhdumper.common.serializer;
 
+import java.lang.reflect.Type;
+
+import net.minecraft.item.ItemStack;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.iouter.gtnhdumper.common.recipe.base.RecipeItem;
-import net.minecraft.item.ItemStack;
-
-import java.lang.reflect.Type;
 
 public class ItemStackSerializer implements JsonSerializer<ItemStack> {
 

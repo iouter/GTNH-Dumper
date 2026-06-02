@@ -1,19 +1,21 @@
 package com.iouter.gtnhdumper.common.recipe.base;
 
+import static com.iouter.gtnhdumper.GTNHDumper.GSON;
+
+import java.util.List;
+
+import net.minecraft.item.ItemStack;
+
+import com.google.common.base.Objects;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.iouter.gtnhdumper.common.utils.RecipeUtil;
+
 import codechicken.nei.recipe.GuiRecipeTab;
 import codechicken.nei.recipe.HandlerInfo;
 import codechicken.nei.recipe.IRecipeHandler;
 import codechicken.nei.recipe.RecipeCatalysts;
 import codechicken.nei.recipe.TemplateRecipeHandler;
-import com.google.common.base.Objects;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.iouter.gtnhdumper.common.utils.RecipeUtil;
-import net.minecraft.item.ItemStack;
-
-import java.util.List;
-
-import static com.iouter.gtnhdumper.GTNHDumper.GSON;
 
 public abstract class BaseHandlerRecipe {
 

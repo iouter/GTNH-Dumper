@@ -1,15 +1,17 @@
 package com.iouter.gtnhdumper.common.recipe;
 
-import codechicken.nei.recipe.IRecipeHandler;
-import com.iouter.gtnhdumper.common.recipe.base.BaseHandlerRecipe;
-import gtnhintergalactic.recipe.GasSiphonRecipes;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-import net.minecraftforge.fluids.FluidStack;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import net.minecraftforge.fluids.FluidStack;
+
+import com.iouter.gtnhdumper.common.recipe.base.BaseHandlerRecipe;
+
+import codechicken.nei.recipe.IRecipeHandler;
+import gtnhintergalactic.recipe.GasSiphonRecipes;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
 public class GasSiphonHandlerRecipe extends BaseHandlerRecipe {
 
