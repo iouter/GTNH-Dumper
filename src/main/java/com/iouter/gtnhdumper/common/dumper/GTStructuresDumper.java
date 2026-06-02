@@ -110,6 +110,13 @@ public class GTStructuresDumper extends DataDumper {
                 IStructureElement<IMetaTileEntity> element = (IStructureElement<IMetaTileEntity>) entry.getValue();
                 var blocks = StructureHacks
                     .getStacksForElement(te, element, ConstructableData.getTierData(constructable));
+                String channel = StructureHacks.getChannel(
+                    element.getClass()
+                        .getName(),
+                    element);
+                if (!(channel.isEmpty())) {
+                    json.addProperty("channel", channel);
+                }
                 ItemStack stackTarget = new ItemStack(Item.getItemById(1));
                 List<ItemStack> itemStacks;
                 if (blocks != null) {

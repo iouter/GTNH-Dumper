@@ -151,7 +151,7 @@ public class StructureHacks {
         return result;
     }
 
-    private static String getChannel(String className, IStructureElement<?> element) {
+    public static String getChannel(String className, IStructureElement<?> element) {
         if (className.equals(CHANNEL_ELEMENT)) {
             try {
                 return (String) CHANNEL_GETTER.invokeWithArguments(element);
