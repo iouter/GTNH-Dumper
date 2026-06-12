@@ -8,9 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import net.glease.tc4tweak.modules.objectTag.GetObjectTags;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.Language;
-import net.minecraft.client.resources.LanguageManager;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -150,19 +147,12 @@ public class AdvItemPanelDumper extends WikiDumper {
     }
 
     private static Map<ItemStack, String> getOriginalNameMap(List<ItemStack> itemStacks) {
-        Minecraft minecraft = Minecraft.getMinecraft();
-        LanguageManager languageManager = minecraft.getLanguageManager();
-        Language currentLanguage = languageManager.getCurrentLanguage();
-        languageManager.setCurrentLanguage(new Language("en_US", "US", "English (United States)", false));
-        languageManager.onResourceManagerReload(minecraft.getResourceManager());
-
         Map<ItemStack, String> originalNameMap = new HashMap<>(itemStacks.size());
-        for (ItemStack stack : itemStacks) {
-            originalNameMap.put(stack, stack.getDisplayName());
-        }
-        languageManager.setCurrentLanguage(currentLanguage);
-        languageManager.onResourceManagerReload(minecraft.getResourceManager());
-
+        Utils.getEnglishTranslation(() -> {
+            for (ItemStack stack : itemStacks) {
+                originalNameMap.put(stack, stack.getDisplayName());
+            }
+        });
         return originalNameMap;
     }
 }

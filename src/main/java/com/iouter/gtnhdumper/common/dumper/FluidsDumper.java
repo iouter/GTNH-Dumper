@@ -1,9 +1,8 @@
 package com.iouter.gtnhdumper.common.dumper;
 
-import static gregtech.api.enums.GTValues.E;
-
 import java.io.File;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -13,8 +12,6 @@ import net.minecraft.util.ChatComponentTranslation;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
-
-import org.apache.commons.lang3.text.WordUtils;
 
 import com.iouter.gtnhdumper.CommonProxy;
 import com.iouter.gtnhdumper.common.base.WikiDumper;
@@ -44,13 +41,9 @@ public class FluidsDumper extends WikiDumper {
         super("tools.dump.gtnhdumper.fluid");
     }
 
-    public static String getFluidName(Fluid aFluid, boolean aLocalized) {
-        if (aFluid == null) return E;
-        String rName = aLocalized ? aFluid.getLocalizedName(new FluidStack(aFluid, 0)) : aFluid.getUnlocalizedName();
-        if (rName.contains("fluid.") || rName.contains("tile.")) return WordUtils.capitalizeFully(
-            rName.replaceAll("fluid.", E)
-                .replaceAll("tile.", E));
-        return rName;
+    public static String getFluidName(Fluid aFluid) {
+        if (aFluid == null) return "";
+        return aFluid.getLocalizedName(new FluidStack(aFluid, 0));
     }
 
     @Override
@@ -74,11 +67,19 @@ public class FluidsDumper extends WikiDumper {
     public Iterable<Object[]> dumpObject(int mode) {
         LinkedList<Object[]> list = new LinkedList<>();
         Map<String, Fluid> fluids = FluidRegistry.getRegisteredFluids();
+
+        Map<Fluid, String> originalNameMap = new HashMap<>();
+        Utils.getEnglishTranslation(() -> {
+            for (Fluid fluid : fluids.values()) {
+                originalNameMap.put(fluid, getFluidName(fluid));
+            }
+        });
+
         for (String fluidKey : fluids.keySet()) {
             Fluid fluid = fluids.get(fluidKey);
             if (fluid == null) continue;
-            String originalName = getFluidName(fluid, false);
-            String translatedName = getFluidName(fluid, true);
+            String originalName = originalNameMap.get(fluid);
+            String translatedName = getFluidName(fluid);
             int luminosity = fluid.getLuminosity();
             int density = fluid.getDensity();
             int temperature = fluid.getTemperature();

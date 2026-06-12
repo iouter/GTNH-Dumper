@@ -5,12 +5,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.Language;
-import net.minecraft.client.resources.LanguageManager;
 import net.minecraft.util.ChatComponentTranslation;
 
 import com.iouter.gtnhdumper.common.base.WikiDumper;
+import com.iouter.gtnhdumper.common.utils.Utils;
 
 import gtneioreplugin.util.DimensionHelper;
 
@@ -36,19 +34,12 @@ public class GTNHDimensionDumper extends WikiDumper {
 
         Map<DimensionHelper.Dimension, String> originalNameMap = new HashMap<>();
 
-        Minecraft minecraft = Minecraft.getMinecraft();
-        LanguageManager languageManager = minecraft.getLanguageManager();
-        Language currentLanguage = languageManager.getCurrentLanguage();
-        languageManager.setCurrentLanguage(new Language("en_US", "US", "English (United States)", false));
-        languageManager.onResourceManagerReload(minecraft.getResourceManager());
-
-        for (DimensionHelper.Dimension dimension : DimensionHelper.ALL_DIMENSIONS) {
-            originalNameMap
-                .put(dimension, DimensionHelper.getDimLocalizedName(DimensionHelper.getFullName(dimension.abbr())));
-        }
-
-        languageManager.setCurrentLanguage(currentLanguage);
-        languageManager.onResourceManagerReload(minecraft.getResourceManager());
+        Utils.getEnglishTranslation(() -> {
+            for (DimensionHelper.Dimension dimension : DimensionHelper.ALL_DIMENSIONS) {
+                originalNameMap
+                    .put(dimension, DimensionHelper.getDimLocalizedName(DimensionHelper.getFullName(dimension.abbr())));
+            }
+        });
 
         for (DimensionHelper.Dimension dimension : DimensionHelper.ALL_DIMENSIONS) {
             list.add(

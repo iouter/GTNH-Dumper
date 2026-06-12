@@ -19,6 +19,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.Language;
+import net.minecraft.client.resources.LanguageManager;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -350,5 +352,18 @@ public class Utils {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static void getEnglishTranslation(Runnable action) {
+        Minecraft minecraft = Minecraft.getMinecraft();
+        LanguageManager languageManager = minecraft.getLanguageManager();
+        Language currentLanguage = languageManager.getCurrentLanguage();
+        languageManager.setCurrentLanguage(new Language("en_US", "US", "English (United States)", false));
+        languageManager.onResourceManagerReload(minecraft.getResourceManager());
+
+        action.run();
+
+        languageManager.setCurrentLanguage(currentLanguage);
+        languageManager.onResourceManagerReload(minecraft.getResourceManager());
     }
 }
