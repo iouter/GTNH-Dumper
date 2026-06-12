@@ -13,6 +13,7 @@ import java.util.Set;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChatComponentTranslation;
 
 import com.google.gson.JsonObject;
 import com.gtnewhorizon.gtnhlib.blockpos.BlockPos;
@@ -25,6 +26,7 @@ import com.iouter.gtnhdumper.common.utils.StructureHacks;
 import com.iouter.gtnhdumper.common.utils.Utils;
 
 import blockrenderer6343.client.utils.ConstructableData;
+import codechicken.nei.NEIClientUtils;
 import codechicken.nei.config.DataDumper;
 import gregtech.api.GregTechAPI;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
@@ -48,6 +50,7 @@ public class GTStructuresDumper extends DataDumper {
     @Override
     public void dumpFile() {
         dumpStructures();
+        NEIClientUtils.printChatMessage(dumpMessage(null));
     }
 
     private void dumpStructures() {
@@ -83,6 +86,11 @@ public class GTStructuresDumper extends DataDumper {
     @Override
     public int modeCount() {
         return 1;
+    }
+
+    @Override
+    public ChatComponentTranslation dumpMessage(File file) {
+        return new ChatComponentTranslation("nei.options.tools.dump.gtnhdumper.gtstructure.dumped");
     }
 
     private static class GTStructure {

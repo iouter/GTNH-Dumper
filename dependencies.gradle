@@ -32,6 +32,7 @@ dependencies {
 	// runtimeOnly("com.github.GTNewHorizons:lwjgl3ify:3.0.21:dev")
 	// runtimeOnly("com.github.GTNewHorizons:RetroFuturaBootstrap:1.0.13:dev")
     runtimeOnly('thaumcraft:Thaumcraft:1.7.10-4.2.3.5:dev')
+    runtimeOnly('net.glease:tc4tweaks:1.5.44:dev')
     runtimeOnly("com.github.GTNewHorizons:AspectRecipeIndex:1.1.1:dev")
     runtimeOnly("com.github.GTNewHorizons:BetterQuesting:3.8.64-GTNH:dev")
     runtimeOnly("com.github.GTNewHorizons:BlockRenderer6343:1.4.13:dev")

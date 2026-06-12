@@ -1,21 +1,14 @@
 package com.iouter.gtnhdumper.common.dumper;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import net.glease.tc4tweak.modules.objectTag.GetObjectTags;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.resources.Language;
 import net.minecraft.client.resources.LanguageManager;
 import net.minecraft.creativetab.CreativeTabs;
@@ -27,17 +20,17 @@ import net.minecraft.util.EnumChatFormatting;
 import org.lwjgl.input.Keyboard;
 
 import com.iouter.gtnhdumper.CommonProxy;
+import com.iouter.gtnhdumper.GTNHDumper;
 import com.iouter.gtnhdumper.common.base.WikiDumper;
 import com.iouter.gtnhdumper.common.utils.KeySimulator;
 import com.iouter.gtnhdumper.common.utils.Utils;
 
 import codechicken.nei.guihook.GuiContainerManager;
-import codechicken.nei.shadow.org.apache.commons.csv.CSVFormat;
-import codechicken.nei.shadow.org.apache.commons.csv.CSVPrinter;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.common.registry.GameRegistry;
+import thaumcraft.api.aspects.AspectList;
 
 public class AdvItemPanelDumper extends WikiDumper {
 
@@ -62,7 +55,7 @@ public class AdvItemPanelDumper extends WikiDumper {
     @Override
     public String[] header() {
         return new String[] { "shortKey", "key", "nbt", "originalName", "translatedName", "tooltips", "tooltipsShift",
-            "tooltipsCtrl", "tooltipsShiftAndCtrl", "mod", "icon", "frameCount", "aspect" };
+            "tooltipsCtrl", "tooltipsShiftAndCtrl", "mod", "icon", "aspect" };
     }
 
     @Override
@@ -77,12 +70,7 @@ public class AdvItemPanelDumper extends WikiDumper {
             item.getSubItems(item, CreativeTabs.tabAllSearch, sub);
             itemStacks.addAll(sub);
         }
-
-        Map<String, String> redirectMap = new LinkedHashMap<>();
-        Set<String> itemNameSet = new HashSet<>();
-
         Map<ItemStack, String> originalNameMap = getOriginalNameMap(itemStacks);
-
         for (ItemStack stack : itemStacks) {
             if (stack == null) continue;
             GameRegistry.UniqueIdentifier uid;
@@ -96,13 +84,8 @@ public class AdvItemPanelDumper extends WikiDumper {
             ModContainer mod = Loader.instance()
                 .getIndexedModList()
                 .get(modid);
-
-            ItemIconDumper.prepareRenderItem(stack, RenderItem.getInstance());
-
             String nbt = Utils.getItemNBT(stack);
-
             String modName = mod != null ? mod.getName() : modid;
-
             String tooltip = Utils.getTooltip(stack);
             String[] tooltips = new String[] { null, null, null };
             KeySimulator.withKeyPressed(() -> {
@@ -140,33 +123,20 @@ public class AdvItemPanelDumper extends WikiDumper {
             final String translatedName = EnumChatFormatting
                 .getTextWithoutFormattingCodes(GuiContainerManager.itemDisplayNameShort(stack));
             final String imageName = ItemIconDumper.getIconFileName(stack);
-            final String vaildFileName = Utils.replaceIllegalChars(translatedName);
-            if (itemNameSet.add(vaildFileName)) {
-                redirectMap.put("File:" + vaildFileName + ".png", "File:" + imageName);
-            } else {
-                int i = 2;
-                while (!itemNameSet.add(vaildFileName + " " + i)) {
-                    i++;
+            AspectList aspectList = null;
+            if (CommonProxy.isTCLoaded) {
+                try {
+                    aspectList = GetObjectTags.getObjectTags(stack);
+                } catch (Exception e) {
+                    GTNHDumper.LOG.error(e);
                 }
-                redirectMap.put("File:" + vaildFileName + " " + i + ".png", "File:" + imageName);
             }
 
             list.add(
                 new Object[] { Utils.getItemStackShortKey(stack), Utils.getItemKey(stack), nbt,
                     originalNameMap.get(stack), translatedName, tooltip, tooltips[TOOLTIP_LSHIFT],
                     tooltips[TOOLTIP_LCONTROL], tooltips[TOOLTIP_LSHIFT_AND_LCONTROL], modName, imageName,
-                    ItemIconDumper.getItemFrameCount(stack),
-                    CommonProxy.isTCLoaded ? GetObjectTags.getObjectTags(stack) : null });
-        }
-
-        try (CSVPrinter printer = new CSVPrinter(
-            Files.newBufferedWriter(Paths.get("dumps/image_redirect.csv")),
-            CSVFormat.DEFAULT)) {
-            for (Map.Entry<String, String> e : redirectMap.entrySet()) {
-                printer.printRecord(e.getKey(), e.getValue());
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+                    aspectList });
         }
 
         return list;

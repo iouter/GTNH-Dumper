@@ -5,12 +5,19 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -21,6 +28,8 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -29,11 +38,15 @@ import org.lwjgl.opengl.GL11;
 import com.gtnewhorizons.angelica.glsm.GLStateManager;
 import com.iouter.gtnhdumper.CommonProxy;
 import com.iouter.gtnhdumper.GTNHDumper;
+import com.iouter.gtnhdumper.common.base.WikiDumper;
 import com.iouter.gtnhdumper.common.utils.DynamicTexture;
 import com.iouter.gtnhdumper.common.utils.FBOHelper;
 import com.iouter.gtnhdumper.common.utils.Utils;
 
 import bartworks.system.material.BWMetaGeneratedOres;
+import codechicken.nei.guihook.GuiContainerManager;
+import codechicken.nei.shadow.org.apache.commons.csv.CSVFormat;
+import codechicken.nei.shadow.org.apache.commons.csv.CSVPrinter;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.registry.GameData;
 import gregtech.common.blocks.GTBlockOre;
@@ -41,12 +54,83 @@ import gregtech.common.items.ItemVolumetricFlask;
 import gtPlusPlus.core.block.base.BlockBaseOre;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
-public class ItemIconDumper {
+public class ItemIconDumper extends WikiDumper {
 
     private static final Object2IntOpenHashMap<ItemStack> frameCountMap = new Object2IntOpenHashMap<>();
     private static final Map<Integer, FBOHelper> fbos = new HashMap<>();
 
-    private ItemIconDumper() {}
+    public ItemIconDumper() {
+        super("tools.dump.gtnhdumper.itemicon");
+    }
+
+    @Override
+    public int getKeyIndex() {
+        return 0;
+    }
+
+    @Override
+    public String getKeyStr() {
+        return "shortKey";
+    }
+
+    @Override
+    public Iterable<Object[]> dumpObject(int mode) {
+        LinkedList<Object[]> list = new LinkedList<>();
+
+        List<ItemStack> itemStacks = new ArrayList<>();
+
+        for (Object temp : GameData.getItemRegistry()) {
+            if (!(temp instanceof Item item)) continue;
+            List<ItemStack> sub = new ArrayList<>();
+            item.getSubItems(item, CreativeTabs.tabAllSearch, sub);
+            itemStacks.addAll(sub);
+        }
+
+        Map<String, String> redirectMap = new LinkedHashMap<>();
+        Set<String> itemNameSet = new HashSet<>();
+
+        for (ItemStack stack : itemStacks) {
+            final int size = prepareRenderItem(stack, RenderItem.getInstance());
+            final String translatedName = EnumChatFormatting
+                .getTextWithoutFormattingCodes(GuiContainerManager.itemDisplayNameShort(stack));
+            final String imageName = getIconFileName(stack);
+            final String vaildFileName = Utils.replaceIllegalChars(translatedName);
+            if (itemNameSet.add(vaildFileName)) {
+                redirectMap.put("File:" + vaildFileName + ".png", "File:" + imageName);
+            } else {
+                int i = 2;
+                while (!itemNameSet.add(vaildFileName + " " + i)) {
+                    i++;
+                }
+                redirectMap.put("File:" + vaildFileName + " " + i + ".png", "File:" + imageName);
+            }
+            list.add(new Object[] { Utils.getItemStackShortKey(stack), imageName, size, getItemFrameCount(stack) });
+        }
+
+        try (CSVPrinter printer = new CSVPrinter(
+            Files.newBufferedWriter(Paths.get("dumps/image_redirect.csv")),
+            CSVFormat.DEFAULT)) {
+            for (Map.Entry<String, String> e : redirectMap.entrySet()) {
+                printer.printRecord(e.getKey(), e.getValue());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return list;
+    }
+
+    @Override
+    public String[] header() {
+        return new String[] { "shortKey", "iconName", "size", "frameCount" };
+    }
+
+    @Override
+    public ChatComponentTranslation dumpMessage(File file) {
+        return new ChatComponentTranslation(
+            "nei.options.tools.dump.gtnhdumper.itemicon.dumped",
+            "dumps/" + file.getName());
+    }
 
     public static String getIconFileName(ItemStack stack) {
         return getIconFileName(stack, false);
@@ -100,26 +184,23 @@ public class ItemIconDumper {
         return false;
     }
 
-    public static void prepareRenderItem(ItemStack itemStack, RenderItem itemRenderer) {
+    public static int prepareRenderItem(ItemStack itemStack, RenderItem itemRenderer) {
         IIcon iIcon = itemStack.getIconIndex();
         if (iIcon == null) {
             iIcon = Objects.requireNonNull(itemStack.getItem())
                 .getIconFromDamageForRenderPass(itemStack.getItemDamage(), 0);
         }
-
         int size;
-        if (iIcon == null) {
+        if (itemStack.getItem() instanceof ItemBlock
+            && RenderBlocks.renderItemIn3d(((ItemBlock) itemStack.getItem()).field_150939_a.getRenderType())) {
+            size = 256;
+        } else if (iIcon == null) {
             GTNHDumper.LOG.error("Can't find {}'s icon, set render size to 128", itemStack.getDisplayName());
             size = 128;
         } else {
             int width = iIcon.getIconWidth();
             int height = iIcon.getIconHeight();
             size = Math.max(width, height);
-            if (itemStack.getItem() instanceof ItemBlock) {
-                if (RenderBlocks.renderItemIn3d(((ItemBlock) itemStack.getItem()).field_150939_a.getRenderType())) {
-                    size = 256;
-                }
-            }
         }
 
         FBOHelper fbo = fbos.get(size);
@@ -128,6 +209,7 @@ public class ItemIconDumper {
             fbos.put(size, fbo);
         }
         renderGeneralItem(itemStack, fbo, itemRenderer);
+        return size;
     }
 
     /**

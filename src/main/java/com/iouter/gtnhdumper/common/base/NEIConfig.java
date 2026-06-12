@@ -10,6 +10,7 @@ import com.iouter.gtnhdumper.common.dumper.GTOreVeinDumper;
 import com.iouter.gtnhdumper.common.dumper.GTSmallOreVeinDumper;
 import com.iouter.gtnhdumper.common.dumper.GTStructuresDumper;
 import com.iouter.gtnhdumper.common.dumper.GTUndergroundFluidDumper;
+import com.iouter.gtnhdumper.common.dumper.ItemIconDumper;
 import com.iouter.gtnhdumper.common.dumper.OreDictionaryDumper;
 import com.iouter.gtnhdumper.common.dumper.QuestDumper;
 import com.iouter.gtnhdumper.common.dumper.QuestLineDumper;
@@ -25,6 +26,7 @@ public class NEIConfig implements IConfigureNEI {
     @Override
     public void loadConfig() {
         API.addOption(new AdvItemPanelDumper());
+        API.addOption(new ItemIconDumper());
         API.addOption(new RecipesDumper());
         API.addOption(new OreDictionaryDumper());
         API.addOption(new FluidsDumper());
