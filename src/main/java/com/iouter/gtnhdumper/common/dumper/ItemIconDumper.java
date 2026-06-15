@@ -90,7 +90,7 @@ public class ItemIconDumper extends WikiDumper {
         Set<String> itemNameSet = new HashSet<>();
 
         for (ItemStack stack : itemStacks) {
-            if (stack == null) continue;
+            if (Utils.isStackInvalid(stack)) continue;
             final int size = prepareRenderItem(stack, RenderItem.getInstance());
             final String translatedName = EnumChatFormatting
                 .getTextWithoutFormattingCodes(GuiContainerManager.itemDisplayNameShort(stack));

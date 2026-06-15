@@ -69,7 +69,7 @@ public class AdvItemPanelDumper extends WikiDumper {
         }
         Map<ItemStack, String> originalNameMap = getOriginalNameMap(itemStacks);
         for (ItemStack stack : itemStacks) {
-            if (stack == null) continue;
+            if (Utils.isStackInvalid(stack)) continue;
             GameRegistry.UniqueIdentifier uid;
             try {
                 uid = GameRegistry.findUniqueIdentifierFor(stack.getItem());

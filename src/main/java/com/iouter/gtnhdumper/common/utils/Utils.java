@@ -26,6 +26,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidStack;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.iouter.gtnhdumper.CommonProxy;
@@ -62,9 +64,10 @@ public class Utils {
         return key;
     }
 
-    public static String getItemKey(ItemStack stack) {
+    public static @NotNull String getItemKey(ItemStack stack) {
         if (stack == null) return "null";
         final String name = Item.itemRegistry.getNameForObject(stack.getItem());
+        if (name == null) return "null";
         final int meta = InventoryUtils.actualDamage(stack);
         if (meta != 0) return name + ":" + meta;
         return name;
@@ -320,7 +323,7 @@ public class Utils {
         return base64.replaceAll("=", "");
     }
 
-    public static String getItemStackShortKey(ItemStack stack) {
+    public static @NotNull String getItemStackShortKey(ItemStack stack) {
         String hash = hashNBT(stack);
         if (hash != null) {
             return getItemKey(stack) + "_" + hash;
@@ -365,5 +368,14 @@ public class Utils {
 
         languageManager.setCurrentLanguage(currentLanguage);
         languageManager.onResourceManagerReload(minecraft.getResourceManager());
+    }
+
+    // Copy from GregTech
+    public static boolean isStackInvalid(ItemStack aStack) {
+        return aStack == null || aStack.getItem() == null || aStack.stackSize < 0;
+    }
+
+    public static boolean isStackValid(FluidStack aStack) {
+        return aStack != null && aStack.getFluid() != null && aStack.amount >= 0;
     }
 }
