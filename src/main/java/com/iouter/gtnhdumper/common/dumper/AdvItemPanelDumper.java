@@ -1,15 +1,12 @@
 package com.iouter.gtnhdumper.common.dumper;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import net.glease.tc4tweak.modules.objectTag.GetObjectTags;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
@@ -19,13 +16,13 @@ import org.lwjgl.input.Keyboard;
 import com.iouter.gtnhdumper.CommonProxy;
 import com.iouter.gtnhdumper.GTNHDumper;
 import com.iouter.gtnhdumper.common.base.WikiDumper;
+import com.iouter.gtnhdumper.common.utils.AllItemStacks;
 import com.iouter.gtnhdumper.common.utils.KeySimulator;
 import com.iouter.gtnhdumper.common.utils.Utils;
 
 import codechicken.nei.guihook.GuiContainerManager;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
-import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.common.registry.GameRegistry;
 import thaumcraft.api.aspects.AspectList;
 
@@ -59,14 +56,7 @@ public class AdvItemPanelDumper extends WikiDumper {
     public Iterable<Object[]> dumpObject(int mode) {
         LinkedList<Object[]> list = new LinkedList<>();
 
-        List<ItemStack> itemStacks = new ArrayList<>();
-
-        for (Object temp : GameData.getItemRegistry()) {
-            if (!(temp instanceof Item item)) continue;
-            List<ItemStack> sub = new ArrayList<>();
-            item.getSubItems(item, CreativeTabs.tabAllSearch, sub);
-            itemStacks.addAll(sub);
-        }
+        List<ItemStack> itemStacks = AllItemStacks.getAllItemStacks();
         Map<ItemStack, String> originalNameMap = getOriginalNameMap(itemStacks);
         for (ItemStack stack : itemStacks) {
             if (Utils.isStackInvalid(stack)) continue;

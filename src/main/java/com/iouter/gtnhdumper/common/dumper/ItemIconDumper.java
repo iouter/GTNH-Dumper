@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,8 +23,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentTranslation;
@@ -39,6 +36,7 @@ import com.gtnewhorizons.angelica.glsm.GLStateManager;
 import com.iouter.gtnhdumper.CommonProxy;
 import com.iouter.gtnhdumper.GTNHDumper;
 import com.iouter.gtnhdumper.common.base.WikiDumper;
+import com.iouter.gtnhdumper.common.utils.AllItemStacks;
 import com.iouter.gtnhdumper.common.utils.DynamicTexture;
 import com.iouter.gtnhdumper.common.utils.FBOHelper;
 import com.iouter.gtnhdumper.common.utils.Utils;
@@ -48,7 +46,6 @@ import codechicken.nei.guihook.GuiContainerManager;
 import codechicken.nei.shadow.org.apache.commons.csv.CSVFormat;
 import codechicken.nei.shadow.org.apache.commons.csv.CSVPrinter;
 import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.registry.GameData;
 import gregtech.common.blocks.GTBlockOre;
 import gregtech.common.items.ItemVolumetricFlask;
 import gtPlusPlus.core.block.base.BlockBaseOre;
@@ -77,14 +74,7 @@ public class ItemIconDumper extends WikiDumper {
     public Iterable<Object[]> dumpObject(int mode) {
         LinkedList<Object[]> list = new LinkedList<>();
 
-        List<ItemStack> itemStacks = new ArrayList<>();
-
-        for (Object temp : GameData.getItemRegistry()) {
-            if (!(temp instanceof Item item)) continue;
-            List<ItemStack> sub = new ArrayList<>();
-            item.getSubItems(item, CreativeTabs.tabAllSearch, sub);
-            itemStacks.addAll(sub);
-        }
+        List<ItemStack> itemStacks = AllItemStacks.getAllItemStacks();
 
         Map<String, String> redirectMap = new LinkedHashMap<>();
         Set<String> itemNameSet = new HashSet<>();
@@ -146,14 +136,7 @@ public class ItemIconDumper extends WikiDumper {
     public static void testHashNBT() {
         Map<String, String> hashMap = new HashMap<>();
         int collisionCount = 0;
-        List<ItemStack> itemStacks = new ArrayList<>();
-
-        for (Object temp : GameData.getItemRegistry()) {
-            if (!(temp instanceof Item item)) continue;
-            List<ItemStack> sub = new ArrayList<>();
-            item.getSubItems(item, CreativeTabs.tabAllSearch, sub);
-            itemStacks.addAll(sub);
-        }
+        List<ItemStack> itemStacks = AllItemStacks.getAllItemStacks();
 
         for (ItemStack stack : itemStacks) {
             String nbt = Utils.getItemNBT(stack);
@@ -174,12 +157,10 @@ public class ItemIconDumper extends WikiDumper {
 
     private static boolean isValidRender(ItemStack stack) {
         if (CommonProxy.isGTLoaded && stack.getItem() instanceof ItemVolumetricFlask flask) {
-            if (flask != null) {
-                FluidStack fs = flask.getFluid(stack);
-                if (fs != null) {
-                    return fs.getFluid()
-                        .getIcon(fs) == null;
-                }
+            FluidStack fs = flask.getFluid(stack);
+            if (fs != null) {
+                return fs.getFluid()
+                    .getIcon(fs) == null;
             }
         }
         return false;
