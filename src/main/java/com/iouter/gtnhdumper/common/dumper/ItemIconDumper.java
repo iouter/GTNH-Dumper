@@ -20,14 +20,12 @@ import java.util.Set;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IIcon;
 import net.minecraftforge.fluids.FluidStack;
 
 import org.lwjgl.opengl.GL11;
@@ -53,7 +51,9 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 public class ItemIconDumper extends WikiDumper {
 
+    private static final int SINGLE_FRAME_SIZE = 256;
     private static final Object2IntOpenHashMap<ItemStack> frameCountMap = new Object2IntOpenHashMap<>();
+    private static final Object2IntOpenHashMap<ItemStack> dynamicSizeMap = new Object2IntOpenHashMap<>();
     private static final Map<Integer, FBOHelper> fbos = new HashMap<>();
 
     public ItemIconDumper() {
@@ -73,6 +73,8 @@ public class ItemIconDumper extends WikiDumper {
     @Override
     public Iterable<Object[]> dumpObject(int mode) {
         LinkedList<Object[]> list = new LinkedList<>();
+        frameCountMap.clear();
+        dynamicSizeMap.clear();
 
         List<ItemStack> itemStacks = AllItemStacks.getAllItemStacks();
 
@@ -81,7 +83,7 @@ public class ItemIconDumper extends WikiDumper {
 
         for (ItemStack stack : itemStacks) {
             if (Utils.isStackInvalid(stack)) continue;
-            final int size = prepareRenderItem(stack, RenderItem.getInstance());
+            prepareRenderItem(stack, RenderItem.getInstance());
             final String translatedName = EnumChatFormatting
                 .getTextWithoutFormattingCodes(GuiContainerManager.itemDisplayNameShort(stack));
             final String imageName = getIconFileName(stack);
@@ -95,7 +97,9 @@ public class ItemIconDumper extends WikiDumper {
                 }
                 redirectMap.put("File:" + vaildFileName + " " + i + ".png", "File:" + imageName);
             }
-            list.add(new Object[] { Utils.getItemStackShortKey(stack), imageName, size, getItemFrameCount(stack) });
+            list.add(
+                new Object[] { Utils.getItemStackShortKey(stack), imageName, getItemDynamicSize(stack),
+                    getItemFrameCount(stack) });
         }
 
         try (CSVPrinter printer = new CSVPrinter(
@@ -166,32 +170,17 @@ public class ItemIconDumper extends WikiDumper {
         return false;
     }
 
-    public static int prepareRenderItem(ItemStack itemStack, RenderItem itemRenderer) {
-        IIcon iIcon = itemStack.getIconIndex();
-        if (iIcon == null) {
-            iIcon = Objects.requireNonNull(itemStack.getItem())
-                .getIconFromDamageForRenderPass(itemStack.getItemDamage(), 0);
-        }
-        int size;
-        if (itemStack.getItem() instanceof ItemBlock
-            && RenderBlocks.renderItemIn3d(((ItemBlock) itemStack.getItem()).field_150939_a.getRenderType())) {
-            size = 256;
-        } else if (iIcon == null) {
-            GTNHDumper.LOG.error("Can't find {}'s icon, set render size to 128", itemStack.getDisplayName());
-            size = 128;
-        } else {
-            int width = iIcon.getIconWidth();
-            int height = iIcon.getIconHeight();
-            size = Math.max(width, height);
-        }
+    public static void prepareRenderItem(ItemStack itemStack, RenderItem itemRenderer) {
+        renderGeneralItem(itemStack, getFbo(SINGLE_FRAME_SIZE), itemRenderer);
+    }
 
+    private static FBOHelper getFbo(int size) {
         FBOHelper fbo = fbos.get(size);
         if (fbo == null) {
             fbo = new FBOHelper(size);
             fbos.put(size, fbo);
         }
-        renderGeneralItem(itemStack, fbo, itemRenderer);
-        return size;
+        return fbo;
     }
 
     /**
@@ -243,21 +232,20 @@ public class ItemIconDumper extends WikiDumper {
         }
         DynamicTexture dynamicTexture = new DynamicTexture(itemStack);
         if (!getIconFileName(itemStack).contains("Botania:prismarine") && dynamicTexture.isDynamic()) {
-            renderDynamicItem(itemStack, fbo, itemRenderer, dynamicTexture);
+            renderDynamicItem(itemStack, itemRenderer, dynamicTexture);
             return;
         }
-        frameCountMap.put(itemStack, 1);
         BufferedImage image = renderItem(itemStack, fbo, itemRenderer, 1f, null);
         FBOHelper.saveToFile(new File("dumps/icons/" + getIconFileName(itemStack)), image);
         fbo.restoreTexture();
     }
 
-    public static void renderDynamicItem(ItemStack itemStack, FBOHelper fbo, RenderItem itemRenderer,
-        DynamicTexture dynamicTexture) {
+    public static void renderDynamicItem(ItemStack itemStack, RenderItem itemRenderer, DynamicTexture dynamicTexture) {
         int frameCount = dynamicTexture.lcm;
+        FBOHelper dynamicFbo = getFbo(getDynamicTextureSize(dynamicTexture));
         BufferedImage[] images = new BufferedImage[frameCount];
         for (int i = 0; i < frameCount; i++) {
-            images[dynamicTexture.getIndex()] = renderItem(itemStack, fbo, itemRenderer, 1f, dynamicTexture);
+            images[dynamicTexture.getIndex()] = renderItem(itemStack, dynamicFbo, itemRenderer, 1f, dynamicTexture);
         }
         BufferedImage image;
         if (Arrays.stream(images)
@@ -269,9 +257,32 @@ public class ItemIconDumper extends WikiDumper {
         }
         image = concatenateImages(images);
         frameCountMap.put(itemStack, image.getWidth() / image.getHeight());
-        FBOHelper.saveToFile(new File("dumps/icons/" + getIconFileName(itemStack)), images[0]);
+        dynamicSizeMap.put(itemStack, image.getHeight());
+        FBOHelper.saveToFile(
+            new File("dumps/icons/" + getIconFileName(itemStack)),
+            resizeImage(images[0], SINGLE_FRAME_SIZE));
         FBOHelper.saveToFile(new File("dumps/icons/" + getIconFileName(itemStack, true)), image);
-        fbo.restoreTexture();
+        dynamicFbo.restoreTexture();
+    }
+
+    private static int getDynamicTextureSize(DynamicTexture dynamicTexture) {
+        return dynamicTexture.textures.stream()
+            .mapToInt(texture -> Math.max(texture.getIconWidth(), texture.getIconHeight()))
+            .max()
+            .orElse(SINGLE_FRAME_SIZE);
+    }
+
+    private static BufferedImage resizeImage(BufferedImage image, int size) {
+        if (image.getWidth() == size && image.getHeight() == size) {
+            return image;
+        }
+        BufferedImage resized = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = resized.createGraphics();
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+        g2d.setComposite(AlphaComposite.Src);
+        g2d.drawImage(image, 0, 0, size, size, null);
+        g2d.dispose();
+        return resized;
     }
 
     /**
@@ -376,7 +387,11 @@ public class ItemIconDumper extends WikiDumper {
         return true;
     }
 
-    public static int getItemFrameCount(ItemStack stack) {
-        return frameCountMap.getInt(stack);
+    public static Integer getItemDynamicSize(ItemStack stack) {
+        return dynamicSizeMap.containsKey(stack) ? dynamicSizeMap.getInt(stack) : null;
+    }
+
+    public static Integer getItemFrameCount(ItemStack stack) {
+        return frameCountMap.containsKey(stack) ? frameCountMap.getInt(stack) : null;
     }
 }
