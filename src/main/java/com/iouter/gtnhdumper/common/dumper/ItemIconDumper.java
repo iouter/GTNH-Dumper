@@ -20,6 +20,7 @@ import java.util.Set;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemBlock;
@@ -242,7 +243,8 @@ public class ItemIconDumper extends WikiDumper {
 
     public static void renderDynamicItem(ItemStack itemStack, RenderItem itemRenderer, DynamicTexture dynamicTexture) {
         int frameCount = dynamicTexture.lcm;
-        FBOHelper dynamicFbo = getFbo(getDynamicTextureSize(dynamicTexture));
+        boolean is3dBlockItem = is3dBlockItem(itemStack);
+        FBOHelper dynamicFbo = getFbo(is3dBlockItem ? SINGLE_FRAME_SIZE : getDynamicTextureSize(dynamicTexture));
         BufferedImage[] images = new BufferedImage[frameCount];
         for (int i = 0; i < frameCount; i++) {
             images[dynamicTexture.getIndex()] = renderItem(itemStack, dynamicFbo, itemRenderer, 1f, dynamicTexture);
@@ -263,6 +265,11 @@ public class ItemIconDumper extends WikiDumper {
             resizeImage(images[0], SINGLE_FRAME_SIZE));
         FBOHelper.saveToFile(new File("dumps/icons/" + getIconFileName(itemStack, true)), image);
         dynamicFbo.restoreTexture();
+    }
+
+    private static boolean is3dBlockItem(ItemStack itemStack) {
+        return itemStack.getItem() instanceof ItemBlock
+            && RenderBlocks.renderItemIn3d(((ItemBlock) itemStack.getItem()).field_150939_a.getRenderType());
     }
 
     private static int getDynamicTextureSize(DynamicTexture dynamicTexture) {
