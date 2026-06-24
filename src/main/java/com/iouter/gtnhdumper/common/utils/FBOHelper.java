@@ -5,8 +5,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.IntBuffer;
+import java.util.Iterator;
 
+import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageOutputStream;
 
 import net.minecraft.client.renderer.GLAllocation;
 
@@ -152,12 +157,40 @@ public final class FBOHelper {
     }
 
     public static void saveToFile(File file, BufferedImage image) {
-        file.mkdirs();
+        File parent = file.getParentFile();
+        if (parent != null) {
+            parent.mkdirs();
+        }
 
         try {
-            ImageIO.write(image, "png", file);
+            writeMaxCompressedPng(file, image);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private static void writeMaxCompressedPng(File file, BufferedImage image) throws IOException {
+        Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName("png");
+        if (!writers.hasNext()) {
+            ImageIO.write(image, "png", file);
+            return;
+        }
+        ImageWriter writer = writers.next();
+        ImageWriteParam param = writer.getDefaultWriteParam();
+        if (param.canWriteCompressed()) {
+            param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+            String[] types = param.getCompressionTypes();
+            if (types != null && types.length > 0) {
+                param.setCompressionType(types[0]);
+            }
+            // PNG 无损：0 = 最大压缩（最慢），导出为离线操作可接受
+            param.setCompressionQuality(0f);
+        }
+        try (ImageOutputStream ios = ImageIO.createImageOutputStream(file)) {
+            writer.setOutput(ios);
+            writer.write(null, new IIOImage(image, null, null), param);
+        } finally {
+            writer.dispose();
         }
     }
 
